@@ -1,0 +1,22 @@
+debug: true
+
+aspect:
+  logging:
+    enabled: true
+  execution:
+    # Method execution for more than 200 milliseconds will be logged
+    time: 200
+
+spring:
+  jpa:
+    properties:
+      hibernate:
+        generate_statistics: true
+    showSql: true
+
+logging:
+  level:
+    root: DEBUG
+    org:
+      apache:
+        kafka: INFO
