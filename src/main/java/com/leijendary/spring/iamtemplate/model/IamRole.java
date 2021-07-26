@@ -2,6 +2,7 @@ package com.leijendary.spring.iamtemplate.model;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
@@ -26,6 +27,7 @@ public class IamRole extends IdentityIdModel {
             name = "iam_role_permission",
             joinColumns = @JoinColumn(name = "iam_role_id"),
             inverseJoinColumns = @JoinColumn(name = "iam_permission_id"))
+    @ToString.Exclude
     private Set<IamPermission> permissions;
 
     @CreatedDate

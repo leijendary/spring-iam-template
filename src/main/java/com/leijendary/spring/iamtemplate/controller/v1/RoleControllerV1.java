@@ -2,8 +2,10 @@ package com.leijendary.spring.iamtemplate.controller.v1;
 
 import com.leijendary.spring.iamtemplate.controller.AbstractController;
 import com.leijendary.spring.iamtemplate.data.request.QueryRequest;
+import com.leijendary.spring.iamtemplate.data.request.v1.RolePermissionRequestV1;
 import com.leijendary.spring.iamtemplate.data.request.v1.RoleRequestV1;
 import com.leijendary.spring.iamtemplate.data.response.DataResponse;
+import com.leijendary.spring.iamtemplate.data.response.v1.PermissionResponseV1;
 import com.leijendary.spring.iamtemplate.data.response.v1.RoleResponseV1;
 import com.leijendary.spring.iamtemplate.service.IamRoleService;
 import io.swagger.annotations.Api;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 import static com.leijendary.spring.iamtemplate.controller.AbstractController.BASE_API_PATH;
@@ -98,6 +101,44 @@ public class RoleControllerV1 extends AbstractController {
     @ApiOperation("Removes the role from the database")
     public CompletableFuture<Void> delete(@PathVariable final long id) {
         iamRoleService.delete(id);
+
+        return completedFuture(null);
+    }
+
+    @GetMapping("{id}/permissions")
+    @PreAuthorize("hasAuthority('SCOPE_urn:role:permission:list:v1')")
+    @ApiOperation("Retrieves the permissions of the role from the database")
+    public CompletableFuture<DataResponse<Set<PermissionResponseV1>>> getPermissions(@PathVariable final long id) {
+        final var permissions = iamRoleService.getPermissions(id);
+        final var response = DataResponse.<Set<PermissionResponseV1>>builder()
+                .data(permissions)
+                .object(PermissionResponseV1.class)
+                .build();
+
+        return completedFuture(response);
+    }
+
+    @PostMapping("{id}/permissions")
+    @PreAuthorize("hasAuthority('SCOPE_urn:role:permission:add:v1')")
+    @ApiOperation("Add add permission into the database")
+    public CompletableFuture<DataResponse<Set<PermissionResponseV1>>> addPermissions(
+            @PathVariable final long id, @Valid @RequestBody RolePermissionRequestV1 request) {
+        final var permissions = iamRoleService.addPermissions(id, request);
+        final var response = DataResponse.<Set<PermissionResponseV1>>builder()
+                .data(permissions)
+                .object(PermissionResponseV1.class)
+                .build();
+
+        return completedFuture(response);
+    }
+
+    @DeleteMapping("{id}/permissions/{permissionId}")
+    @PreAuthorize("hasAuthority('SCOPE_urn:role:permission:delete:v1')")
+    @ResponseStatus(NO_CONTENT)
+    @ApiOperation("Removes the specific permission from the role")
+    public CompletableFuture<Void> removePermission(
+            @PathVariable final long id, @PathVariable final long permissionId) {
+        iamRoleService.removePermission(id, permissionId);
 
         return completedFuture(null);
     }

@@ -18,8 +18,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import javax.transaction.Transactional;
-
 import static com.leijendary.spring.iamtemplate.factory.IamPermissionFactory.toResponseV1;
 
 @Service
@@ -48,7 +46,6 @@ public class IamPermissionService extends AbstractService {
     @Caching(
             evict = @CacheEvict(value = PAGE_CACHE_V1, allEntries = true),
             put = @CachePut(value = CACHE_V1, key = "#result.id"))
-    @Transactional
     public PermissionResponseV1 create(final PermissionRequestV1 permissionRequest) {
         final var iamPermission = IamPermissionFactory.of(permissionRequest);
 

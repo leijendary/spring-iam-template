@@ -26,10 +26,10 @@ public class RoleListSpecification implements Specification<IamRole> {
 
         final var lowerQuery = query.toLowerCase();
 
-        // Role lowercase like
-        final var role = root.<String>get("role");
-        final var lowerRole = criteriaBuilder.lower(role);
-        final var roleLike = criteriaBuilder.like(lowerRole, "%" + lowerQuery + "%");
+        // Name lowercase like
+        final var name = root.<String>get("name");
+        final var lowerName = criteriaBuilder.lower(name);
+        final var nameLike = criteriaBuilder.like(lowerName, "%" + lowerQuery + "%");
 
         // Description lowercase like
         final var description = root.<String>get("description");
@@ -37,7 +37,7 @@ public class RoleListSpecification implements Specification<IamRole> {
         final var descriptionLike = criteriaBuilder.like(lowerDescription, "%" + lowerQuery + "%");
 
         // Combine the predicates into an "OR" condition
-        final var predicate = criteriaBuilder.or(roleLike, descriptionLike);
+        final var predicate = criteriaBuilder.or(nameLike, descriptionLike);
 
         return criteriaQuery.where(predicate).getRestriction();
     }
