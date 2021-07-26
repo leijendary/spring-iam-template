@@ -108,7 +108,7 @@ public class RoleControllerV1 extends AbstractController {
     @GetMapping("{id}/permissions")
     @PreAuthorize("hasAuthority('SCOPE_urn:role:permission:list:v1')")
     @ApiOperation("Retrieves the permissions of the role from the database")
-    public CompletableFuture<DataResponse<Set<PermissionResponseV1>>> getPermissions(@PathVariable final long id) {
+    public CompletableFuture<DataResponse<Set<PermissionResponseV1>>> listPermissions(@PathVariable final long id) {
         final var permissions = iamRoleService.getPermissions(id);
         final var response = DataResponse.<Set<PermissionResponseV1>>builder()
                 .data(permissions)
@@ -133,7 +133,7 @@ public class RoleControllerV1 extends AbstractController {
     }
 
     @DeleteMapping("{id}/permissions/{permissionId}")
-    @PreAuthorize("hasAuthority('SCOPE_urn:role:permission:delete:v1')")
+    @PreAuthorize("hasAuthority('SCOPE_urn:role:permission:remove:v1')")
     @ResponseStatus(NO_CONTENT)
     @ApiOperation("Removes the specific permission from the role")
     public CompletableFuture<Void> removePermission(
