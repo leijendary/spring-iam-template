@@ -15,19 +15,30 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 @Builder
 public class RoleListSpecification implements Specification<IamRole> {
 
-    private final String column1;
+    private final String query;
 
     @Override
-    public Predicate toPredicate(@NonNull final Root<IamRole> root, final CriteriaQuery<?> criteriaQuery,
-                                 final CriteriaBuilder criteriaBuilder) {
-        if (isBlank(this.column1)) {
+    public Predicate toPredicate(@NonNull final Root<IamRole> root, @NonNull final CriteriaQuery<?> criteriaQuery,
+                                 @NonNull final CriteriaBuilder criteriaBuilder) {
+        if (isBlank(this.query)) {
             return criteriaQuery.where().getRestriction();
         }
 
-        final var column1 = root.<String>get("column1");
-        final var lowerColumn1 = criteriaBuilder.lower(column1);
-        final var like = criteriaBuilder.like(lowerColumn1, "%" + this.column1.toLowerCase() + "%");
+        final var lowerQuery = query.toLowerCase();
 
-        return criteriaQuery.where(like).getRestriction();
+        // Role lowercase like
+        final var role = root.<String>get("role");
+        final var lowerRole = criteriaBuilder.lower(role);
+        final var roleLike = criteriaBuilder.like(lowerRole, "%" + lowerQuery + "%");
+
+        // Description lowercase like
+        final var description = root.<String>get("description");
+        final var lowerDescription = criteriaBuilder.lower(description);
+        final var descriptionLike = criteriaBuilder.like(lowerDescription, "%" + lowerQuery + "%");
+
+        // Combine the predicates into an "OR" condition
+        final var predicate = criteriaBuilder.or(roleLike, descriptionLike);
+
+        return criteriaQuery.where(predicate).getRestriction();
     }
 }

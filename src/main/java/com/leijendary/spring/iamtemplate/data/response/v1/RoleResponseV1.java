@@ -7,6 +7,7 @@ import java.util.Set;
 @Data
 public class RoleResponseV1 {
 
+    private long id;
     private String name;
     private String description;
     private Set<PermissionResponseV1> permissions;

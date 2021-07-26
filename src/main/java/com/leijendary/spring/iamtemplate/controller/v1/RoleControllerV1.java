@@ -2,7 +2,7 @@ package com.leijendary.spring.iamtemplate.controller.v1;
 
 import com.leijendary.spring.iamtemplate.controller.AbstractController;
 import com.leijendary.spring.iamtemplate.data.request.QueryRequest;
-import com.leijendary.spring.iamtemplate.data.request.v1.SampleRequestV1;
+import com.leijendary.spring.iamtemplate.data.request.v1.RoleRequestV1;
 import com.leijendary.spring.iamtemplate.data.response.DataResponse;
 import com.leijendary.spring.iamtemplate.data.response.v1.RoleResponseV1;
 import com.leijendary.spring.iamtemplate.service.IamRoleService;
@@ -37,11 +37,11 @@ public class RoleControllerV1 extends AbstractController {
     public CompletableFuture<DataResponse<List<RoleResponseV1>>> list(
             final QueryRequest queryRequest, final Pageable pageable) {
         final var page = iamRoleService.list(queryRequest, pageable);
-        final var response = DataResponse.<List<SampleResponseV1>>builder()
+        final var response = DataResponse.<List<RoleResponseV1>>builder()
                 .data(page.getContent())
                 .meta(page)
                 .links(page)
-                .object(SampleResponseV1.class)
+                .object(RoleResponseV1.class)
                 .build();
 
         return completedFuture(response);
@@ -50,29 +50,29 @@ public class RoleControllerV1 extends AbstractController {
     @PostMapping
     @PreAuthorize("hasAuthority('SCOPE_urn:role:create:v1')")
     @ResponseStatus(CREATED)
-    @ApiOperation("Saves a sample record into the database")
-    public CompletableFuture<DataResponse<SampleResponseV1>> create(
-            @Valid @RequestBody final SampleRequestV1 request, final HttpServletResponse httpServletResponse) {
-        final var sampleResponse = iamRoleService.create(request);
-        final var response = DataResponse.<SampleResponseV1>builder()
-                .data(sampleResponse)
+    @ApiOperation("Saves a role into the database. The name must be unique and at least one (1) permission")
+    public CompletableFuture<DataResponse<RoleResponseV1>> create(
+            @Valid @RequestBody final RoleRequestV1 request, final HttpServletResponse httpServletResponse) {
+        final var roleResponse = iamRoleService.create(request);
+        final var response = DataResponse.<RoleResponseV1>builder()
+                .data(roleResponse)
                 .status(CREATED)
-                .object(SampleResponseV1.class)
+                .object(RoleResponseV1.class)
                 .build();
 
-        locationHeader(httpServletResponse, sampleResponse.getId());
+        locationHeader(httpServletResponse, roleResponse.getId());
 
         return completedFuture(response);
     }
 
     @GetMapping("{id}")
     @PreAuthorize("hasAuthority('SCOPE_urn:role:get:v1')")
-    @ApiOperation("Retrieves the sample record from the database")
-    public CompletableFuture<DataResponse<SampleResponseV1>> get(@PathVariable final long id) {
-        final var sampleResponse = iamRoleService.get(id);
-        final var response = DataResponse.<SampleResponseV1>builder()
-                .data(sampleResponse)
-                .object(SampleResponseV1.class)
+    @ApiOperation("Retrieves the role from the database")
+    public CompletableFuture<DataResponse<RoleResponseV1>> get(@PathVariable final long id) {
+        final var roleResponse = iamRoleService.get(id);
+        final var response = DataResponse.<RoleResponseV1>builder()
+                .data(roleResponse)
+                .object(RoleResponseV1.class)
                 .build();
 
         return completedFuture(response);
@@ -80,13 +80,13 @@ public class RoleControllerV1 extends AbstractController {
 
     @PutMapping("{id}")
     @PreAuthorize("hasAuthority('SCOPE_urn:role:update:v1')")
-    @ApiOperation("Updates the sample record into the database")
-    public CompletableFuture<DataResponse<SampleResponseV1>> update(
-            @PathVariable final long id, @Valid @RequestBody final SampleRequestV1 request) {
-        final var sampleResponse = iamRoleService.update(id, request);
-        final var response = DataResponse.<SampleResponseV1>builder()
-                .data(sampleResponse)
-                .object(SampleResponseV1.class)
+    @ApiOperation("Updates the role into the database. The name should be unique and at least one (1) permission")
+    public CompletableFuture<DataResponse<RoleResponseV1>> update(
+            @PathVariable final long id, @Valid @RequestBody final RoleRequestV1 request) {
+        final var roleResponse = iamRoleService.update(id, request);
+        final var response = DataResponse.<RoleResponseV1>builder()
+                .data(roleResponse)
+                .object(RoleResponseV1.class)
                 .build();
 
         return completedFuture(response);
@@ -95,7 +95,7 @@ public class RoleControllerV1 extends AbstractController {
     @DeleteMapping ("{id}")
     @PreAuthorize("hasAuthority('SCOPE_urn:role:delete:v1')")
     @ResponseStatus(NO_CONTENT)
-    @ApiOperation("Removes the sample record from the database")
+    @ApiOperation("Removes the role from the database")
     public CompletableFuture<Void> delete(@PathVariable final long id) {
         iamRoleService.delete(id);
 

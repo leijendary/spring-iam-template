@@ -80,7 +80,7 @@ public class IamPermissionService extends AbstractService {
 
         iamPermissionRepository
                 .findFirstByPermissionIgnoreCaseAndIdNot(permissionRequest.getPermission(), id)
-                .ifPresent((permission) -> {
+                .ifPresent(permission -> {
                     throw new ResourceNotUniqueException("permission", permission.getPermission());
                 });
 
