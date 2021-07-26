@@ -6,4 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface IamRolePermissionRepository extends JpaRepository<IamRolePermission, Long> {
 
     void deleteAllByRoleIdAndPermissionId(final long roleId, final long permissionId);
+
+    void deleteAllByPermissionId(final long permissionId);
 }

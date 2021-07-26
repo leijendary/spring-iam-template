@@ -8,6 +8,7 @@ import com.leijendary.spring.iamtemplate.exception.ResourceNotUniqueException;
 import com.leijendary.spring.iamtemplate.factory.IamPermissionFactory;
 import com.leijendary.spring.iamtemplate.model.IamPermission;
 import com.leijendary.spring.iamtemplate.repository.IamPermissionRepository;
+import com.leijendary.spring.iamtemplate.repository.IamRolePermissionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
@@ -16,6 +17,7 @@ import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import static com.leijendary.spring.iamtemplate.factory.IamPermissionFactory.toResponseV1;
@@ -28,6 +30,7 @@ public class IamPermissionService extends AbstractService {
     private static final String PAGE_CACHE_V1 = "PermissionResponsePageV1";
     private static final String CACHE_V1 = "PermissionResponseV1";
 
+    private final IamRolePermissionRepository iamRolePermissionRepository;
     private final IamPermissionRepository iamPermissionRepository;
 
     @Cacheable(value = PAGE_CACHE_V1, key = "#queryRequest.toString() + '|' + #pageable.toString()")
@@ -91,10 +94,16 @@ public class IamPermissionService extends AbstractService {
     @Caching(evict = {
             @CacheEvict(value = PAGE_CACHE_V1, allEntries = true),
             @CacheEvict(value = CACHE_V1, key = "#id") })
+    @Transactional
     public void delete(final long id) {
         final var iamPermission = iamPermissionRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(RESOURCE_NAME, id));
 
+        // Delete all iam_role_permission first since they are connected to the role
+        iamRolePermissionRepository.deleteAllByPermissionId(id);
+
+        // Once the in used permission is deleted form iam_role_permission,
+        // proceed with the deletion of the actual permission
         iamPermissionRepository.delete(iamPermission);
     }
 }
