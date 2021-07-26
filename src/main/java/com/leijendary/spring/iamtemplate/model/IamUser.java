@@ -9,7 +9,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
-import java.time.Instant;
+import java.time.OffsetDateTime;
 import java.util.Set;
 
 @Data
@@ -35,13 +35,13 @@ public class IamUser extends SnowflakeIdModel {
     private String status;
 
     @CreatedDate
-    private Instant createdDate;
+    private OffsetDateTime createdDate;
 
     @CreatedBy
     private String createdBy;
 
     @LastModifiedDate
-    private Instant lastModifiedDate;
+    private OffsetDateTime lastModifiedDate;
 
     @LastModifiedBy
     private String lastModifiedBy;

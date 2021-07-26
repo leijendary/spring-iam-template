@@ -9,7 +9,7 @@ import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import java.time.Instant;
+import java.time.OffsetDateTime;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -25,7 +25,7 @@ public class IamUserCredential extends IdentityIdModel {
     private String password;
 
     @CreatedDate
-    private Instant createdDate;
+    private OffsetDateTime createdDate;
 
-    private Instant lastUsedDate;
+    private OffsetDateTime lastUsedDate;
 }

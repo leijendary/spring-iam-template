@@ -2,7 +2,6 @@ package com.leijendary.spring.iamtemplate.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.leijendary.spring.iamtemplate.config.properties.AuthProperties;
-import com.leijendary.spring.iamtemplate.util.RequestContextUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
 import org.springframework.security.core.AuthenticationException;
@@ -15,10 +14,11 @@ import org.springframework.util.StringUtils;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.time.Instant;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import static com.leijendary.spring.iamtemplate.util.RequestContextUtil.getPath;
+import static com.leijendary.spring.iamtemplate.util.RequestContextUtil.now;
 import static java.util.Locale.getDefault;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -68,8 +68,8 @@ public class AppAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
         final var wwwAuthenticate = computeWwwAuthenticateHeaderValue(parameters);
 
-        parameters.put("timestamp", Instant.now());
-        parameters.put("path", RequestContextUtil.getPath());
+        parameters.put("timestamp", now());
+        parameters.put("path", getPath());
         parameters.put("status", status.value());
 
         if (!parameters.containsKey("error")) {
