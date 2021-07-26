@@ -139,7 +139,7 @@ server:
   http2:
     enabled: true
   servlet:
-    contextPath: /sample
+    contextPath: /identity
   tomcat:
     relaxedQueryChars: '[,]'
     threads:
