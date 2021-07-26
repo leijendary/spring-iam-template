@@ -11,6 +11,7 @@ import com.leijendary.spring.iamtemplate.factory.IamPermissionFactory;
 import com.leijendary.spring.iamtemplate.factory.IamRoleFactory;
 import com.leijendary.spring.iamtemplate.model.IamRole;
 import com.leijendary.spring.iamtemplate.repository.IamPermissionRepository;
+import com.leijendary.spring.iamtemplate.repository.IamRolePermissionRepository;
 import com.leijendary.spring.iamtemplate.repository.IamRoleRepository;
 import com.leijendary.spring.iamtemplate.specification.RoleListSpecification;
 import lombok.RequiredArgsConstructor;
@@ -37,6 +38,7 @@ public class IamRoleService extends AbstractService {
     private static final String CACHE_V1 = "RoleResponseV1";
 
     private final IamPermissionRepository iamPermissionRepository;
+    private final IamRolePermissionRepository iamRolePermissionRepository;
     private final IamRoleRepository iamRoleRepository;
 
     @Cacheable(value = PAGE_CACHE_V1, key = "#queryRequest.toString() + '|' + #pageable.toString()")
@@ -139,12 +141,8 @@ public class IamRoleService extends AbstractService {
     @CacheEvict(value = CACHE_V1, key = "#id + '/permissions'")
     @Transactional
     public void removePermission(final long id, final long permissionId) {
-        final var iamRole = iamRoleRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException(RESOURCE_NAME, id));
-        // Remove permission if the id of the permission matches the permissionId
-        // to be deleted
-        iamRole.getPermissions().removeIf(permission -> permission.getId() == permissionId);
+        iamRoleRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(RESOURCE_NAME, id));
 
-        iamRoleRepository.save(iamRole);
+        iamRolePermissionRepository.deleteAllByRoleIdAndPermissionId(id, permissionId);
     }
 }
