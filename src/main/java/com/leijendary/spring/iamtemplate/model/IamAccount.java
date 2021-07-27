@@ -21,6 +21,7 @@ public class IamAccount extends SnowflakeIdModel {
     @OneToMany(mappedBy = "account")
     private Set<IamUser> users;
 
+    private String type;
     private String status;
 
     @CreatedDate
@@ -31,4 +32,9 @@ public class IamAccount extends SnowflakeIdModel {
 
     private OffsetDateTime deactivatedDate;
     private String deactivatedBy;
+
+    public static class Type {
+        public static final String CUSTOMER = "customer";
+        public static final String PARTNER = "partner";
+    }
 }

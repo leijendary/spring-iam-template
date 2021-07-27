@@ -20,7 +20,7 @@ public class RoleListSpecification implements Specification<IamRole> {
     @Override
     public Predicate toPredicate(@NonNull final Root<IamRole> root, @NonNull final CriteriaQuery<?> criteriaQuery,
                                  @NonNull final CriteriaBuilder criteriaBuilder) {
-        if (isBlank(this.query)) {
+        if (isBlank(query)) {
             return criteriaQuery.where().getRestriction();
         }
 

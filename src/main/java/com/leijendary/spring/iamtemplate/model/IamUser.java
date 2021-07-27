@@ -32,6 +32,9 @@ public class IamUser extends SnowflakeIdModel {
     private String firstName;
     private String middleName;
     private String lastName;
+    private String emailAddress;
+    private String countryCode;
+    private String mobileNumber;
     private String status;
 
     @CreatedDate
@@ -45,4 +48,7 @@ public class IamUser extends SnowflakeIdModel {
 
     @LastModifiedBy
     private String lastModifiedBy;
+
+    private OffsetDateTime deactivatedDate;
+    private String deactivatedBy;
 }
