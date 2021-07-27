@@ -4,8 +4,10 @@ import com.leijendary.spring.iamtemplate.controller.AbstractController;
 import com.leijendary.spring.iamtemplate.data.request.QueryRequest;
 import com.leijendary.spring.iamtemplate.data.request.UserQueryRequest;
 import com.leijendary.spring.iamtemplate.data.request.v1.PermissionRequestV1;
+import com.leijendary.spring.iamtemplate.data.request.v1.UserRequestV1;
 import com.leijendary.spring.iamtemplate.data.response.DataResponse;
 import com.leijendary.spring.iamtemplate.data.response.v1.PermissionResponseV1;
+import com.leijendary.spring.iamtemplate.data.response.v1.UserResponseV1;
 import com.leijendary.spring.iamtemplate.service.IamUserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -35,14 +37,14 @@ public class UserControllerV1 extends AbstractController {
     @GetMapping
     @PreAuthorize("hasAuthority('SCOPE_urn:user:list:v1')")
     @ApiOperation("Get the paginated list of users without an account")
-    public CompletableFuture<DataResponse<List<PermissionResponseV1>>> list(
+    public CompletableFuture<DataResponse<List<UserResponseV1>>> list(
             final QueryRequest queryRequest, final UserQueryRequest userQueryRequest, final Pageable pageable) {
         final var page = iamUserService.list(queryRequest, userQueryRequest, pageable);
-        final var response = DataResponse.<List<PermissionResponseV1>>builder()
+        final var response = DataResponse.<List<UserResponseV1>>builder()
                 .data(page.getContent())
                 .meta(page)
                 .links(page)
-                .object(PermissionResponseV1.class)
+                .object(UserResponseV1.class)
                 .build();
 
         return completedFuture(response);
@@ -51,17 +53,17 @@ public class UserControllerV1 extends AbstractController {
     @PostMapping
     @PreAuthorize("hasAuthority('SCOPE_urn:user:create:v1')")
     @ResponseStatus(CREATED)
-    @ApiOperation("Saves a permission into the database. The permission should be unique")
-    public CompletableFuture<DataResponse<PermissionResponseV1>> create(
-            @Valid @RequestBody final PermissionRequestV1 request, final HttpServletResponse httpServletResponse) {
-        final var permissionResponse = iamUserService.create(request);
-        final var response = DataResponse.<PermissionResponseV1>builder()
-                .data(permissionResponse)
+    @ApiOperation("Saves a user into the database. Both emailAddress and mobileNumber should be unique")
+    public CompletableFuture<DataResponse<UserResponseV1>> create(
+            @Valid @RequestBody final UserRequestV1 request, final HttpServletResponse httpServletResponse) {
+        final var userResponse = iamUserService.create(request);
+        final var response = DataResponse.<UserResponseV1>builder()
+                .data(userResponse)
                 .status(CREATED)
-                .object(PermissionResponseV1.class)
+                .object(UserResponseV1.class)
                 .build();
 
-        locationHeader(httpServletResponse, permissionResponse.getId());
+        locationHeader(httpServletResponse, userResponse.getId());
 
         return completedFuture(response);
     }

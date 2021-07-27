@@ -185,8 +185,6 @@ databaseChangeLog:
                   name: username
                   type: TEXT
               - column:
-                  constraints:
-                    nullable: false
                   name: password
                   type: CHAR(60)
               - column:

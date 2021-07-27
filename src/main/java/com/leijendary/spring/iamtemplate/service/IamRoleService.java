@@ -33,7 +33,8 @@ import static com.leijendary.spring.iamtemplate.factory.IamRoleFactory.toRespons
 @RequiredArgsConstructor
 public class IamRoleService extends AbstractService {
 
-    private static final String RESOURCE_NAME = "IAM Role";
+    public static final String RESOURCE_NAME = "IAM Role";
+
     private static final String PAGE_CACHE_V1 = "RoleResponsePageV1";
     private static final String CACHE_V1 = "RoleResponseV1";
 
