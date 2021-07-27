@@ -190,6 +190,11 @@ databaseChangeLog:
               - column:
                   constraints:
                     nullable: false
+                  name: type
+                  type: TEXT
+              - column:
+                  constraints:
+                    nullable: false
                   defaultValueComputed: CURRENT_TIMESTAMP
                   name: created_date
                   type: TIMESTAMP WITH TIME ZONE
@@ -299,6 +304,28 @@ databaseChangeLog:
             referencedTableName: iam_user
             validate: true
   - changeSet:
+      id: 1626859044307-16
+      author: Leijendary (generated)
+      changes:
+        - createIndex:
+            columns:
+              - column:
+                  name: email_address
+            indexName: idx_iam_user_email_address
+            tableName: iam_user
+  - changeSet:
+      id: 1626859044307-17
+      author: Leijendary (generated)
+      changes:
+        - createIndex:
+            columns:
+              - column:
+                  name: country_code
+              - column:
+                  name: mobile_number
+            indexName: idx_iam_user_country_code_mobile_number
+            tableName: iam_user
+  - changeSet:
       id: 1626859044307-11
       author: Leijendary (generated)
       changes:
@@ -306,9 +333,10 @@ databaseChangeLog:
             columns:
               - column:
                   name: username
-            indexName: uidx_iam_user_credential_username
+              - column:
+                  name: type
+            indexName: idx_iam_user_credential_username_type
             tableName: iam_user_credential
-            unique: true
   - changeSet:
       id: 1626859044307-12
       author: Leijendary (generated)

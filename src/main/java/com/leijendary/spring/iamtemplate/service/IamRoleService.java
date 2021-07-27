@@ -92,7 +92,7 @@ public class IamRoleService extends AbstractService {
 
         IamRoleFactory.map(roleRequest, iamRole);
 
-        iamRole = iamRoleRepository.save(iamRole);
+        iamRoleRepository.save(iamRole);
 
         return toResponseV1(iamRole);
     }

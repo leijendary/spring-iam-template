@@ -3,6 +3,7 @@ package com.leijendary.spring.iamtemplate.data.response.v1;
 import lombok.Data;
 
 import java.time.OffsetDateTime;
+import java.util.Set;
 
 @Data
 public class UserResponseV1 {
@@ -10,6 +11,7 @@ public class UserResponseV1 {
     private long id;
     private AccountResponseV1 account;
     private UserRoleResponseV1 role;
+    private Set<CredentialResponseV1> credentials;
     private String firstName;
     private String middleName;
     private String lastName;

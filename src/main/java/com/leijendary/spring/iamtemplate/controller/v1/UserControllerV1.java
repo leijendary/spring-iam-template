@@ -3,10 +3,8 @@ package com.leijendary.spring.iamtemplate.controller.v1;
 import com.leijendary.spring.iamtemplate.controller.AbstractController;
 import com.leijendary.spring.iamtemplate.data.request.QueryRequest;
 import com.leijendary.spring.iamtemplate.data.request.UserQueryRequest;
-import com.leijendary.spring.iamtemplate.data.request.v1.PermissionRequestV1;
 import com.leijendary.spring.iamtemplate.data.request.v1.UserRequestV1;
 import com.leijendary.spring.iamtemplate.data.response.DataResponse;
-import com.leijendary.spring.iamtemplate.data.response.v1.PermissionResponseV1;
 import com.leijendary.spring.iamtemplate.data.response.v1.UserResponseV1;
 import com.leijendary.spring.iamtemplate.service.IamUserService;
 import io.swagger.annotations.Api;
@@ -70,12 +68,12 @@ public class UserControllerV1 extends AbstractController {
 
     @GetMapping("{id}")
     @PreAuthorize("hasAuthority('SCOPE_urn:user:get:v1')")
-    @ApiOperation("Retrieves the permission from the database")
-    public CompletableFuture<DataResponse<PermissionResponseV1>> get(@PathVariable final long id) {
-        final var permissionResponse = iamUserService.get(id);
-        final var response = DataResponse.<PermissionResponseV1>builder()
-                .data(permissionResponse)
-                .object(PermissionResponseV1.class)
+    @ApiOperation("Retrieves the user details from the database")
+    public CompletableFuture<DataResponse<UserResponseV1>> get(@PathVariable final long id) {
+        final var userResponse = iamUserService.get(id);
+        final var response = DataResponse.<UserResponseV1>builder()
+                .data(userResponse)
+                .object(UserResponseV1.class)
                 .build();
 
         return completedFuture(response);
@@ -83,24 +81,26 @@ public class UserControllerV1 extends AbstractController {
 
     @PutMapping("{id}")
     @PreAuthorize("hasAuthority('SCOPE_urn:user:update:v1')")
-    @ApiOperation("Updates the permission record into the database. The permission should be unique")
-    public CompletableFuture<DataResponse<PermissionResponseV1>> update(
-            @PathVariable final long id, @Valid @RequestBody final PermissionRequestV1 request) {
+    @ApiOperation("Updates the user record into the database. The user's emailAddress and " +
+            "mobileNumber should be unique")
+    public CompletableFuture<DataResponse<UserResponseV1>> update(
+            @PathVariable final long id, @Valid @RequestBody final UserRequestV1 request) {
         final var permissionResponse = iamUserService.update(id, request);
-        final var response = DataResponse.<PermissionResponseV1>builder()
+        final var response = DataResponse.<UserResponseV1>builder()
                 .data(permissionResponse)
-                .object(PermissionRequestV1.class)
+                .object(UserRequestV1.class)
                 .build();
 
         return completedFuture(response);
     }
 
     @DeleteMapping ("{id}")
-    @PreAuthorize("hasAuthority('SCOPE_urn:user:delete:v1')")
+    @PreAuthorize("hasAuthority('SCOPE_urn:user:deactivate:v1')")
     @ResponseStatus(NO_CONTENT)
-    @ApiOperation("Removes the permission record from the database")
-    public CompletableFuture<Void> delete(@PathVariable final long id) {
-        iamUserService.delete(id);
+    @ApiOperation("Soft deletes the user. The user's details will still be kept in the database as is. " +
+            "But the user's credentials can be used by another user")
+    public CompletableFuture<Void> deactivate(@PathVariable final long id) {
+        iamUserService.deactivate(id);
 
         return completedFuture(null);
     }

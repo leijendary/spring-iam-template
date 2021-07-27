@@ -23,6 +23,7 @@ public class IamUserCredential extends IdentityIdModel {
 
     private String username;
     private String password;
+    private String type;
 
     @CreatedDate
     private OffsetDateTime createdDate;

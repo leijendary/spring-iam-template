@@ -13,4 +13,8 @@ public class IamUserFactory extends AbstractFactory {
     public static IamUser of(final UserRequestV1 userRequestV1) {
         return MAPPER.map(userRequestV1, IamUser.class);
     }
+
+    public static void map(final UserRequestV1 userRequestV1, final IamUser iamUser) {
+        MAPPER.map(userRequestV1, iamUser);
+    }
 }
