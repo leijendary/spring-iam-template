@@ -150,13 +150,11 @@ public class IamUserService extends AbstractService {
         }
 
         final var specification = builder.build();
-        // Filter only one item
-        final var oneItem = Pageable.ofSize(1);
         // Get the list of filtered users based on the specification
-        final var page = iamUserRepository.findAll(specification, oneItem);
+        final var iamUser = iamUserRepository.findOne(specification);
 
         // If there is an item in the list, throw an error
-        if (page.hasNext()) {
+        if (iamUser.isPresent()) {
             final var username = getUsername(userRequest);
 
             throw new ResourceNotUniqueException(preferredUsername, username);
