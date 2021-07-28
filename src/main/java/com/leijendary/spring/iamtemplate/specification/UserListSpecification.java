@@ -1,5 +1,6 @@
 package com.leijendary.spring.iamtemplate.specification;
 
+import com.leijendary.spring.iamtemplate.model.IamAccount;
 import com.leijendary.spring.iamtemplate.model.IamUser;
 import lombok.Builder;
 import org.springframework.data.jpa.domain.Specification;
@@ -49,10 +50,10 @@ public class UserListSpecification implements Specification<IamUser> {
         // Option to exclude users with accounts. Normally users with accounts are those who has
         // subscriptions or has multiple users
         if (excludeWithAccounts) {
-            final var accountId = root.<Long>get("account.id");
-            final var nullAccountId = criteriaBuilder.isNull(accountId);
+            final var accountPath = root.<IamAccount>get("account");
+            final var nullAccount = criteriaBuilder.isNull(accountPath);
 
-            predicates.add(nullAccountId);
+            predicates.add(nullAccount);
         }
 
         // Option to exclude users that are deactivated
