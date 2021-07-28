@@ -16,7 +16,7 @@ databaseChangeLog:
                   constraints:
                     nullable: false
                   name: type
-                  type: VARCHAR(12)
+                  type: VARCHAR(8)
               - column:
                   constraints:
                     nullable: false
@@ -191,7 +191,7 @@ databaseChangeLog:
                   constraints:
                     nullable: false
                   name: type
-                  type: TEXT
+                  type: varchar(12)
               - column:
                   constraints:
                     nullable: false
@@ -306,6 +306,7 @@ databaseChangeLog:
   - changeSet:
       id: 1626859044307-16
       author: Leijendary (generated)
+      dbms: '!h2'
       changes:
         - createIndex:
             columns:
@@ -316,6 +317,7 @@ databaseChangeLog:
   - changeSet:
       id: 1626859044307-17
       author: Leijendary (generated)
+      dbms: '!h2'
       changes:
         - createIndex:
             columns:
@@ -328,6 +330,7 @@ databaseChangeLog:
   - changeSet:
       id: 1626859044307-11
       author: Leijendary (generated)
+      dbms: '!h2'
       changes:
         - createIndex:
             columns:
@@ -340,6 +343,7 @@ databaseChangeLog:
   - changeSet:
       id: 1626859044307-12
       author: Leijendary (generated)
+      dbms: '!h2'
       changes:
         - createIndex:
             columns:

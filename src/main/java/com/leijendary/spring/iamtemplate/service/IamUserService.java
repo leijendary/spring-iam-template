@@ -10,7 +10,9 @@ import com.leijendary.spring.iamtemplate.exception.ResourceNotUniqueException;
 import com.leijendary.spring.iamtemplate.factory.IamAccountFactory;
 import com.leijendary.spring.iamtemplate.factory.IamUserFactory;
 import com.leijendary.spring.iamtemplate.model.IamUserCredential;
+import com.leijendary.spring.iamtemplate.repository.IamAccountRepository;
 import com.leijendary.spring.iamtemplate.repository.IamRoleRepository;
+import com.leijendary.spring.iamtemplate.repository.IamUserCredentialRepository;
 import com.leijendary.spring.iamtemplate.repository.IamUserRepository;
 import com.leijendary.spring.iamtemplate.specification.UserListSpecification;
 import com.leijendary.spring.iamtemplate.specification.UserUniquenessSpecification;
@@ -18,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 import java.util.Set;
@@ -34,7 +37,9 @@ public class IamUserService extends AbstractService {
 
     private static final String RESOURCE_NAME = "IAM User";
 
+    private final IamAccountRepository iamAccountRepository;
     private final IamRoleRepository iamRoleRepository;
+    private final IamUserCredentialRepository iamUserCredentialRepository;
     private final IamUserRepository iamUserRepository;
 
     public Page<UserResponseV1> list(final QueryRequest queryRequest, final UserQueryRequest userQueryRequest,
@@ -49,35 +54,49 @@ public class IamUserService extends AbstractService {
         return page.map(IamUserFactory::toResponseV1);
     }
 
+    @Transactional
     public UserResponseV1 create(final UserRequestV1 userRequest) {
-        final var role = iamRoleRepository.findById(userRequest.getRole().getId())
+        final var iamRole = iamRoleRepository.findById(userRequest.getRole().getId())
                 .orElseThrow(() -> new InvalidRoleException("role.id", userRequest.getRole().getId()));
-        final var account = Optional.ofNullable(userRequest.getAccount())
+        final var iamAccount = Optional.ofNullable(userRequest.getAccount())
                 .map(accountRequest -> {
                     // Create a new IamAccount
-                    final var iamAccount = IamAccountFactory.of(accountRequest);
+                    final var account = IamAccountFactory.of(accountRequest);
                     // With the default status of "active"
-                    iamAccount.setStatus(ACTIVE);
+                    account.setStatus(ACTIVE);
 
-                    return iamAccount;
+                    return account;
                 })
                 .orElse(null);
 
         // Validate the uniqueness of the user
         checkUniqueness(userRequest, 0);
 
-        final var username = getUsername(userRequest);
-        // Set the credential based on the username from the preferredUsername field
-        final var credential = new IamUserCredential();
-        credential.setUsername(username);
-        credential.setType(userRequest.getPreferredUsername());
+        // Save the account if the user gave it an account
+        if (iamAccount != null) {
+            iamAccountRepository.save(iamAccount);
+        }
 
         final var iamUser = IamUserFactory.of(userRequest);
-        iamUser.setAccount(account);
-        iamUser.setRole(role);
-        iamUser.setCredentials(Set.of(credential));
+        iamUser.setAccount(iamAccount);
+        iamUser.setRole(iamRole);
+        iamUser.setStatus(ACTIVE);
 
+        // Save the user
         iamUserRepository.save(iamUser);
+
+        final var username = getUsername(userRequest);
+        // Set the credential based on the username from the preferredUsername field
+        final var iamUserCredential = new IamUserCredential();
+        iamUserCredential.setUser(iamUser);
+        iamUserCredential.setUsername(username);
+        iamUserCredential.setType(userRequest.getPreferredUsername());
+
+        // Save the credentials
+        iamUserCredentialRepository.save(iamUserCredential);
+
+        // Set the credentials of the IamUser object for return
+        iamUser.setCredentials(Set.of(iamUserCredential));
 
         return IamUserFactory.toResponseV1(iamUser);
     }
@@ -135,29 +154,32 @@ public class IamUserService extends AbstractService {
     }
 
     private void checkUniqueness(final UserRequestV1 userRequest, long id) {
-        final var preferredUsername = userRequest.getPreferredUsername();
-        final var builder = UserUniquenessSpecification.builder()
-                .id(id);
-
-        // If the preferred username is mobileNumber, just set the countryCode and mobileNumber
-        if (preferredUsername.equals(MOBILE_NUMBER)) {
-            builder
-                    .countryCode(userRequest.getCountryCode())
-                    .mobileNumber(userRequest.getMobileNumber());
-        } else {
-            // Else, insert email
-            builder.emailAddress(userRequest.getEmailAddress());
-        }
-
-        final var specification = builder.build();
-        // Get the list of filtered users based on the specification
-        final var iamUser = iamUserRepository.findOne(specification);
+        // Validate country code and mobile number first
+        var specification = UserUniquenessSpecification.builder()
+                .id(id)
+                .countryCode(userRequest.getCountryCode())
+                .mobileNumber(userRequest.getMobileNumber())
+                .build();
+        // Get the user based on the country code and mobile number
+        var iamUser = iamUserRepository.findOne(specification);
 
         // If there is an item in the list, throw an error
         if (iamUser.isPresent()) {
-            final var username = getUsername(userRequest);
+            throw new ResourceNotUniqueException(MOBILE_NUMBER,
+                    userRequest.getCountryCode() + userRequest.getMobileNumber());
+        }
 
-            throw new ResourceNotUniqueException(preferredUsername, username);
+        // Validate email address
+        specification = UserUniquenessSpecification.builder()
+                .id(id)
+                .emailAddress(userRequest.getEmailAddress())
+                .build();
+        // Get the user based on the email address
+        iamUser = iamUserRepository.findOne(specification);
+
+        // If there is an item in the list, throw an error
+        if (iamUser.isPresent()) {
+            throw new ResourceNotUniqueException(EMAIL_ADDRESS, userRequest.getEmailAddress());
         }
     }
 

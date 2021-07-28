@@ -22,7 +22,6 @@ public class UserRequestV1 {
     @NotBlank(message = "validation.required")
     private String firstName;
 
-    @NotBlank(message = "validation.required")
     private String middleName;
 
     @NotBlank(message = "validation.required")

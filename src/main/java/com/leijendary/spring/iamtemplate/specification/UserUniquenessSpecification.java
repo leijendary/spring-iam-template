@@ -10,8 +10,9 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 
-import static com.leijendary.spring.iamtemplate.util.PredicateUtil.lowerLike;
+import static com.leijendary.spring.iamtemplate.util.PredicateUtil.lowerEqual;
 import static java.util.Arrays.asList;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
@@ -36,12 +37,12 @@ public class UserUniquenessSpecification implements Specification<IamUser> {
         final var notId = criteriaBuilder.notEqual(idPath, id);
 
         // Starting predicates
-        final var predicates = asList(notDeactivated, notId);
+        final var predicates = new ArrayList<>(asList(notDeactivated, notId));
 
         // If there is an email address, filter by email address
         if (!isBlank(emailAddress)) {
             final var path = root.<String>get("emailAddress");
-            final var predicate = lowerLike(emailAddress, path, criteriaBuilder);
+            final var predicate = lowerEqual(emailAddress, path, criteriaBuilder);
 
             predicates.add(predicate);
         }

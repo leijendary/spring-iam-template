@@ -2,6 +2,7 @@ package com.leijendary.spring.iamtemplate.model;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
@@ -11,6 +12,8 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import javax.persistence.*;
 import java.time.OffsetDateTime;
 import java.util.Set;
+
+import static javax.persistence.FetchType.EAGER;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -26,7 +29,9 @@ public class IamUser extends SnowflakeIdModel {
     @JoinColumn(name = "iam_role_id")
     private IamRole role;
 
-    @OneToMany(mappedBy = "user")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = EAGER)
     private Set<IamUserCredential> credentials;
 
     private String firstName;
