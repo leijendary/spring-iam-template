@@ -16,6 +16,7 @@ import com.leijendary.spring.iamtemplate.repository.IamUserCredentialRepository;
 import com.leijendary.spring.iamtemplate.repository.IamUserRepository;
 import com.leijendary.spring.iamtemplate.specification.UserListSpecification;
 import com.leijendary.spring.iamtemplate.specification.UserUniquenessSpecification;
+import com.leijendary.spring.iamtemplate.util.RequestContextUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -151,6 +152,9 @@ public class IamUserService extends AbstractService {
                 .orElseThrow(() -> new ResourceNotFoundException(RESOURCE_NAME, id));
 
         iamUser.setDeactivatedDate(now());
+        iamUser.setDeactivatedBy(RequestContextUtil.getUsername());
+
+        iamUserRepository.save(iamUser);
     }
 
     private void updateCredentialUsername(final Set<IamUserCredential> credentials, final String type,
