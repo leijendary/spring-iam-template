@@ -6,6 +6,6 @@ import lombok.Data;
 @Data
 public class UserQueryRequest {
 
-    private boolean excludeWithAccounts = true;
-    private boolean excludeDeactivated = true;
+    private boolean excludeWithAccounts = false;
+    private boolean excludeDeactivated = false;
 }
