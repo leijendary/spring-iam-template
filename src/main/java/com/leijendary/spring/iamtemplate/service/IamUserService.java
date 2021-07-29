@@ -114,6 +114,18 @@ public class IamUserService extends AbstractService {
                 // Cannot show a deactivated user
                 .filter(user -> user.getDeactivatedDate() == null)
                 .orElseThrow(() -> new ResourceNotFoundException(RESOURCE_NAME, id));
+        final var iamRole = Optional.of(iamUser.getRole())
+                .map(role -> {
+                    if (role.getId() == userRequest.getRole().getId()) {
+                        return role;
+                    }
+
+                    return iamRoleRepository.findById(userRequest.getRole().getId())
+                            .orElseThrow(() -> new InvalidRoleException("role.id", userRequest.getRole().getId()));
+                });
+
+        // Update the user's role
+        iamRole.ifPresent(iamUser::setRole);
 
         // Validate the uniqueness of the user
         checkUniqueness(userRequest, iamUser.getId());
@@ -121,12 +133,13 @@ public class IamUserService extends AbstractService {
         // Update the values of the current IamUser object
         IamUserFactory.map(userRequest, iamUser);
 
-        // Update mobile number credential if there is a new value
-        updateCredentialUsername(iamUser.getCredentials(), MOBILE_NUMBER,
-                iamUser.getCountryCode() + iamUser.getMobileNumber());
+        final var username = getUsername(userRequest);
 
-        // Update email address credential if there is a new value
-        updateCredentialUsername(iamUser.getCredentials(), EMAIL_ADDRESS, iamUser.getEmailAddress());
+        // Update the credentials based on the preferredUsername
+        updateCredentialUsername(iamUser.getCredentials(), userRequest.getPreferredUsername(), username);
+
+        // Save the updated IamUser object
+        iamUserRepository.save(iamUser);
 
         return IamUserFactory.toResponseV1(iamUser);
     }
@@ -184,8 +197,8 @@ public class IamUserService extends AbstractService {
     }
 
     /**
-     * Get the username from the {@link UserRequestV1} object based on the {@link UserRequestV1#preferredUsername}
-     * field set
+     * Get the username from the {@link UserRequestV1} object based on the
+     * {@link UserRequestV1#getPreferredUsername()} field set
      *
      * @param userRequest {@link UserRequestV1}
      * @return {@link String} value of the username from the object. Will return either emailAddress

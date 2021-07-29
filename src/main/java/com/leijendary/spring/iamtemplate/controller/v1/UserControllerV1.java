@@ -88,7 +88,7 @@ public class UserControllerV1 extends AbstractController {
         final var permissionResponse = iamUserService.update(id, request);
         final var response = DataResponse.<UserResponseV1>builder()
                 .data(permissionResponse)
-                .object(UserRequestV1.class)
+                .object(UserResponseV1.class)
                 .build();
 
         return completedFuture(response);
