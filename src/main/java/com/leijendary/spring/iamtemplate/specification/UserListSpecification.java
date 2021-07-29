@@ -1,6 +1,5 @@
 package com.leijendary.spring.iamtemplate.specification;
 
-import com.leijendary.spring.iamtemplate.model.IamAccount;
 import com.leijendary.spring.iamtemplate.model.IamUser;
 import lombok.Builder;
 import org.springframework.data.jpa.domain.Specification;
@@ -14,6 +13,7 @@ import java.time.OffsetDateTime;
 import java.util.ArrayList;
 
 import static com.leijendary.spring.iamtemplate.util.PredicateUtil.lowerLike;
+import static javax.persistence.criteria.JoinType.LEFT;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
 @Builder
@@ -50,8 +50,8 @@ public class UserListSpecification implements Specification<IamUser> {
         // Option to exclude users with accounts. Normally users with accounts are those who has
         // subscriptions or has multiple users
         if (excludeWithAccounts) {
-            final var accountPath = root.<IamAccount>get("account");
-            final var nullAccount = criteriaBuilder.isNull(accountPath);
+            final var accountJoin = root.join("account", LEFT);
+            final var nullAccount = accountJoin.isNull();
 
             predicates.add(nullAccount);
         }
@@ -59,7 +59,7 @@ public class UserListSpecification implements Specification<IamUser> {
         // Option to exclude users that are deactivated
         if (excludeDeactivated) {
             final var deactivatedDate = root.<OffsetDateTime>get("deactivatedDate");
-            final var nullDeactivatedDate = criteriaBuilder.isNull(deactivatedDate);
+            final var nullDeactivatedDate = deactivatedDate.isNull();
 
             predicates.add(nullDeactivatedDate);
         }
