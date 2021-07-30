@@ -17,7 +17,7 @@ import static java.util.Arrays.asList;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
 @Builder
-public class UserUniquenessSpecification implements Specification<IamUser> {
+public class UserMobileEmailSpecification implements Specification<IamUser> {
 
     private final long id;
     private final String emailAddress;

@@ -16,7 +16,7 @@ import com.leijendary.spring.iamtemplate.repository.IamRoleRepository;
 import com.leijendary.spring.iamtemplate.repository.IamUserCredentialRepository;
 import com.leijendary.spring.iamtemplate.repository.IamUserRepository;
 import com.leijendary.spring.iamtemplate.specification.UserListSpecification;
-import com.leijendary.spring.iamtemplate.specification.UserUniquenessSpecification;
+import com.leijendary.spring.iamtemplate.specification.UserMobileEmailSpecification;
 import com.leijendary.spring.iamtemplate.util.RequestContextUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -175,7 +175,7 @@ public class IamUserService extends AbstractService {
 
     private void checkUniqueness(final UserRequestV1 userRequest, long id) {
         // Validate country code and mobile number first
-        var specification = UserUniquenessSpecification.builder()
+        var specification = UserMobileEmailSpecification.builder()
                 .id(id)
                 .countryCode(userRequest.getCountryCode())
                 .mobileNumber(userRequest.getMobileNumber())
@@ -190,7 +190,7 @@ public class IamUserService extends AbstractService {
         }
 
         // Validate email address
-        specification = UserUniquenessSpecification.builder()
+        specification = UserMobileEmailSpecification.builder()
                 .id(id)
                 .emailAddress(userRequest.getEmailAddress())
                 .build();
