@@ -9,6 +9,7 @@ import com.leijendary.spring.iamtemplate.exception.ResourceNotFoundException;
 import com.leijendary.spring.iamtemplate.exception.ResourceNotUniqueException;
 import com.leijendary.spring.iamtemplate.factory.IamAccountFactory;
 import com.leijendary.spring.iamtemplate.factory.IamUserFactory;
+import com.leijendary.spring.iamtemplate.factory.UsernameFieldFactory;
 import com.leijendary.spring.iamtemplate.model.IamUserCredential;
 import com.leijendary.spring.iamtemplate.repository.IamAccountRepository;
 import com.leijendary.spring.iamtemplate.repository.IamRoleRepository;
@@ -29,8 +30,8 @@ import java.util.Set;
 import static com.leijendary.spring.iamtemplate.data.PreferredUsername.EMAIL_ADDRESS;
 import static com.leijendary.spring.iamtemplate.data.PreferredUsername.MOBILE_NUMBER;
 import static com.leijendary.spring.iamtemplate.data.Status.ACTIVE;
-import static com.leijendary.spring.iamtemplate.util.ReflectionUtil.getFieldValue;
 import static com.leijendary.spring.iamtemplate.util.RequestContextUtil.now;
+import static com.leijendary.spring.iamtemplate.util.UsernameUtil.getUsername;
 
 @Service
 @RequiredArgsConstructor
@@ -86,7 +87,8 @@ public class IamUserService extends AbstractService {
         // Save the user
         iamUserRepository.save(iamUser);
 
-        final var username = getUsername(userRequest);
+        final var usernameField = UsernameFieldFactory.of(userRequest);
+        final var username = getUsername(usernameField, userRequest.getPreferredUsername());
         // Set the credential based on the username from the preferredUsername field
         final var iamUserCredential = new IamUserCredential();
         iamUserCredential.setUser(iamUser);
@@ -134,7 +136,8 @@ public class IamUserService extends AbstractService {
         // Update the values of the current IamUser object
         IamUserFactory.map(userRequest, iamUser);
 
-        final var username = getUsername(userRequest);
+        final var usernameField = UsernameFieldFactory.of(userRequest);
+        final var username = getUsername(usernameField, userRequest.getPreferredUsername());
 
         // Update the credentials based on the preferredUsername
         updateCredentialUsername(iamUser.getCredentials(), userRequest.getPreferredUsername(), username);
@@ -198,27 +201,5 @@ public class IamUserService extends AbstractService {
         if (iamUser.isPresent()) {
             throw new ResourceNotUniqueException(EMAIL_ADDRESS, userRequest.getEmailAddress());
         }
-    }
-
-    /**
-     * Get the username from the {@link UserRequestV1} object based on the
-     * {@link UserRequestV1#getPreferredUsername()} field set
-     *
-     * @param userRequest {@link UserRequestV1}
-     * @return {@link String} value of the username from the object. Will return either emailAddress
-     * or countryCode + mobileNumber
-     */
-    private String getUsername(final UserRequestV1 userRequest) {
-        final var preferredUsername = userRequest.getPreferredUsername();
-        String username;
-
-        try {
-            username = (String) getFieldValue(userRequest, preferredUsername);
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            throw new IllegalArgumentException("Invalid preferredUsername " + preferredUsername, e);
-        }
-
-
-        return preferredUsername.equals(MOBILE_NUMBER) ? userRequest.getCountryCode() + username : username;
     }
 }

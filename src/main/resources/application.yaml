@@ -35,6 +35,8 @@ cors:
     - trace
   exposedHeaders: '*'
 
+
+
 spring:
   application:
     name: ${info.app.name}
