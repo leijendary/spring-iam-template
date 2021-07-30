@@ -15,8 +15,8 @@ import java.util.Set;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-@EntityListeners(AuditingEntityListener.class)
 @Entity
+@EntityListeners(AuditingEntityListener.class)
 public class IamAccount extends SnowflakeIdModel {
 
     @ToString.Exclude

@@ -9,4 +9,6 @@ import java.util.Optional;
 public interface IamRoleRepository extends JpaRepository<IamRole, Long>, JpaSpecificationExecutor<IamRole> {
 
     Optional<IamRole> findFirstByNameIgnoreCaseAndIdNot(final String name, final long id);
+
+    Optional<IamRole> findFirstByName(final String name);
 }

@@ -35,7 +35,12 @@ cors:
     - trace
   exposedHeaders: '*'
 
+role:
+  customer:
+    name: Customer
 
+verification:
+  expiry: 15 # 15 minutes
 
 spring:
   application:
@@ -72,29 +77,18 @@ spring:
   cloud:
     stream:
       bindings:
-        sampleCreated-in-0:
-          destination: ${info.app.artifactId}.sample.created
-        sampleCreated-out-0:
-          destination: ${info.app.artifactId}.sample.created
+        registerCustomerMobile-out-0:
+          destination: ${info.app.artifactId}.register.customer.mobile
           producer:
             useNativeEncoding: true
-        sampleUpdated-in-0:
-          destination: ${info.app.artifactId}.sample.updated
-        sampleUpdated-out-0:
-          destination: ${info.app.artifactId}.sample.updated
-          producer:
-            useNativeEncoding: true
-        sampleDeleted-in-0:
-          destination: ${info.app.artifactId}.sample.deleted
-        sampleDeleted-out-0:
-          destination: ${info.app.artifactId}.sample.deleted
+        notificationSms-out-0:
+          destination: ${info.app.artifactId}.notification.sms
           producer:
             useNativeEncoding: true
       function:
         definition: >-
-          sampleCreated;
-          sampleUpdated;
-          sampleDeleted
+          registerCustomerMobile;
+          notificationSms
       kafka:
         binder:
           autoAddPartitions: true
@@ -107,12 +101,10 @@ spring:
                 value:
                   serde: io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde
             functions:
-              sampleCreated:
-                applicationId: ${info.app.organization}.${info.app.artifactId}.sample.created
-              sampleUpdated:
-                applicationId: ${info.app.organization}.${info.app.artifactId}.sample.updated
-              sampleDeleted:
-                applicationId: ${info.app.organization}.${info.app.artifactId}.sample.deleted
+              registerCustomerMobile:
+                applicationId: ${info.app.organization}.${info.app.artifactId}.register.customer.mobile
+              notificationSms:
+                applicationId: ${info.app.organization}.${info.app.artifactId}.notification.sms
   kafka:
     bootstrapServers:
     consumer:
