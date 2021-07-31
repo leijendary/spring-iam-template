@@ -9,5 +9,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class RegisterVerificationResponseV1 {
 
-    private String verificationCode;
+    private String verificationId;
 }

@@ -1,5 +1,6 @@
 package com.leijendary.spring.iamtemplate.factory;
 
+import com.leijendary.spring.iamtemplate.data.request.v1.RegisterCustomerFullRequestV1;
 import com.leijendary.spring.iamtemplate.data.request.v1.RegisterCustomerMobileRequestV1;
 import com.leijendary.spring.iamtemplate.data.request.v1.UserRequestV1;
 import com.leijendary.spring.iamtemplate.data.response.v1.UserResponseV1;
@@ -17,6 +18,10 @@ public class IamUserFactory extends AbstractFactory {
 
     public static IamUser of(final RegisterCustomerMobileRequestV1 mobileRequest) {
         return MAPPER.map(mobileRequest, IamUser.class);
+    }
+
+    public static IamUser of(final RegisterCustomerFullRequestV1 fullRequest) {
+        return MAPPER.map(fullRequest, IamUser.class);
     }
 
     public static void map(final UserRequestV1 userRequestV1, final IamUser iamUser) {

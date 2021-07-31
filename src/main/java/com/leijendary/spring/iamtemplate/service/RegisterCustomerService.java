@@ -3,11 +3,13 @@ package com.leijendary.spring.iamtemplate.service;
 import com.leijendary.spring.iamtemplate.config.properties.RoleProperties;
 import com.leijendary.spring.iamtemplate.config.properties.VerificationProperties;
 import com.leijendary.spring.iamtemplate.data.UsernameField;
+import com.leijendary.spring.iamtemplate.data.request.v1.RegisterCustomerFullRequestV1;
 import com.leijendary.spring.iamtemplate.data.request.v1.RegisterCustomerMobileRequestV1;
 import com.leijendary.spring.iamtemplate.data.request.v1.RegisterVerificationResponseV1;
 import com.leijendary.spring.iamtemplate.exception.ResourceNotFoundException;
 import com.leijendary.spring.iamtemplate.exception.ResourceNotUniqueException;
 import com.leijendary.spring.iamtemplate.factory.IamUserFactory;
+import com.leijendary.spring.iamtemplate.factory.UsernameFieldFactory;
 import com.leijendary.spring.iamtemplate.model.IamAccount;
 import com.leijendary.spring.iamtemplate.model.IamUser;
 import com.leijendary.spring.iamtemplate.model.IamUserCredential;
@@ -26,6 +28,7 @@ import static com.leijendary.spring.iamtemplate.data.PreferredUsername.MOBILE_NU
 import static com.leijendary.spring.iamtemplate.data.Status.ACTIVE;
 import static com.leijendary.spring.iamtemplate.data.Status.FOR_VERIFICATION;
 import static com.leijendary.spring.iamtemplate.data.VerificationType.REGISTRATION;
+import static com.leijendary.spring.iamtemplate.util.UserUtil.checkUniqueness;
 import static com.leijendary.spring.iamtemplate.util.UsernameUtil.getUsername;
 import static java.util.Optional.ofNullable;
 import static java.util.UUID.randomUUID;
@@ -50,9 +53,7 @@ public class RegisterCustomerService extends AbstractService {
                 .build();
         final var iamUser = iamUserRepository.findOne(specification)
                 .orElseGet(() -> IamUserFactory.of(mobileRequest));
-        final var isForVerification = ofNullable(iamUser.getStatus())
-                .map(s -> s.equals(FOR_VERIFICATION))
-                .orElse(true);
+        final var isForVerification = isForVerification(iamUser.getStatus());
 
         // If the IamUser's status is not equal to for verification,
         // then that user must be already verified and should therefore
@@ -64,13 +65,51 @@ public class RegisterCustomerService extends AbstractService {
 
         // If the IamUser's id is 0, this is a new user.
         if (iamUser.getId() == 0) {
-            createIamUser(iamUser, mobileRequest);
+            // Create the credential
+            final var usernameField = UsernameField.builder()
+                    .countryCode(mobileRequest.getCountryCode())
+                    .mobileNumber(mobileRequest.getCountryCode())
+                    .build();
+
+            createIamUser(iamUser, usernameField, MOBILE_NUMBER);
         }
 
         return createVerification(iamUser);
     }
 
-    private void createIamUser(final IamUser iamUser, final RegisterCustomerMobileRequestV1 mobileRequest) {
+    @Transactional
+    public RegisterVerificationResponseV1 full(final RegisterCustomerFullRequestV1 fullRequest) {
+        final var specification = UserMobileEmailSpecification.builder()
+                .emailAddress(fullRequest.getEmailAddress())
+                .countryCode(fullRequest.getCountryCode())
+                .mobileNumber(fullRequest.getMobileNumber())
+                .build();
+        final var iamUser = iamUserRepository.findOne(specification)
+                .orElseGet(() -> IamUserFactory.of(fullRequest));
+        final var preferredUsername = fullRequest.getPreferredUsername();
+        final var isForVerification = isForVerification(iamUser.getStatus());
+        final var usernameField = UsernameFieldFactory.of(fullRequest);
+        final var username = getUsername(usernameField, preferredUsername);
+
+        // If the IamUser's status is not equal to for verification,
+        // then that user must be already verified and should therefore
+        // skip the registration part and move on to the login
+        if (!isForVerification) {
+            throw new ResourceNotUniqueException(preferredUsername, username);
+        }
+
+        checkUniqueness(usernameField, 0, iamUserRepository);
+
+        // If the IamUser's id is 0, this is a new user.
+        if (iamUser.getId() == 0) {
+            createIamUser(iamUser, usernameField, preferredUsername);
+        }
+
+        return createVerification(iamUser);
+    }
+
+    private void createIamUser(final IamUser iamUser, final UsernameField usernameField,
+                               final String preferredUsername) {
         final var roleName = roleProperties.getCustomer().getName();
         // Get the customer's role from the configuration properties
         final var iamRole = iamRoleRepository
@@ -95,17 +134,12 @@ public class RegisterCustomerService extends AbstractService {
         // Save the user
         iamUserRepository.save(iamUser);
 
-        // Create the credential
-        final var usernameField = UsernameField.builder()
-                .countryCode(mobileRequest.getCountryCode())
-                .mobileNumber(mobileRequest.getCountryCode())
-                .build();
-        final var username = getUsername(usernameField, MOBILE_NUMBER);
+        final var username = getUsername(usernameField, preferredUsername);
         // Set the credential based on the username from the preferredUsername field
         final var iamUserCredential = new IamUserCredential();
         iamUserCredential.setUser(iamUser);
         iamUserCredential.setUsername(username);
-        iamUserCredential.setType(MOBILE_NUMBER);
+        iamUserCredential.setType(preferredUsername);
 
         // Save the credentials
         iamUserCredentialRepository.save(iamUserCredential);
@@ -124,5 +158,11 @@ public class RegisterCustomerService extends AbstractService {
         iamVerificationRepository.save(iamVerification);
 
         return new RegisterVerificationResponseV1(code);
+    }
+
+    private boolean isForVerification(final String status) {
+        return ofNullable(status)
+                .map(s -> s.equals(FOR_VERIFICATION))
+                .orElse(true);
     }
 }

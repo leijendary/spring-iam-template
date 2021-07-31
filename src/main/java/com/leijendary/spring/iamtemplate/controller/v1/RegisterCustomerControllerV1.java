@@ -1,6 +1,7 @@
 package com.leijendary.spring.iamtemplate.controller.v1;
 
 import com.leijendary.spring.iamtemplate.controller.AbstractController;
+import com.leijendary.spring.iamtemplate.data.request.v1.RegisterCustomerFullRequestV1;
 import com.leijendary.spring.iamtemplate.data.request.v1.RegisterCustomerMobileRequestV1;
 import com.leijendary.spring.iamtemplate.data.request.v1.RegisterVerificationResponseV1;
 import com.leijendary.spring.iamtemplate.data.response.DataResponse;
@@ -26,12 +27,29 @@ public class RegisterCustomerControllerV1 extends AbstractController {
 
     @PostMapping("mobile")
     @ResponseStatus(ACCEPTED)
-    @ApiOperation("A customer account can register using this API. Although, this API " +
-            "contains only the mobileNumber, emailAddress, deviceId, and preferredUsername. " +
-            "Once registered, this API should send an SMS verification for the mobile number")
+    @ApiOperation("A customer account can register using this API. Although, this API only requires the " +
+            "countryCode, mobileNumber, and deviceId. This is only for the mobile number credential. " +
+            "Once registered, this API should send an SMS verification to the mobile number")
     public CompletableFuture<DataResponse<RegisterVerificationResponseV1>> mobile(
             final @RequestBody RegisterCustomerMobileRequestV1 request) {
         final var registerResponse = registerCustomerService.mobile(request);
+        final var response = DataResponse.<RegisterVerificationResponseV1>builder()
+                .data(registerResponse)
+                .status(ACCEPTED)
+                .object(RegisterVerificationResponseV1.class)
+                .build();
+
+        return completedFuture(response);
+    }
+
+    @PostMapping("full")
+    @ResponseStatus(ACCEPTED)
+    @ApiOperation("A customer account can register using this API. This API requires the full information of " +
+            "the user. preferredUsername is required to identify what the username should be. Once registered, " +
+            "this API should send an SMS verification to the mobile number")
+    public CompletableFuture<DataResponse<RegisterVerificationResponseV1>> full(
+            final @RequestBody RegisterCustomerFullRequestV1 request) {
+        final var registerResponse = registerCustomerService.full(request);
         final var response = DataResponse.<RegisterVerificationResponseV1>builder()
                 .data(registerResponse)
                 .status(ACCEPTED)
