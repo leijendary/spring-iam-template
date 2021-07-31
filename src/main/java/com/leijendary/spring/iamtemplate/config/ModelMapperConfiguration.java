@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import static java.time.format.DateTimeFormatter.ISO_OFFSET_DATE_TIME;
+import static org.modelmapper.convention.MatchingStrategies.STRICT;
 import static org.modelmapper.module.jsr310.Jsr310ModuleConfig.builder;
 
 @Configuration
@@ -18,6 +19,8 @@ public class ModelMapperConfiguration {
                 .build();
         final var modelMapper = new ModelMapper();
         modelMapper.registerModule(new Jsr310Module(config));
+        // Matching strategy set to "STRICT" to avoid mismatching of fields
+        modelMapper.getConfiguration().setMatchingStrategy(STRICT);
 
         return modelMapper;
     }

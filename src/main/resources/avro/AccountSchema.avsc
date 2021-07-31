@@ -1,19 +1,15 @@
 {
   "type": "record",
   "namespace": "com.leijendary.spring.iamtemplate.event.schema",
-  "name": "SampleSchema",
+  "name": "AccountSchema",
   "fields": [
     {
       "name": "id",
       "type": "long"
     },
     {
-      "name": "column1",
+      "name": "type",
       "type": "string"
-    },
-    {
-      "name": "column2",
-      "type": "int"
     },
     {
       "name": "createdDate",
@@ -21,14 +17,6 @@
     },
     {
       "name": "createdBy",
-      "type": "string"
-    },
-    {
-      "name": "lastModifiedDate",
-      "type": "string"
-    },
-    {
-      "name": "lastModifiedBy",
       "type": "string"
     }
   ]

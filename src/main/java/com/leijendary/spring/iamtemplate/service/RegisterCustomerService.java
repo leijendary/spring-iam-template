@@ -3,6 +3,7 @@ package com.leijendary.spring.iamtemplate.service;
 import com.leijendary.spring.iamtemplate.config.properties.RoleProperties;
 import com.leijendary.spring.iamtemplate.config.properties.VerificationProperties;
 import com.leijendary.spring.iamtemplate.data.UsernameField;
+import com.leijendary.spring.iamtemplate.data.request.v1.RegisterCustomerEmailRequestV1;
 import com.leijendary.spring.iamtemplate.data.request.v1.RegisterCustomerFullRequestV1;
 import com.leijendary.spring.iamtemplate.data.request.v1.RegisterCustomerMobileRequestV1;
 import com.leijendary.spring.iamtemplate.data.request.v1.RegisterVerificationResponseV1;
@@ -23,15 +24,15 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Set;
 
 import static com.leijendary.spring.iamtemplate.data.AccountType.CUSTOMER;
-import static com.leijendary.spring.iamtemplate.data.Auditing.SYSTEM;
+import static com.leijendary.spring.iamtemplate.data.PreferredUsername.EMAIL_ADDRESS;
 import static com.leijendary.spring.iamtemplate.data.PreferredUsername.MOBILE_NUMBER;
 import static com.leijendary.spring.iamtemplate.data.Status.ACTIVE;
 import static com.leijendary.spring.iamtemplate.data.Status.FOR_VERIFICATION;
 import static com.leijendary.spring.iamtemplate.data.VerificationType.REGISTRATION;
+import static com.leijendary.spring.iamtemplate.util.RandomUtil.otp;
 import static com.leijendary.spring.iamtemplate.util.UserUtil.checkUniqueness;
 import static com.leijendary.spring.iamtemplate.util.UsernameUtil.getUsername;
 import static java.util.Optional.ofNullable;
-import static java.util.UUID.randomUUID;
 
 @Service
 @RequiredArgsConstructor
@@ -63,18 +64,51 @@ public class RegisterCustomerService extends AbstractService {
                     mobileRequest.getCountryCode() + mobileRequest.getMobileNumber());
         }
 
+        // Create the credential
+        final var usernameField = UsernameField.builder()
+                .countryCode(mobileRequest.getCountryCode())
+                .mobileNumber(mobileRequest.getMobileNumber())
+                .build();
+
         // If the IamUser's id is 0, this is a new user.
         if (iamUser.getId() == 0) {
-            // Create the credential
-            final var usernameField = UsernameField.builder()
-                    .countryCode(mobileRequest.getCountryCode())
-                    .mobileNumber(mobileRequest.getCountryCode())
-                    .build();
-
-            createIamUser(iamUser, usernameField, MOBILE_NUMBER);
+            createUserAndCredential(iamUser, usernameField, MOBILE_NUMBER);
+        } else {
+            createCredential(iamUser, usernameField, MOBILE_NUMBER);
         }
 
-        return createVerification(iamUser);
+        return createVerification(iamUser, mobileRequest.getDeviceId());
+    }
+
+    @Transactional
+    public RegisterVerificationResponseV1 email(final RegisterCustomerEmailRequestV1 emailRequest) {
+        final var specification = UserMobileEmailSpecification.builder()
+                .emailAddress(emailRequest.getEmailAddress())
+                .build();
+        final var iamUser = iamUserRepository.findOne(specification)
+                .orElseGet(() -> IamUserFactory.of(emailRequest));
+        final var isForVerification = isForVerification(iamUser.getStatus());
+
+        // If the IamUser's status is not equal to for verification,
+        // then that user must be already verified and should therefore
+        // skip the registration part and move on to the login
+        if (!isForVerification) {
+            throw new ResourceNotUniqueException(EMAIL_ADDRESS, emailRequest.getEmailAddress());
+        }
+
+        // The username to be used
+        final var usernameField = UsernameField.builder()
+                .emailAddress(emailRequest.getEmailAddress())
+                .build();
+
+        // If the IamUser's id is 0, this is a new user.
+        if (iamUser.getId() == 0) {
+            createUserAndCredential(iamUser, usernameField, EMAIL_ADDRESS);
+        } else {
+            createCredential(iamUser, usernameField, EMAIL_ADDRESS);
+        }
+
+        return createVerification(iamUser, emailRequest.getDeviceId());
     }
 
     @Transactional
@@ -102,14 +136,16 @@ public class RegisterCustomerService extends AbstractService {
 
         // If the IamUser's id is 0, this is a new user.
         if (iamUser.getId() == 0) {
-            createIamUser(iamUser, usernameField, preferredUsername);
+            createUserAndCredential(iamUser, usernameField, preferredUsername);
+        } else {
+            createCredential(iamUser, usernameField, preferredUsername);
         }
 
-        return createVerification(iamUser);
+        return createVerification(iamUser, fullRequest.getDeviceId());
     }
 
-    private void createIamUser(final IamUser iamUser, final UsernameField usernameField,
-                               final String preferredUsername) {
+    private void createUserAndCredential(final IamUser iamUser, final UsernameField usernameField,
+                                         final String preferredUsername) {
         final var roleName = roleProperties.getCustomer().getName();
         // Get the customer's role from the configuration properties
         final var iamRole = iamRoleRepository
@@ -127,15 +163,25 @@ public class RegisterCustomerService extends AbstractService {
         iamUser.setAccount(iamAccount);
         iamUser.setRole(iamRole);
         iamUser.setStatus(FOR_VERIFICATION);
-        // System as audit values since there is no session here
-        iamUser.setCreatedBy(SYSTEM);
-        iamUser.setLastModifiedBy(SYSTEM);
 
         // Save the user
         iamUserRepository.save(iamUser);
 
-        final var username = getUsername(usernameField, preferredUsername);
+        createCredential(iamUser, usernameField, preferredUsername);
+    }
+
+    private void createCredential(final IamUser iamUser, final UsernameField usernameField,
+                                  final String preferredUsername) {
         // Set the credential based on the username from the preferredUsername field
+        final var hasCredential = iamUser.getCredentials().stream()
+                .anyMatch(credential -> credential.getType().equals(preferredUsername));
+
+        // If there is already a credential based on the preferred username, skip this method
+        if (hasCredential) {
+            return;
+        }
+
+        final var username = getUsername(usernameField, preferredUsername);
         final var iamUserCredential = new IamUserCredential();
         iamUserCredential.setUser(iamUser);
         iamUserCredential.setUsername(username);
@@ -148,16 +194,24 @@ public class RegisterCustomerService extends AbstractService {
         iamUser.setCredentials(Set.of(iamUserCredential));
     }
 
-    private RegisterVerificationResponseV1 createVerification(final IamUser iamUser) {
+    private RegisterVerificationResponseV1 createVerification(final IamUser iamUser, final String deviceId) {
+        final var type = REGISTRATION;
+
+        // Remove the old verifications first
+        iamVerificationRepository.deleteAllByUserIdAndType(iamUser.getId(), type);
+
         final var expiry = verificationProperties.getExpiry();
-        final var code = randomUUID().toString();
-        final var iamVerification = new IamVerification(iamUser, code, expiry, MOBILE_NUMBER, REGISTRATION);
+        final var code = otp();
+        final var iamVerification = new IamVerification(iamUser, code, expiry, deviceId, MOBILE_NUMBER, type);
 
         // Save the verification object into the database.
         // Should fire a notification event
         iamVerificationRepository.save(iamVerification);
 
-        return new RegisterVerificationResponseV1(code);
+        // Verification ID needed for the verification process
+        final var verificationId = String.valueOf(iamVerification.getId());
+
+        return new RegisterVerificationResponseV1(verificationId);
     }
 
     private boolean isForVerification(final String status) {

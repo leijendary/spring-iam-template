@@ -9,4 +9,11 @@ public class VerificationProperties {
 
     // In minutes
     private int expiry;
+    private Register register;
+
+    @Data
+    public static class Register {
+
+        private String url;
+    }
 }

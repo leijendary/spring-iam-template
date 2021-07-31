@@ -19,7 +19,7 @@ import static com.leijendary.spring.iamtemplate.util.RequestContextUtil.now;
 @NoArgsConstructor
 @Entity
 @EntityListeners(AuditingEntityListener.class)
-public class IamVerification extends IdentityIdModel {
+public class IamVerification extends SnowflakeIdModel {
 
     @ManyToOne
     @JoinColumn(name = "iam_user_id")
@@ -28,18 +28,19 @@ public class IamVerification extends IdentityIdModel {
     private String code;
     private OffsetDateTime expiry;
     private String deviceId;
-    private String sendTo;
+    private String field;
     private String type;
 
     @CreatedDate
     private OffsetDateTime createdDate;
 
-    public IamVerification(final IamUser user, final String code, final int expiry, final String sendTo,
-                           final String type) {
+    public IamVerification(final IamUser user, final String code, final int expiry, final String deviceId,
+                           final String field, final String type) {
         this.user = user;
         this.code = code;
         this.expiry = now().plusMinutes(expiry);
-        this.sendTo = sendTo;
+        this.deviceId = deviceId;
+        this.field = field;
         this.type = type;
     }
 }

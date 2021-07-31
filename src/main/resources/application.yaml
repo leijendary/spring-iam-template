@@ -40,7 +40,10 @@ role:
     name: Customer
 
 verification:
-  expiry: 15 # 15 minutes
+  # 15 minutes
+  expiry: 15
+  register:
+    url: http://localhost:4000/register/verify/{code}
 
 spring:
   application:
@@ -77,8 +80,16 @@ spring:
   cloud:
     stream:
       bindings:
-        registerCustomerMobile-out-0:
-          destination: ${info.app.artifactId}.register.customer.mobile
+        userCreate-out-0:
+          destination: ${info.app.artifactId}.user.create
+          producer:
+            useNativeEncoding: true
+        userUpdate-out-0:
+          destination: ${info.app.artifactId}.user.update
+          producer:
+            useNativeEncoding: true
+        userDeactivate-out-0:
+          destination: ${info.app.artifactId}.user.deactivate
           producer:
             useNativeEncoding: true
         notificationSms-out-0:
@@ -86,9 +97,7 @@ spring:
           producer:
             useNativeEncoding: true
       function:
-        definition: >-
-          registerCustomerMobile;
-          notificationSms
+        definition: userCreate;userUpdate;userDeactivate;notificationSms
       kafka:
         binder:
           autoAddPartitions: true
@@ -101,8 +110,12 @@ spring:
                 value:
                   serde: io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde
             functions:
-              registerCustomerMobile:
-                applicationId: ${info.app.organization}.${info.app.artifactId}.register.customer.mobile
+              userCreate:
+                applicationId: ${info.app.organization}.${info.app.artifactId}.user.create
+              userUpdate:
+                applicationId: ${info.app.organization}.${info.app.artifactId}.user.update
+              userDeactivate:
+                applicationId: ${info.app.organization}.${info.app.artifactId}.user.deactivate
               notificationSms:
                 applicationId: ${info.app.organization}.${info.app.artifactId}.notification.sms
   kafka:

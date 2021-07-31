@@ -1,0 +1,31 @@
+{
+  "type": "record",
+  "namespace": "com.leijendary.spring.iamtemplate.event.schema",
+  "name": "RoleSchema",
+  "fields": [
+    {
+      "name": "id",
+      "type": "long"
+    },
+    {
+      "name": "name",
+      "type": "string"
+    },
+    {
+      "name": "createdDate",
+      "type": "string"
+    },
+    {
+      "name": "createdBy",
+      "type": "string"
+    },
+    {
+      "name": "lastModifiedDate",
+      "type": "string"
+    },
+    {
+      "name": "lastModifiedBy",
+      "type": "string"
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "type": "record",
+  "namespace": "com.leijendary.spring.iamtemplate.event.schema",
+  "name": "NotificationSchema",
+  "fields": [
+    {
+      "name": "to",
+      "type": "string"
+    },
+    {
+      "name": "content",
+      "type": "string"
+    },
+    {
+      "name": "name",
+      "type": "string"
+    },
+    {
+      "name": "type",
+      "type": "string"
+    }
+  ]
+}
