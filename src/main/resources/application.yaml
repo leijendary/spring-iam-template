@@ -76,7 +76,7 @@ spring:
         jdbc:
           batch_size: 1000
   messages:
-    basename: messages.access, messages.error, messages.validation
+    basename: messages.access, messages.error, messages.notification, messages.validation
   cache:
     type: redis
   cloud:

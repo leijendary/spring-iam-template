@@ -34,6 +34,10 @@ public class IamUserFactory extends AbstractFactory {
         MAPPER.map(userRequestV1, iamUser);
     }
 
+    public static void map(final RegisterCustomerFullRequestV1 fullRequest, final IamUser iamUser) {
+        MAPPER.map(fullRequest, iamUser);
+    }
+
     public static UserSchema toSchema(final IamUser iamUser) {
         return MAPPER.map(iamUser, UserSchema.class);
     }

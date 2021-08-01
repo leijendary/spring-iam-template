@@ -5,10 +5,7 @@ import com.leijendary.spring.iamtemplate.data.UsernameField;
 import com.leijendary.spring.iamtemplate.data.request.v1.RegisterCustomerEmailRequestV1;
 import com.leijendary.spring.iamtemplate.data.request.v1.RegisterCustomerFullRequestV1;
 import com.leijendary.spring.iamtemplate.data.request.v1.RegisterCustomerMobileRequestV1;
-import com.leijendary.spring.iamtemplate.exception.BlankCountryCodeException;
-import com.leijendary.spring.iamtemplate.exception.BlankPreferredUsernameException;
-import com.leijendary.spring.iamtemplate.exception.ResourceNotFoundException;
-import com.leijendary.spring.iamtemplate.exception.ResourceNotUniqueException;
+import com.leijendary.spring.iamtemplate.exception.*;
 import com.leijendary.spring.iamtemplate.factory.IamUserFactory;
 import com.leijendary.spring.iamtemplate.factory.UsernameFieldFactory;
 import com.leijendary.spring.iamtemplate.model.IamAccount;
@@ -130,13 +127,26 @@ public class RegisterCustomerService extends AbstractService {
             throw new BlankPreferredUsernameException(fullRequest.getPreferredUsername());
         }
 
-        final var specification = UserMobileEmailSpecification.builder()
-                .emailAddress(fullRequest.getEmailAddress())
-                .countryCode(fullRequest.getCountryCode())
-                .mobileNumber(fullRequest.getMobileNumber())
-                .build();
+        final var builder = UserMobileEmailSpecification.builder();
+        UserMobileEmailSpecification specification;
+
+        // Get the user based on the preferredUsername
+        if (preferredUsername.equals(MOBILE_NUMBER)) {
+            specification = builder
+                    .countryCode(fullRequest.getCountryCode())
+                    .mobileNumber(fullRequest.getMobileNumber())
+                    .build();
+        } else if (preferredUsername.equals(EMAIL_ADDRESS)) {
+            specification = builder.emailAddress(fullRequest.getEmailAddress()).build();
+        } else {
+            throw new InvalidPreferredUsernameException("preferredUsername");
+        }
+
         final var iamUser = iamUserRepository.findOne(specification)
-                .orElseGet(() -> IamUserFactory.of(fullRequest));
+                .orElseGet(IamUser::new);
+
+        IamUserFactory.map(fullRequest, iamUser);
+
         final var isForVerification = isForVerification(iamUser.getStatus());
 
         // If the IamUser's status is not equal to for verification,
@@ -146,7 +156,8 @@ public class RegisterCustomerService extends AbstractService {
             throw new ResourceNotUniqueException(preferredUsername, username);
         }
 
-        userValidator.checkUniqueness(usernameField, 0);
+        // Check if the user is still unique based on the fields that we have
+        userValidator.checkUniqueness(usernameField, iamUser.getId());
 
         // If the IamUser's id is 0, this is a new user.
         if (iamUser.getId() == 0) {
@@ -181,24 +192,21 @@ public class RegisterCustomerService extends AbstractService {
         // Save the user
         iamUserRepository.save(iamUser);
 
+        // Everytime we create a new user, we must create a new credential
         createCredential(iamUser, usernameField, preferredUsername, password);
     }
 
     private void createCredential(final IamUser iamUser, final UsernameField usernameField,
                                   final String preferredUsername, final String password) {
+        final var username = getUsername(usernameField, preferredUsername);
         // Set the credential based on the username from the preferredUsername field
-        final var hasCredential = ofNullable(iamUser.getCredentials())
+        final var iamUserCredential = ofNullable(iamUser.getCredentials())
                 .orElse(emptySet())
                 .stream()
-                .anyMatch(credential -> credential.getType().equals(preferredUsername));
-
-        // If there is already a credential based on the preferred username, skip this method
-        if (hasCredential) {
-            return;
-        }
-
-        final var username = getUsername(usernameField, preferredUsername);
-        final var iamUserCredential = new IamUserCredential();
+                .filter(credential -> credential.getType().equals(preferredUsername))
+                .findFirst()
+                // return a new IamUserCredential instance if there are none existing yet
+                .orElse(new IamUserCredential());
         iamUserCredential.setUser(iamUser);
         iamUserCredential.setUsername(username);
         iamUserCredential.setType(preferredUsername);

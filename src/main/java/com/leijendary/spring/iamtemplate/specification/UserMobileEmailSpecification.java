@@ -38,36 +38,33 @@ public class UserMobileEmailSpecification implements Specification<IamUser> {
 
         // Starting predicates
         final var predicates = new ArrayList<>(asList(notDeactivated, notId));
+        // Predicates with OR filtering
+        final var orPredicates = new ArrayList<Predicate>();
 
         // If there is an email address, filter by email address
         if (!isBlank(emailAddress)) {
             final var path = root.<String>get("emailAddress");
             final var predicate = lowerEqual(emailAddress, path, criteriaBuilder);
 
-            predicates.add(predicate);
+            orPredicates.add(predicate);
         }
 
-        // If there is a country code, filter the country code.
-        // This is normally partnered up with mobile number
-        if (!isBlank(countryCode)) {
-            final var path = root.<String>get("countryCode");
-            final var predicate = criteriaBuilder.equal(path, countryCode);
+        // Predicate for country code + mobile number
+        if (!isBlank(countryCode) && !isBlank(mobileNumber)) {
+            final var countryCodePath = root.<String>get("countryCode");
+            final var countryCodeEqual = criteriaBuilder.equal(countryCodePath, countryCode);
 
-            predicates.add(predicate);
+            final var mobileNumberPath = root.<String>get("mobileNumber");
+            final var mobileNumberEqual = criteriaBuilder.equal(mobileNumberPath, mobileNumber);
+
+            final var countryCodeAndMobileNumber = criteriaBuilder.and(countryCodeEqual, mobileNumberEqual);
+
+            orPredicates.add(countryCodeAndMobileNumber);
         }
 
-        // If there is a mobile number, filter the mobile number/
-        // This is normally partnered up with country code
-        if (!isBlank(mobileNumber)) {
-            final var path = root.<String>get("mobileNumber");
-            final var predicate = criteriaBuilder.equal(path, mobileNumber);
-
-            predicates.add(predicate);
-        }
-
-        // Combine all predicates into a AND criteria
         final var andPredicate = criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+        final var orPredicate = criteriaBuilder.or(orPredicates.toArray(new Predicate[0]));
 
-        return criteriaQuery.where(andPredicate).getRestriction();
+        return criteriaQuery.where(andPredicate, orPredicate).getRestriction();
     }
 }
