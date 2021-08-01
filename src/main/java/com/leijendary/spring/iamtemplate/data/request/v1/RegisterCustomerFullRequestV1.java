@@ -3,7 +3,9 @@ package com.leijendary.spring.iamtemplate.data.request.v1;
 import com.leijendary.spring.iamtemplate.validator.annotation.v1.MobileNumber;
 import com.leijendary.spring.iamtemplate.validator.annotation.v1.PreferredUsernameV1;
 import lombok.Data;
+import org.hibernate.validator.constraints.Length;
 
+import javax.validation.constraints.Digits;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 
@@ -35,4 +37,9 @@ public class RegisterCustomerFullRequestV1 {
     @NotBlank(message = "validation.required")
     @PreferredUsernameV1
     private String preferredUsername;
+
+    @NotBlank(message = "validation.required")
+    @Digits(message = "validation.digits.invalid", integer = 999999, fraction = 0)
+    @Length(message = "validation.digits.exact", min = 6, max = 6)
+    private String password;
 }

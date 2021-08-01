@@ -26,9 +26,11 @@ import java.util.Optional;
 import java.util.Set;
 
 import static com.leijendary.spring.iamtemplate.data.Status.ACTIVE;
+import static com.leijendary.spring.iamtemplate.data.Status.FOR_VERIFICATION;
 import static com.leijendary.spring.iamtemplate.util.RequestContextUtil.now;
 import static com.leijendary.spring.iamtemplate.util.UserUtil.checkUniqueness;
 import static com.leijendary.spring.iamtemplate.util.UsernameUtil.getUsername;
+import static java.util.Collections.singleton;
 
 @Service
 @RequiredArgsConstructor
@@ -81,7 +83,7 @@ public class IamUserService extends AbstractService {
         final var iamUser = IamUserFactory.of(userRequest);
         iamUser.setAccount(iamAccount);
         iamUser.setRole(iamRole);
-        iamUser.setStatus(ACTIVE);
+        iamUser.setStatus(FOR_VERIFICATION);
 
         // Save the user
         iamUserRepository.save(iamUser);
@@ -97,7 +99,7 @@ public class IamUserService extends AbstractService {
         iamUserCredentialRepository.save(iamUserCredential);
 
         // Set the credentials of the IamUser object for return
-        iamUser.setCredentials(Set.of(iamUserCredential));
+        iamUser.setCredentials(singleton(iamUserCredential));
 
         return IamUserFactory.toResponseV1(iamUser);
     }
