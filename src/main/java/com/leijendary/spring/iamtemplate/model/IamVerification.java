@@ -1,5 +1,6 @@
 package com.leijendary.spring.iamtemplate.model;
 
+import com.leijendary.spring.iamtemplate.model.listener.IamVerificationListener;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -18,7 +19,7 @@ import static com.leijendary.spring.iamtemplate.util.RequestContextUtil.now;
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @Entity
-@EntityListeners(AuditingEntityListener.class)
+@EntityListeners({ AuditingEntityListener.class, IamVerificationListener.class })
 public class IamVerification extends SnowflakeIdModel {
 
     @ManyToOne

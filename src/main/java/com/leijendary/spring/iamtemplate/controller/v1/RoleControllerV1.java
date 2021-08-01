@@ -7,7 +7,7 @@ import com.leijendary.spring.iamtemplate.data.request.v1.RoleRequestV1;
 import com.leijendary.spring.iamtemplate.data.response.DataResponse;
 import com.leijendary.spring.iamtemplate.data.response.v1.PermissionResponseV1;
 import com.leijendary.spring.iamtemplate.data.response.v1.RoleResponseV1;
-import com.leijendary.spring.iamtemplate.service.IamRoleService;
+import com.leijendary.spring.iamtemplate.flow.RoleFlow;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
@@ -32,14 +32,14 @@ import static org.springframework.http.HttpStatus.NO_CONTENT;
 @Api("Role resource API. Roles are a group of permissions that can be assigned to a user")
 public class RoleControllerV1 extends AbstractController {
 
-    private final IamRoleService iamRoleService;
+    private final RoleFlow roleFlow;
 
     @GetMapping
     @PreAuthorize("hasAuthority('SCOPE_urn:role:list:v1')")
     @ApiOperation("Get the paginated list of roles")
     public CompletableFuture<DataResponse<List<RoleResponseV1>>> list(
             final QueryRequest queryRequest, final Pageable pageable) {
-        final var page = iamRoleService.list(queryRequest, pageable);
+        final var page = roleFlow.listV1(queryRequest, pageable);
         final var response = DataResponse.<List<RoleResponseV1>>builder()
                 .data(page.getContent())
                 .meta(page)
@@ -56,7 +56,7 @@ public class RoleControllerV1 extends AbstractController {
     @ApiOperation("Saves a role into the database. The name must be unique and at least one (1) permission")
     public CompletableFuture<DataResponse<RoleResponseV1>> create(
             @Valid @RequestBody final RoleRequestV1 request, final HttpServletResponse httpServletResponse) {
-        final var roleResponse = iamRoleService.create(request);
+        final var roleResponse = roleFlow.createV1(request);
         final var response = DataResponse.<RoleResponseV1>builder()
                 .data(roleResponse)
                 .status(CREATED)
@@ -72,7 +72,7 @@ public class RoleControllerV1 extends AbstractController {
     @PreAuthorize("hasAuthority('SCOPE_urn:role:get:v1')")
     @ApiOperation("Retrieves the role from the database")
     public CompletableFuture<DataResponse<RoleResponseV1>> get(@PathVariable final long id) {
-        final var roleResponse = iamRoleService.get(id);
+        final var roleResponse = roleFlow.getV1(id);
         final var response = DataResponse.<RoleResponseV1>builder()
                 .data(roleResponse)
                 .object(RoleResponseV1.class)
@@ -86,7 +86,7 @@ public class RoleControllerV1 extends AbstractController {
     @ApiOperation("Updates the role into the database. The name should be unique and at least one (1) permission")
     public CompletableFuture<DataResponse<RoleResponseV1>> update(
             @PathVariable final long id, @Valid @RequestBody final RoleRequestV1 request) {
-        final var roleResponse = iamRoleService.update(id, request);
+        final var roleResponse = roleFlow.updateV1(id, request);
         final var response = DataResponse.<RoleResponseV1>builder()
                 .data(roleResponse)
                 .object(RoleResponseV1.class)
@@ -100,7 +100,7 @@ public class RoleControllerV1 extends AbstractController {
     @ResponseStatus(NO_CONTENT)
     @ApiOperation("Removes the role from the database")
     public CompletableFuture<Void> delete(@PathVariable final long id) {
-        iamRoleService.delete(id);
+        roleFlow.deleteV1(id);
 
         return completedFuture(null);
     }
@@ -109,7 +109,7 @@ public class RoleControllerV1 extends AbstractController {
     @PreAuthorize("hasAuthority('SCOPE_urn:role:permission:list:v1')")
     @ApiOperation("Retrieves the permissions of the role from the database")
     public CompletableFuture<DataResponse<Set<PermissionResponseV1>>> listPermissions(@PathVariable final long id) {
-        final var permissions = iamRoleService.getPermissions(id);
+        final var permissions = roleFlow.getPermissionsV1(id);
         final var response = DataResponse.<Set<PermissionResponseV1>>builder()
                 .data(permissions)
                 .object(PermissionResponseV1.class)
@@ -123,7 +123,7 @@ public class RoleControllerV1 extends AbstractController {
     @ApiOperation("Add add permission into the database")
     public CompletableFuture<DataResponse<Set<PermissionResponseV1>>> addPermissions(
             @PathVariable final long id, @Valid @RequestBody RolePermissionRequestV1 request) {
-        final var permissions = iamRoleService.addPermissions(id, request);
+        final var permissions = roleFlow.addPermissionsV1(id, request);
         final var response = DataResponse.<Set<PermissionResponseV1>>builder()
                 .data(permissions)
                 .object(PermissionResponseV1.class)
@@ -138,7 +138,7 @@ public class RoleControllerV1 extends AbstractController {
     @ApiOperation("Removes the specific permission from the role")
     public CompletableFuture<Void> removePermission(
             @PathVariable final long id, @PathVariable final long permissionId) {
-        iamRoleService.removePermission(id, permissionId);
+        roleFlow.removePermissionV1(id, permissionId);
 
         return completedFuture(null);
     }

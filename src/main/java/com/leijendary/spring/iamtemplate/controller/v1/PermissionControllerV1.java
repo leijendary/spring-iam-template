@@ -5,7 +5,7 @@ import com.leijendary.spring.iamtemplate.data.request.QueryRequest;
 import com.leijendary.spring.iamtemplate.data.request.v1.PermissionRequestV1;
 import com.leijendary.spring.iamtemplate.data.response.DataResponse;
 import com.leijendary.spring.iamtemplate.data.response.v1.PermissionResponseV1;
-import com.leijendary.spring.iamtemplate.service.IamPermissionService;
+import com.leijendary.spring.iamtemplate.flow.PermissionFlow;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
@@ -29,14 +29,14 @@ import static org.springframework.http.HttpStatus.NO_CONTENT;
 @Api("Permission resource API. All permissions should be in an urn format (prefixed with 'urn:')")
 public class PermissionControllerV1 extends AbstractController {
 
-    private final IamPermissionService iamPermissionService;
+    private final PermissionFlow permissionFlow;
 
     @GetMapping
     @PreAuthorize("hasAuthority('SCOPE_urn:permission:list:v1')")
     @ApiOperation("Get the paginated list of permissions")
     public CompletableFuture<DataResponse<List<PermissionResponseV1>>> list(
             final QueryRequest queryRequest, final Pageable pageable) {
-        final var page = iamPermissionService.list(queryRequest, pageable);
+        final var page = permissionFlow.listV1(queryRequest, pageable);
         final var response = DataResponse.<List<PermissionResponseV1>>builder()
                 .data(page.getContent())
                 .meta(page)
@@ -53,7 +53,7 @@ public class PermissionControllerV1 extends AbstractController {
     @ApiOperation("Saves a permission into the database. The permission should be unique")
     public CompletableFuture<DataResponse<PermissionResponseV1>> create(
             @Valid @RequestBody final PermissionRequestV1 request, final HttpServletResponse httpServletResponse) {
-        final var permissionResponse = iamPermissionService.create(request);
+        final var permissionResponse = permissionFlow.createV1(request);
         final var response = DataResponse.<PermissionResponseV1>builder()
                 .data(permissionResponse)
                 .status(CREATED)
@@ -69,7 +69,7 @@ public class PermissionControllerV1 extends AbstractController {
     @PreAuthorize("hasAuthority('SCOPE_urn:permission:get:v1')")
     @ApiOperation("Retrieves the permission from the database")
     public CompletableFuture<DataResponse<PermissionResponseV1>> get(@PathVariable final long id) {
-        final var permissionResponse = iamPermissionService.get(id);
+        final var permissionResponse = permissionFlow.getV1(id);
         final var response = DataResponse.<PermissionResponseV1>builder()
                 .data(permissionResponse)
                 .object(PermissionResponseV1.class)
@@ -83,7 +83,7 @@ public class PermissionControllerV1 extends AbstractController {
     @ApiOperation("Updates the permission record into the database. The permission should be unique")
     public CompletableFuture<DataResponse<PermissionResponseV1>> update(
             @PathVariable final long id, @Valid @RequestBody final PermissionRequestV1 request) {
-        final var permissionResponse = iamPermissionService.update(id, request);
+        final var permissionResponse = permissionFlow.updateV1(id, request);
         final var response = DataResponse.<PermissionResponseV1>builder()
                 .data(permissionResponse)
                 .object(PermissionRequestV1.class)
@@ -97,7 +97,7 @@ public class PermissionControllerV1 extends AbstractController {
     @ResponseStatus(NO_CONTENT)
     @ApiOperation("Removes the permission record from the database")
     public CompletableFuture<Void> delete(@PathVariable final long id) {
-        iamPermissionService.delete(id);
+        permissionFlow.deleteV1(id);
 
         return completedFuture(null);
     }

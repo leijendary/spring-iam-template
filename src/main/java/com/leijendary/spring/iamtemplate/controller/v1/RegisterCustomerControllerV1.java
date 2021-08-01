@@ -6,7 +6,7 @@ import com.leijendary.spring.iamtemplate.data.request.v1.RegisterCustomerFullReq
 import com.leijendary.spring.iamtemplate.data.request.v1.RegisterCustomerMobileRequestV1;
 import com.leijendary.spring.iamtemplate.data.response.DataResponse;
 import com.leijendary.spring.iamtemplate.data.response.v1.RegisterResponseV1;
-import com.leijendary.spring.iamtemplate.service.RegisterCustomerService;
+import com.leijendary.spring.iamtemplate.flow.RegisterCustomerFlow;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +25,7 @@ import static org.springframework.http.HttpStatus.ACCEPTED;
 @Api("API for the registration flows of the customer")
 public class RegisterCustomerControllerV1 extends AbstractController {
 
-    private final RegisterCustomerService registerCustomerService;
+    private final RegisterCustomerFlow registerCustomerFlow;
 
     @PostMapping("mobile")
     @ResponseStatus(ACCEPTED)
@@ -34,7 +34,7 @@ public class RegisterCustomerControllerV1 extends AbstractController {
             "Once registered, this API should send an SMS verification to the mobile number")
     public CompletableFuture<DataResponse<RegisterResponseV1>> mobile(
             @Valid @RequestBody final RegisterCustomerMobileRequestV1 request) {
-        final var registerResponse = registerCustomerService.mobile(request);
+        final var registerResponse = registerCustomerFlow.mobileV1(request);
         final var response = DataResponse.<RegisterResponseV1>builder()
                 .data(registerResponse)
                 .status(ACCEPTED)
@@ -51,7 +51,7 @@ public class RegisterCustomerControllerV1 extends AbstractController {
             "this API should send a verification to the email address")
     public CompletableFuture<DataResponse<RegisterResponseV1>> email(
             @Valid @RequestBody final RegisterCustomerEmailRequestV1 request) {
-        final var registerResponse = registerCustomerService.email(request);
+        final var registerResponse = registerCustomerFlow.emailV1(request);
         final var response = DataResponse.<RegisterResponseV1>builder()
                 .data(registerResponse)
                 .status(ACCEPTED)
@@ -68,7 +68,7 @@ public class RegisterCustomerControllerV1 extends AbstractController {
             "this API should send a verification to the preferredUsername")
     public CompletableFuture<DataResponse<RegisterResponseV1>> full(
             @Valid @RequestBody final RegisterCustomerFullRequestV1 request) {
-        final var registerResponse = registerCustomerService.full(request);
+        final var registerResponse = registerCustomerFlow.fullV1(request);
         final var response = DataResponse.<RegisterResponseV1>builder()
                 .data(registerResponse)
                 .status(ACCEPTED)

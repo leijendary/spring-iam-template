@@ -1,7 +1,7 @@
 package com.leijendary.spring.iamtemplate.error;
 
 import com.leijendary.spring.iamtemplate.data.response.ErrorResponse;
-import com.leijendary.spring.iamtemplate.exception.InvalidPreferredUsernameException;
+import com.leijendary.spring.iamtemplate.exception.BlankCountryCodeException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
 import org.springframework.core.annotation.Order;
@@ -15,14 +15,14 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 @RestControllerAdvice
 @Order(3)
 @RequiredArgsConstructor
-public class InvalidPreferredUsernameExceptionHandler {
+public class BlankCountryCodeExceptionHandler {
 
     private final MessageSource messageSource;
 
-    @ExceptionHandler(InvalidPreferredUsernameException.class)
+    @ExceptionHandler(BlankCountryCodeException.class)
     @ResponseStatus(BAD_REQUEST)
-    public ErrorResponse catchInvalidPreferredUsername(final InvalidPreferredUsernameException exception) {
-        final var code = "validation.preferredUsername.invalid";
+    public ErrorResponse catchBlankCountryCode(final BlankCountryCodeException exception) {
+        final var code = "validation.countryCode.blank";
         final var message = messageSource.getMessage(code, new Object[] { }, getLocale());
 
         return ErrorResponse.builder()

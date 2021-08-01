@@ -1,7 +1,7 @@
 package com.leijendary.spring.iamtemplate.error;
 
 import com.leijendary.spring.iamtemplate.data.response.ErrorResponse;
-import com.leijendary.spring.iamtemplate.exception.InvalidPreferredUsernameException;
+import com.leijendary.spring.iamtemplate.exception.BlankPreferredUsernameException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
 import org.springframework.core.annotation.Order;
@@ -15,15 +15,15 @@ import static org.springframework.http.HttpStatus.BAD_REQUEST;
 @RestControllerAdvice
 @Order(3)
 @RequiredArgsConstructor
-public class InvalidPreferredUsernameExceptionHandler {
+public class BlankPreferredUsernameExceptionHandler {
 
     private final MessageSource messageSource;
 
-    @ExceptionHandler(InvalidPreferredUsernameException.class)
+    @ExceptionHandler(BlankPreferredUsernameException.class)
     @ResponseStatus(BAD_REQUEST)
-    public ErrorResponse catchInvalidPreferredUsername(final InvalidPreferredUsernameException exception) {
-        final var code = "validation.preferredUsername.invalid";
-        final var message = messageSource.getMessage(code, new Object[] { }, getLocale());
+    public ErrorResponse catchBlankPreferredUsername(final BlankPreferredUsernameException exception) {
+        final var code = "validation.preferredUsername.blank";
+        final var message = messageSource.getMessage(code, new Object[] { exception.getField() }, getLocale());
 
         return ErrorResponse.builder()
                 .addError(exception.getField(), code, message)

@@ -20,14 +20,11 @@ public class RegisterCustomerFullRequestV1 {
     @NotBlank(message = "validation.required")
     private String lastName;
 
-    @NotBlank(message = "validation.required")
     @Email(message = "validation.emailAddress.invalid")
     private String emailAddress;
 
-    @NotBlank(message = "validation.required")
     private String countryCode;
 
-    @NotBlank(message = "validation.required")
     @MobileNumber
     private String mobileNumber;
 

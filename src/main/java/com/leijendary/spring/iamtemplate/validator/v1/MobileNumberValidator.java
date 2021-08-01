@@ -24,7 +24,13 @@ public class MobileNumberValidator implements ConstraintValidator<MobileNumber, 
         return ofNullable(value)
                 // Make this a valid mobile number if parseable by Long,
                 // length is between MIN_LENGTH, and MAX_LENGTH
-                .map((v) -> isLong(v) && v.trim().length() >= MIN_LENGTH && v.trim().length() <= MAX_LENGTH)
-                .orElse(false);
+                .map(v -> v.isBlank() || isValidFormat(v))
+                .orElse(true);
+    }
+
+    private boolean isValidFormat(String value) {
+        return isLong(value)
+                && value.trim().length() >= MIN_LENGTH
+                && value.trim().length() <= MAX_LENGTH;
     }
 }

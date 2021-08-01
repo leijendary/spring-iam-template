@@ -14,7 +14,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface PreferredUsernameV1 {
 
-    String message() default "validation.user.preferredUsername.invalid";
+    String message() default "validation.preferredUsername.invalid";
 
     Class<?>[] groups() default { };
 

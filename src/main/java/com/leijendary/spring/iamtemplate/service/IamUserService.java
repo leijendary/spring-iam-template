@@ -3,12 +3,12 @@ package com.leijendary.spring.iamtemplate.service;
 import com.leijendary.spring.iamtemplate.data.request.QueryRequest;
 import com.leijendary.spring.iamtemplate.data.request.UserQueryRequest;
 import com.leijendary.spring.iamtemplate.data.request.v1.UserRequestV1;
-import com.leijendary.spring.iamtemplate.data.response.v1.UserResponseV1;
 import com.leijendary.spring.iamtemplate.exception.InvalidRoleException;
 import com.leijendary.spring.iamtemplate.exception.ResourceNotFoundException;
 import com.leijendary.spring.iamtemplate.factory.IamAccountFactory;
 import com.leijendary.spring.iamtemplate.factory.IamUserFactory;
 import com.leijendary.spring.iamtemplate.factory.UsernameFieldFactory;
+import com.leijendary.spring.iamtemplate.model.IamUser;
 import com.leijendary.spring.iamtemplate.model.IamUserCredential;
 import com.leijendary.spring.iamtemplate.repository.IamAccountRepository;
 import com.leijendary.spring.iamtemplate.repository.IamRoleRepository;
@@ -16,6 +16,7 @@ import com.leijendary.spring.iamtemplate.repository.IamUserCredentialRepository;
 import com.leijendary.spring.iamtemplate.repository.IamUserRepository;
 import com.leijendary.spring.iamtemplate.specification.UserListSpecification;
 import com.leijendary.spring.iamtemplate.util.RequestContextUtil;
+import com.leijendary.spring.iamtemplate.validator.UserValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -28,7 +29,6 @@ import java.util.Set;
 import static com.leijendary.spring.iamtemplate.data.Status.ACTIVE;
 import static com.leijendary.spring.iamtemplate.data.Status.FOR_VERIFICATION;
 import static com.leijendary.spring.iamtemplate.util.RequestContextUtil.now;
-import static com.leijendary.spring.iamtemplate.util.UserUtil.checkUniqueness;
 import static com.leijendary.spring.iamtemplate.util.UsernameUtil.getUsername;
 import static java.util.Collections.singleton;
 
@@ -42,21 +42,21 @@ public class IamUserService extends AbstractService {
     private final IamRoleRepository iamRoleRepository;
     private final IamUserCredentialRepository iamUserCredentialRepository;
     private final IamUserRepository iamUserRepository;
+    private final UserValidator userValidator;
 
-    public Page<UserResponseV1> list(final QueryRequest queryRequest, final UserQueryRequest userQueryRequest,
-                                     final Pageable pageable) {
+    public Page<IamUser> list(final QueryRequest queryRequest, final UserQueryRequest userQueryRequest,
+                              final Pageable pageable) {
         final var specification = UserListSpecification.builder()
                 .query(queryRequest.getQuery())
                 .excludeWithAccounts(userQueryRequest.isExcludeWithAccounts())
                 .excludeDeactivated(userQueryRequest.isExcludeDeactivated())
                 .build();
-        final var page = iamUserRepository.findAll(specification, pageable);
 
-        return page.map(IamUserFactory::toResponseV1);
+        return iamUserRepository.findAll(specification, pageable);
     }
 
     @Transactional
-    public UserResponseV1 create(final UserRequestV1 userRequest) {
+    public IamUser create(final UserRequestV1 userRequest) {
         final var iamRole = iamRoleRepository.findById(userRequest.getRole().getId())
                 .orElseThrow(() -> new InvalidRoleException("role.id", userRequest.getRole().getId()));
         final var iamAccount = Optional.ofNullable(userRequest.getAccount())
@@ -73,7 +73,7 @@ public class IamUserService extends AbstractService {
         final var usernameField = UsernameFieldFactory.of(userRequest);
 
         // Validate the uniqueness of the user
-        checkUniqueness(usernameField, 0, iamUserRepository);
+        userValidator.checkUniqueness(usernameField, 0);
 
         // Save the account if the user gave it an account
         if (iamAccount != null) {
@@ -101,18 +101,17 @@ public class IamUserService extends AbstractService {
         // Set the credentials of the IamUser object for return
         iamUser.setCredentials(singleton(iamUserCredential));
 
-        return IamUserFactory.toResponseV1(iamUser);
+        return iamUser;
     }
 
-    public UserResponseV1 get(final long id) {
+    public IamUser get(final long id) {
         return iamUserRepository.findById(id)
                 // Cannot show a deactivated user
                 .filter(user -> user.getDeactivatedDate() == null)
-                .map(IamUserFactory::toResponseV1)
                 .orElseThrow(() -> new ResourceNotFoundException(RESOURCE_NAME, id));
     }
 
-    public UserResponseV1 update(final long id, final UserRequestV1 userRequest) {
+    public IamUser update(final long id, final UserRequestV1 userRequest) {
         final var iamUser = iamUserRepository.findById(id)
                 // Cannot show a deactivated user
                 .filter(user -> user.getDeactivatedDate() == null)
@@ -133,7 +132,7 @@ public class IamUserService extends AbstractService {
         final var usernameField = UsernameFieldFactory.of(userRequest);
 
         // Validate the uniqueness of the user
-        checkUniqueness(usernameField, iamUser.getId(), iamUserRepository);
+        userValidator.checkUniqueness(usernameField, iamUser.getId());
 
         // Update the values of the current IamUser object
         IamUserFactory.map(userRequest, iamUser);
@@ -144,9 +143,7 @@ public class IamUserService extends AbstractService {
         updateCredentialUsername(iamUser.getCredentials(), userRequest.getPreferredUsername(), username);
 
         // Save the updated IamUser object
-        iamUserRepository.save(iamUser);
-
-        return IamUserFactory.toResponseV1(iamUser);
+        return iamUserRepository.save(iamUser);
     }
 
     public void deactivate(final long id) {

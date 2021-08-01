@@ -6,7 +6,7 @@ import com.leijendary.spring.iamtemplate.data.request.UserQueryRequest;
 import com.leijendary.spring.iamtemplate.data.request.v1.UserRequestV1;
 import com.leijendary.spring.iamtemplate.data.response.DataResponse;
 import com.leijendary.spring.iamtemplate.data.response.v1.UserResponseV1;
-import com.leijendary.spring.iamtemplate.service.IamUserService;
+import com.leijendary.spring.iamtemplate.flow.UserFlow;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
@@ -30,14 +30,14 @@ import static org.springframework.http.HttpStatus.NO_CONTENT;
 @Api("User resource API. All users that are not connected to an account are shown here")
 public class UserControllerV1 extends AbstractController {
 
-    private final IamUserService iamUserService;
+    private final UserFlow userFlow;
 
     @GetMapping
     @PreAuthorize("hasAuthority('SCOPE_urn:user:list:v1')")
     @ApiOperation("Get the paginated list of users without an account")
     public CompletableFuture<DataResponse<List<UserResponseV1>>> list(
             final QueryRequest queryRequest, final UserQueryRequest userQueryRequest, final Pageable pageable) {
-        final var page = iamUserService.list(queryRequest, userQueryRequest, pageable);
+        final var page = userFlow.listV1(queryRequest, userQueryRequest, pageable);
         final var response = DataResponse.<List<UserResponseV1>>builder()
                 .data(page.getContent())
                 .meta(page)
@@ -54,7 +54,7 @@ public class UserControllerV1 extends AbstractController {
     @ApiOperation("Saves a user into the database. Both emailAddress and mobileNumber should be unique")
     public CompletableFuture<DataResponse<UserResponseV1>> create(
             @Valid @RequestBody final UserRequestV1 request, final HttpServletResponse httpServletResponse) {
-        final var userResponse = iamUserService.create(request);
+        final var userResponse = userFlow.createV1(request);
         final var response = DataResponse.<UserResponseV1>builder()
                 .data(userResponse)
                 .status(CREATED)
@@ -70,7 +70,7 @@ public class UserControllerV1 extends AbstractController {
     @PreAuthorize("hasAuthority('SCOPE_urn:user:get:v1')")
     @ApiOperation("Retrieves the user details from the database")
     public CompletableFuture<DataResponse<UserResponseV1>> get(@PathVariable final long id) {
-        final var userResponse = iamUserService.get(id);
+        final var userResponse = userFlow.getV1(id);
         final var response = DataResponse.<UserResponseV1>builder()
                 .data(userResponse)
                 .object(UserResponseV1.class)
@@ -85,7 +85,7 @@ public class UserControllerV1 extends AbstractController {
             "mobileNumber should be unique")
     public CompletableFuture<DataResponse<UserResponseV1>> update(
             @PathVariable final long id, @Valid @RequestBody final UserRequestV1 request) {
-        final var permissionResponse = iamUserService.update(id, request);
+        final var permissionResponse = userFlow.updateV1(id, request);
         final var response = DataResponse.<UserResponseV1>builder()
                 .data(permissionResponse)
                 .object(UserResponseV1.class)
@@ -100,7 +100,7 @@ public class UserControllerV1 extends AbstractController {
     @ApiOperation("Soft deletes the user. The user's details will still be kept in the database as is. " +
             "But the user's credentials can be used by another user")
     public CompletableFuture<Void> deactivate(@PathVariable final long id) {
-        iamUserService.deactivate(id);
+        userFlow.deactivateV1(id);
 
         return completedFuture(null);
     }
