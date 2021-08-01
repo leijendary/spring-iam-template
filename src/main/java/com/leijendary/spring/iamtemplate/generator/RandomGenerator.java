@@ -1,11 +1,11 @@
-package com.leijendary.spring.iamtemplate.util;
+package com.leijendary.spring.iamtemplate.generator;
 
 import java.util.Arrays;
 import java.util.Random;
 
 import static java.lang.Character.getNumericValue;
 
-public class RandomUtil {
+public class RandomGenerator {
 
     public static final Random RANDOM = new Random();
     public static final String NUMBERS = "0123456789";

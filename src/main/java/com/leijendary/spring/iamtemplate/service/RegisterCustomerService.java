@@ -169,8 +169,8 @@ public class RegisterCustomerService extends AbstractService {
         return iamUser;
     }
 
-    private void createUserAndCredential(final IamUser iamUser, final UsernameField usernameField,
-                                         final String preferredUsername, final String password) {
+    public void createUserAndCredential(final IamUser iamUser, final UsernameField usernameField,
+                                        final String preferredUsername, final String password) {
         final var roleName = roleProperties.getCustomer().getName();
         // Get the customer's role from the configuration properties
         final var iamRole = iamRoleRepository

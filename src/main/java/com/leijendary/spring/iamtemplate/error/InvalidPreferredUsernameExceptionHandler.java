@@ -23,7 +23,7 @@ public class InvalidPreferredUsernameExceptionHandler {
     @ResponseStatus(BAD_REQUEST)
     public ErrorResponse catchInvalidPreferredUsername(final InvalidPreferredUsernameException exception) {
         final var code = "validation.preferredUsername.invalid";
-        final var message = messageSource.getMessage(code, new Object[] { }, getLocale());
+        final var message = messageSource.getMessage(code, new Object[0], getLocale());
 
         return ErrorResponse.builder()
                 .addError(exception.getField(), code, message)

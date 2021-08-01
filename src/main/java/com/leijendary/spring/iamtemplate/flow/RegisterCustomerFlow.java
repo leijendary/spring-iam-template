@@ -26,10 +26,8 @@ public class RegisterCustomerFlow {
         final var iamUser = registerCustomerService.mobile(request);
         final var iamVerification = iamVerificationService.create(iamUser, request.getDeviceId(),
                 MOBILE_NUMBER, REGISTRATION);
-        // Verification ID needed for the verification process
-        final var verificationId = String.valueOf(iamVerification.getId());
 
-        return new RegisterResponseV1(verificationId);
+        return new RegisterResponseV1(iamVerification.getId());
     }
 
     @Transactional
@@ -37,10 +35,8 @@ public class RegisterCustomerFlow {
         final var iamUser = registerCustomerService.email(request);
         final var iamVerification = iamVerificationService.create(iamUser, request.getDeviceId(),
                 EMAIL_ADDRESS, REGISTRATION);
-        // Verification ID needed for the verification process
-        final var verificationId = String.valueOf(iamVerification.getId());
 
-        return new RegisterResponseV1(verificationId);
+        return new RegisterResponseV1(iamVerification.getId());
     }
 
     @Transactional
@@ -48,9 +44,7 @@ public class RegisterCustomerFlow {
         final var iamUser = registerCustomerService.full(request);
         final var iamVerification = iamVerificationService.create(iamUser, request.getDeviceId(),
                 request.getPreferredUsername(), REGISTRATION);
-        // Verification ID needed for the verification process
-        final var verificationId = String.valueOf(iamVerification.getId());
 
-        return new RegisterResponseV1(verificationId);
+        return new RegisterResponseV1(iamVerification.getId());
     }
 }

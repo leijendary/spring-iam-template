@@ -7,6 +7,6 @@ import javax.validation.constraints.Min;
 @Data
 public class IdRequestV1 {
 
-    @Min(value = 1, message = "validation.id.invalid")
+    @Min(message = "validation.id.invalid", value = 1)
     private long id;
 }
