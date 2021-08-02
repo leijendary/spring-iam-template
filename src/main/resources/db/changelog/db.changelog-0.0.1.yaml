@@ -555,8 +555,6 @@ databaseChangeLog:
         - createIndex:
             columns:
               - column:
-                  name: id
-              - column:
                   name: iam_user_id
               - column:
                   name: code
@@ -564,5 +562,5 @@ databaseChangeLog:
                   name: field
               - column:
                   name: type
-            indexName: idx_iam_verification_id_iam_user_id_code_field_type
+            indexName: idx_iam_verification_iam_user_id_code_field_type
             tableName: iam_verification

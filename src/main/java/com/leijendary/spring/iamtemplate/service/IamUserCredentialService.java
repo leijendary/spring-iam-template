@@ -48,6 +48,10 @@ public class IamUserCredentialService extends AbstractService {
         return iamUserCredentialRepository.save(iamUserCredential);
     }
 
+    public IamUserCredential getByUsername(final String username) {
+        final var specification = Specification
+    }
+
     @Transactional
     public Set<IamUserCredential> update(final IamUser iamUser, final UsernameField usernameField) {
         return update(iamUser, usernameField, null);
