@@ -36,7 +36,7 @@ public class RegisterCustomerFullRequestV1 {
     private String preferredUsername;
 
     @NotBlank(message = "validation.required")
-    @Digits(message = "validation.digits.invalid", integer = 999999, fraction = 0)
-    @Length(message = "validation.digits.exact", min = 6, max = 6)
+    @Digits(message = "validation.digits.invalid", integer = 9999, fraction = 0)
+    @Length(message = "validation.digits.exact", min = 4, max = 4)
     private String password;
 }
