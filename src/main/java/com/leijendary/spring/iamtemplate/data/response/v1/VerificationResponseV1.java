@@ -7,8 +7,8 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class RegisterVerifyResponseV1 {
+public class VerificationResponseV1 {
 
     private long verificationId;
-    private String code;
+    private String next;
 }

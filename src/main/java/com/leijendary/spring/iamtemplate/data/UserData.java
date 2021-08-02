@@ -11,4 +11,8 @@ public class UserData {
     private String emailAddress;
     private String countryCode;
     private String mobileNumber;
+
+    public UserData(final String emailAddress) {
+        this.emailAddress = emailAddress;
+    }
 }

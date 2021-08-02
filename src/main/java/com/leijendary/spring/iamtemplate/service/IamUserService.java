@@ -5,6 +5,7 @@ import com.leijendary.spring.iamtemplate.data.UserData;
 import com.leijendary.spring.iamtemplate.data.UsernameField;
 import com.leijendary.spring.iamtemplate.data.request.QueryRequest;
 import com.leijendary.spring.iamtemplate.data.request.UserExclusionRequest;
+import com.leijendary.spring.iamtemplate.exception.InvalidPreferredUsernameException;
 import com.leijendary.spring.iamtemplate.exception.ResourceNotFoundException;
 import com.leijendary.spring.iamtemplate.exception.ResourceNotUniqueException;
 import com.leijendary.spring.iamtemplate.factory.IamUserFactory;
@@ -16,6 +17,7 @@ import com.leijendary.spring.iamtemplate.repository.IamUserRepository;
 import com.leijendary.spring.iamtemplate.specification.NonDeactivatedAccountUser;
 import com.leijendary.spring.iamtemplate.specification.UserListSpecification;
 import com.leijendary.spring.iamtemplate.specification.UserMobileEmailSpecification;
+import com.leijendary.spring.iamtemplate.util.UsernameUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -27,6 +29,7 @@ import static com.leijendary.spring.iamtemplate.data.PreferredUsername.MOBILE_NU
 import static com.leijendary.spring.iamtemplate.data.Status.FOR_VERIFICATION;
 import static com.leijendary.spring.iamtemplate.util.RequestContextUtil.getUsername;
 import static com.leijendary.spring.iamtemplate.util.RequestContextUtil.now;
+import static java.util.Optional.ofNullable;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
 @Service
@@ -79,6 +82,42 @@ public class IamUserService extends AbstractService {
                 .orElseThrow(() -> new ResourceNotFoundException(RESOURCE_NAME, countryCode + mobileNumber));
     }
 
+    public IamUser getByEmailAddress(final String emailAddress) {
+        final var specification = UserMobileEmailSpecification.builder()
+                .emailAddress(emailAddress)
+                .build();
+
+        return iamUserRepository.findOne(specification)
+                .orElseThrow(() -> new ResourceNotFoundException(RESOURCE_NAME, emailAddress));
+    }
+
+    public IamUser getByPreferredUsername(final UsernameField usernameField, final String preferredUsername) {
+        final var builder = UserMobileEmailSpecification.builder();
+        UserMobileEmailSpecification specification;
+
+        // Get the user based on the preferredUsername
+        if (preferredUsername.equals(MOBILE_NUMBER)) {
+            final var countryCode = usernameField.getCountryCode();
+            final var mobileNumber = usernameField.getMobileNumber();
+
+            specification = builder
+                    .countryCode(countryCode)
+                    .mobileNumber(mobileNumber)
+                    .build();
+        } else if (preferredUsername.equals(EMAIL_ADDRESS)) {
+            final var emailAddress = usernameField.getEmailAddress();
+
+            specification = builder.emailAddress(emailAddress).build();
+        } else {
+            throw new InvalidPreferredUsernameException("preferredUsername");
+        }
+
+        final var username = UsernameUtil.getUsername(usernameField, preferredUsername);
+
+        return iamUserRepository.findOne(specification)
+                .orElseThrow(() -> new ResourceNotFoundException(RESOURCE_NAME, username));
+    }
+
     @Transactional
     public IamUser update(final long id, final UserData userData, final IamRole iamRole) {
         final var iamUser = get(id);
@@ -110,6 +149,20 @@ public class IamUserService extends AbstractService {
         iamUser.setStatus(status);
 
         iamUserRepository.save(iamUser);
+    }
+
+    public void throwIfNotForVerification(final String status, final String preferredUsername,
+                                             final String username) {
+        boolean isForVerification = ofNullable(status)
+                .map(s -> s.equals(FOR_VERIFICATION))
+                .orElse(true);
+
+        // If the IamUser's status is not equal to for verification,
+        // then that user must be already verified and should therefore
+        // skip the registration part and move on to the login
+        if (!isForVerification) {
+            throw new ResourceNotUniqueException(preferredUsername, username);
+        }
     }
 
     public void checkUniqueness(long id, final UsernameField usernameField) {

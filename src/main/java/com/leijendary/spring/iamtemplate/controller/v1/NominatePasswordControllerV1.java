@@ -2,6 +2,8 @@ package com.leijendary.spring.iamtemplate.controller.v1;
 
 import com.leijendary.spring.iamtemplate.data.request.v1.NominatePasswordRequestV1;
 import com.leijendary.spring.iamtemplate.data.response.DataResponse;
+import com.leijendary.spring.iamtemplate.data.response.v1.VerificationResponseV1;
+import com.leijendary.spring.iamtemplate.flow.NominatePasswordFlow;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +16,7 @@ import javax.validation.Valid;
 import java.util.concurrent.CompletableFuture;
 
 import static com.leijendary.spring.iamtemplate.controller.AbstractController.BASE_API_PATH;
+import static java.util.concurrent.CompletableFuture.completedFuture;
 
 @RestController
 @RequestMapping(BASE_API_PATH + "/v1/nominate-password")
@@ -21,9 +24,18 @@ import static com.leijendary.spring.iamtemplate.controller.AbstractController.BA
 @Api("Nominate password API resource")
 public class NominatePasswordControllerV1 {
 
+    private final NominatePasswordFlow nominatePasswordFlow;
+
     @PostMapping
     @ApiOperation("Create a password using the verification code sent")
-    public CompletableFuture<DataResponse<?>> nominate(@Valid @RequestBody final NominatePasswordRequestV1 request) {
+    public CompletableFuture<DataResponse<VerificationResponseV1>> nominate(
+            @Valid @RequestBody final NominatePasswordRequestV1 request) {
+        final var verifyResponse = nominatePasswordFlow.nominateV1(request);
+        final var response = DataResponse.<VerificationResponseV1>builder()
+                .data(verifyResponse)
+                .object(VerificationResponseV1.class)
+                .build();
 
+        return completedFuture(response);
     }
 }
