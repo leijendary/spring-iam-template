@@ -2,6 +2,7 @@ package com.leijendary.spring.iamtemplate.model;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
@@ -15,6 +16,7 @@ import java.util.Set;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
+@NoArgsConstructor
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 public class IamAccount extends SnowflakeIdModel {

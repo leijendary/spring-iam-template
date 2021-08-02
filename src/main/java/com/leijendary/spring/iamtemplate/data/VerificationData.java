@@ -5,7 +5,6 @@ import lombok.Data;
 @Data
 public class VerificationData {
 
-    private long verificationId;
     private String deviceId;
     private String field;
     private String type;

@@ -9,9 +9,6 @@ public class RandomGenerator {
     public static final Random RANDOM = new Random();
     public static final String NUMBERS = "0123456789";
 
-    public static String otp() {
-    }
-
     public static int[] digits(int length) {
         final var values = new int[length];
 

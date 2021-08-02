@@ -11,6 +11,7 @@ import com.leijendary.spring.iamtemplate.model.IamUser;
 import com.leijendary.spring.iamtemplate.model.IamVerification;
 import com.leijendary.spring.iamtemplate.repository.IamVerificationRepository;
 import com.leijendary.spring.iamtemplate.specification.VerificationSpecification;
+import javassist.compiler.CodeGen;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
 import org.springframework.security.access.AccessDeniedException;
@@ -34,6 +35,15 @@ public class IamVerificationService extends AbstractService {
 
     @Transactional
     public IamVerification create(final IamUser iamUser, final VerificationData verificationData) {
+        final var field = verificationData.getField();
+        final var codeGenerationStrategy = codeGenerationStrategy(field);
+
+        return create(iamUser, verificationData, codeGenerationStrategy);
+    }
+
+    @Transactional
+    public IamVerification create(final IamUser iamUser, final VerificationData verificationData,
+                                  final CodeGenerationStrategy codeGenerationStrategy) {
         final var deviceId = verificationData.getDeviceId();
         final var field = verificationData.getField();
         final var type = verificationData.getType();
@@ -42,7 +52,6 @@ public class IamVerificationService extends AbstractService {
         iamVerificationRepository.deleteAllByUserIdAndType(iamUser.getId(), type);
 
         final var expiry = verificationProperties.getExpiry();
-        final var codeGenerationStrategy = codeGenerationStrategy(field);
         final var code = codeGenerationStrategy.generate();
         final var iamVerification = new IamVerification(iamUser, code, expiry, deviceId, field, type);
 
@@ -53,18 +62,16 @@ public class IamVerificationService extends AbstractService {
 
     public IamVerification get(final VerificationSpecification specification) {
         return iamVerificationRepository.findOne(specification)
-                .orElseThrow(() -> new ResourceNotFoundException(RESOURCE_NAME, specification.getId()));
+                .orElseThrow(() -> new ResourceNotFoundException(RESOURCE_NAME, specification.getCode()));
     }
 
     @Transactional(noRollbackFor = VerificationExpiredException.class)
     public IamVerification verify(final VerificationData verificationData) {
-        final var verificationId = verificationData.getVerificationId();
         final var deviceId = verificationData.getDeviceId();
         final var code = verificationData.getCode();
         final var type = verificationData.getType();
         // Filter the IamVerification object using the verification ID, code, and type
         final var specification = VerificationSpecification.builder()
-                .id(verificationId)
                 .code(code)
                 .type(type)
                 .build();

@@ -57,4 +57,8 @@ public class IamUser extends SnowflakeIdModel {
 
     private OffsetDateTime deactivatedDate;
     private String deactivatedBy;
+
+    public boolean isIncomplete() {
+        return firstName == null || lastName == null;
+    }
 }

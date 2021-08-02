@@ -19,9 +19,8 @@ import static javax.persistence.criteria.JoinType.INNER;
 public class VerificationSpecification implements Specification<IamVerification> {
 
     @Getter
-    private final long id;
-
     private final String code;
+
     private final String type;
 
     @Override
@@ -36,12 +35,6 @@ public class VerificationSpecification implements Specification<IamVerification>
 
         // The user should be deactivated
         predicates.add(userNotDeactivated);
-
-        final var idPath = root.<Long>get("id");
-        final var idEquals = criteriaBuilder.equal(idPath, id);
-
-        // Id should be equals to
-        predicates.add(idEquals);
 
         final var codePath = root.<String>get("code");
         final var codeEquals = criteriaBuilder.equal(codePath, code);

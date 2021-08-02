@@ -87,6 +87,7 @@ public class UserFlow {
     @Caching(
             evict = @CacheEvict(value = PAGE_CACHE_V1, allEntries = true),
             put = @CachePut(value = CACHE_V1, key = "#result.id"))
+    @Transactional
     public UserResponseV1 updateV1(final long id, final UserRequestV1 request) {
         final var roleId = request.getRole().getId();
         final var iamRole = iamRoleService.get(roleId);

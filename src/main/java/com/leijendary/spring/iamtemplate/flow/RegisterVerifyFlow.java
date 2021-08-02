@@ -3,6 +3,7 @@ package com.leijendary.spring.iamtemplate.flow;
 import com.leijendary.spring.iamtemplate.data.request.v1.VerifyRequestV1;
 import com.leijendary.spring.iamtemplate.data.response.v1.VerificationResponseV1;
 import com.leijendary.spring.iamtemplate.factory.VerificationDataFactory;
+import com.leijendary.spring.iamtemplate.generator.UuidCodeGenerationStrategy;
 import com.leijendary.spring.iamtemplate.service.IamUserCredentialService;
 import com.leijendary.spring.iamtemplate.service.IamVerificationService;
 import lombok.RequiredArgsConstructor;
@@ -30,15 +31,19 @@ public class RegisterVerifyFlow {
 
         // If there is no password set, create a nominate password verification
         if (!hasPassword) {
+            verificationData.setField(field);
             verificationData.setType(NOMINATE_PASSWORD);
 
-            iamVerification = iamVerificationService.create(iamUser, verificationData);
+            final var codeGenerationStrategy = new UuidCodeGenerationStrategy();
 
-            final var id = iamVerification.getId();
+            iamVerification = iamVerificationService.create(iamUser, verificationData, codeGenerationStrategy);
 
-            return new VerificationResponseV1(id, NOMINATE_PASSWORD);
+            // Code to use when nominating a password
+            final var code = iamVerification.getCode();
+
+            return new VerificationResponseV1(NOMINATE_PASSWORD, code);
         }
 
-        return new VerificationResponseV1(0, AUTHENTICATE);
+        return new VerificationResponseV1(AUTHENTICATE, null);
     }
 }

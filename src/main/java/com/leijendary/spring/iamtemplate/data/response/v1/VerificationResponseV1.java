@@ -9,6 +9,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class VerificationResponseV1 {
 
-    private long verificationId;
     private String next;
+    private String code;
 }

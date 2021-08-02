@@ -5,6 +5,6 @@ import lombok.Data;
 @Data
 public class MobileNumberData {
 
-    final String countryCode;
-    final String mobileNumber;
+    private String countryCode;
+    private String mobileNumber;
 }

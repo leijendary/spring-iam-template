@@ -23,6 +23,12 @@ public class IamUserCredentialService extends AbstractService {
 
     @Transactional
     public IamUserCredential create(final IamUser iamUser, final UsernameField usernameField,
+                                    final String preferredUsername) {
+        return create(iamUser, usernameField, preferredUsername, null);
+    }
+
+    @Transactional
+    public IamUserCredential create(final IamUser iamUser, final UsernameField usernameField,
                                     final String preferredUsername, final String password) {
         final var username = getUsername(usernameField, preferredUsername);
         // Set the credential based on the username from the preferredUsername field
@@ -44,19 +50,27 @@ public class IamUserCredentialService extends AbstractService {
 
     @Transactional
     public Set<IamUserCredential> update(final IamUser iamUser, final UsernameField usernameField) {
+        return update(iamUser, usernameField, null);
+    }
+
+    @Transactional
+    public Set<IamUserCredential> update(final IamUser iamUser, final UsernameField usernameField,
+                                         final String password) {
         iamUser.getCredentials().forEach(credential -> {
             final var type = credential.getType();
             // Get the new value of the current credential type
             final var username = getUsername(usernameField, type);
 
-            // If the current credential's username is the same value of the current
-            // value from the IamUser object, skip this
-            if (credential.getUsername().equals(username)) {
-                return;
-            }
-
             // Otherwise, update the value and save the credentials
             credential.setUsername(username);
+
+            // If the password is not blank or there is a value, encode the
+            // value and use that as the user's updated password
+            if (!isBlank(password)) {
+                final var encodedPassword = passwordEncoder.encode(password);
+
+                credential.setPassword(encodedPassword);
+            }
 
             iamUserCredentialRepository.save(credential);
         });
@@ -68,5 +82,11 @@ public class IamUserCredentialService extends AbstractService {
         return iamUser.getCredentials()
                 .stream()
                 .anyMatch(credential -> credential.getType().equals(field) && credential.getPassword() != null);
+    }
+
+    public boolean hasCredentialType(final IamUser iamUser, final String field) {
+        return iamUser.getCredentials()
+                .stream()
+                .anyMatch(credential -> credential.getType().equals(field));
     }
 }

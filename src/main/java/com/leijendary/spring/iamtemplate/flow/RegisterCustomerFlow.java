@@ -11,7 +11,6 @@ import com.leijendary.spring.iamtemplate.factory.MobileNumberDataFactory;
 import com.leijendary.spring.iamtemplate.factory.UserDataFactory;
 import com.leijendary.spring.iamtemplate.factory.UsernameFieldFactory;
 import com.leijendary.spring.iamtemplate.model.IamUser;
-import com.leijendary.spring.iamtemplate.model.IamVerification;
 import com.leijendary.spring.iamtemplate.service.*;
 import com.leijendary.spring.iamtemplate.util.UsernameUtil;
 import com.leijendary.spring.iamtemplate.validator.UsernameValidator;
@@ -51,11 +50,13 @@ public class RegisterCustomerFlow {
         final var iamUser = userCreationProcess(
                 iamUserSupplier, userDataSupplier, MOBILE_NUMBER, null);
         final var deviceId= request.getDeviceId();
-        final var iamVerification = verificationProcess(iamUser, deviceId, MOBILE_NUMBER);
+
+        // Send a verification code to the user's mobile number
+        verificationProcess(iamUser, deviceId, MOBILE_NUMBER);
 
         // Since this is a registration via mobile number, the API consumer's
         // next action is to do a verification process
-        return new VerificationResponseV1(iamVerification.getId(), VERIFICATION);
+        return new VerificationResponseV1(VERIFICATION, null);
     }
 
     @Transactional
@@ -71,11 +72,13 @@ public class RegisterCustomerFlow {
         final var iamUser = userCreationProcess(
                 iamUserSupplier, userDataSupplier, EMAIL_ADDRESS, null);
         final var deviceId= request.getDeviceId();
-        final var iamVerification = verificationProcess(iamUser, deviceId, EMAIL_ADDRESS);
+
+        // Send a verification code to the user's email address
+        verificationProcess(iamUser, deviceId, EMAIL_ADDRESS);
 
         // Since this is a registration via email address, the API consumer's
         // next action is to do a verification process
-        return new VerificationResponseV1(iamVerification.getId(), VERIFICATION);
+        return new VerificationResponseV1(VERIFICATION, null);
     }
 
     @Transactional
@@ -114,9 +117,11 @@ public class RegisterCustomerFlow {
         final var iamUser = userCreationProcess(
                 iamUserSupplier, userDataSupplier, preferredUsername, password);
         final var deviceId = request.getDeviceId();
-        final var iamVerification = verificationProcess(iamUser, deviceId, preferredUsername);
 
-        return new VerificationResponseV1(iamVerification.getId(), VERIFICATION);
+        // Send a verification code to the user's preferred username
+        verificationProcess(iamUser, deviceId, preferredUsername);
+
+        return new VerificationResponseV1(VERIFICATION, null);
     }
 
     private IamUser userCreationProcess(final Supplier<IamUser> iamUserSupplier,
@@ -147,22 +152,23 @@ public class RegisterCustomerFlow {
     private void createUpdateCredentials(final IamUser iamUser, final String field, final String password) {
         // Username field for updating the credentials
         final var usernameField = UsernameFieldFactory.of(iamUser);
+        final var hasCredentialType = iamUserCredentialService.hasCredentialType(iamUser, field);
 
         // Create the credentials of the customer
-        if (iamUser.getCredentials().size() > 0) {
-            final var credentials = iamUserCredentialService.update(iamUser, usernameField);
-
-            // Set the credentials of the updated user
-            iamUser.setCredentials(credentials);
-        } else {
+        if (!hasCredentialType) {
             final var credential = iamUserCredentialService.create(
                     iamUser, usernameField, field, password);
 
             iamUser.getCredentials().add(credential);
+        } else {
+            final var credentials = iamUserCredentialService.update(iamUser, usernameField);
+
+            // Set the credentials of the updated user
+            iamUser.setCredentials(credentials);
         }
     }
 
-    private IamVerification verificationProcess(final IamUser iamUser, final String deviceId, final String field) {
+    private void verificationProcess(final IamUser iamUser, final String deviceId, final String field) {
         // Create the verification data - parameter for creation of a verification code
         final var verificationData = new VerificationData();
         verificationData.setDeviceId(deviceId);
@@ -170,6 +176,6 @@ public class RegisterCustomerFlow {
         verificationData.setType(REGISTRATION);
 
         // Create a verification code
-        return iamVerificationService.create(iamUser, verificationData);
+        iamVerificationService.create(iamUser, verificationData);
     }
 }
