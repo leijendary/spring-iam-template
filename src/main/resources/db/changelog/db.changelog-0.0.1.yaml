@@ -1,6 +1,6 @@
 databaseChangeLog:
   - changeSet:
-      id: 1626859044307-1
+      id: 1627905024389-1
       author: Leijendary (generated)
       changes:
         - createTable:
@@ -26,7 +26,7 @@ databaseChangeLog:
               - column:
                   constraints:
                     nullable: false
-                  defaultValueComputed: CURRENT_TIMESTAMP
+                  defaultValueComputed: now()
                   name: created_date
                   type: TIMESTAMP WITH TIME ZONE
               - column:
@@ -42,7 +42,7 @@ databaseChangeLog:
                   type: TEXT
             tableName: iam_account
   - changeSet:
-      id: 1626859044307-2
+      id: 1627905024389-2
       author: Leijendary (generated)
       changes:
         - createTable:
@@ -71,7 +71,7 @@ databaseChangeLog:
               - column:
                   constraints:
                     nullable: false
-                  defaultValueComputed: CURRENT_TIMESTAMP
+                  defaultValueComputed: now()
                   name: created_date
                   type: TIMESTAMP WITH TIME ZONE
               - column:
@@ -82,12 +82,12 @@ databaseChangeLog:
               - column:
                   constraints:
                     nullable: false
-                  defaultValueComputed: CURRENT_TIMESTAMP
+                  defaultValueComputed: now()
                   name: last_modified_date
                   type: TIMESTAMP WITH TIME ZONE
             tableName: iam_role
   - changeSet:
-      id: 1626859044307-3
+      id: 1627905024389-3
       author: Leijendary (generated)
       changes:
         - createTable:
@@ -130,7 +130,7 @@ databaseChangeLog:
                     nullable: false
                   defaultValue: active
                   name: status
-                  type: VARCHAR(10)
+                  type: VARCHAR(20)
               - column:
                   constraints:
                     nullable: false
@@ -139,7 +139,7 @@ databaseChangeLog:
               - column:
                   constraints:
                     nullable: false
-                  defaultValueComputed: CURRENT_TIMESTAMP
+                  defaultValueComputed: now()
                   name: created_date
                   type: TIMESTAMP WITH TIME ZONE
               - column:
@@ -150,7 +150,7 @@ databaseChangeLog:
               - column:
                   constraints:
                     nullable: false
-                  defaultValueComputed: CURRENT_TIMESTAMP
+                  defaultValueComputed: now()
                   name: last_modified_date
                   type: TIMESTAMP WITH TIME ZONE
               - column:
@@ -161,7 +161,7 @@ databaseChangeLog:
                   type: TEXT
             tableName: iam_user
   - changeSet:
-      id: 1626859044307-4
+      id: 1627905024389-4
       author: Leijendary (generated)
       changes:
         - createTable:
@@ -191,11 +191,11 @@ databaseChangeLog:
                   constraints:
                     nullable: false
                   name: type
-                  type: varchar(12)
+                  type: VARCHAR(12)
               - column:
                   constraints:
                     nullable: false
-                  defaultValueComputed: CURRENT_TIMESTAMP
+                  defaultValueComputed: now()
                   name: created_date
                   type: TIMESTAMP WITH TIME ZONE
               - column:
@@ -203,7 +203,7 @@ databaseChangeLog:
                   type: TIMESTAMP WITH TIME ZONE
             tableName: iam_user_credential
   - changeSet:
-      id: 1626859044307-5
+      id: 1627905024389-5
       author: Leijendary (generated)
       changes:
         - createTable:
@@ -223,7 +223,7 @@ databaseChangeLog:
                   type: TEXT
             tableName: iam_permission
   - changeSet:
-      id: 1626859044307-6
+      id: 1627905024389-6
       author: Leijendary (generated)
       changes:
         - createTable:
@@ -248,18 +248,63 @@ databaseChangeLog:
                   type: BIGINT
             tableName: iam_role_permission
   - changeSet:
-      id: 1626859044307-7
+      id: 1627905024389-7
+      author: Leijendary (generated)
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: pk_iam_verification
+                  name: id
+                  type: BIGINT
+              - column:
+                  constraints:
+                    nullable: false
+                  name: iam_user_id
+                  type: BIGINT
+              - column:
+                  constraints:
+                    nullable: false
+                  name: code
+                  type: VARCHAR(36)
+              - column:
+                  name: expiry
+                  type: TIMESTAMP WITH TIME ZONE
+              - column:
+                  constraints:
+                    nullable: false
+                  name: device_id
+                  type: TEXT
+              - column:
+                  name: field
+                  type: VARCHAR(12)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: type
+                  type: VARCHAR(16)
+              - column:
+                  constraints:
+                    nullable: false
+                  defaultValueComputed: now()
+                  name: created_date
+                  type: TIMESTAMP WITH TIME ZONE
+            tableName: iam_verification
+  - changeSet:
+      id: 1627905024389-8
       author: Leijendary (generated)
       changes:
         - createIndex:
             columns:
               - column:
-                  name: name
-            indexName: uidx_iam_role_name
-            tableName: iam_role
-            unique: true
+                  name: deactivated_date
+            indexName: idx_iam_account_deactivated_date
+            tableName: iam_account
   - changeSet:
-      id: 1626859044307-8
+      id: 1627905024389-9
       author: Leijendary (generated)
       changes:
         - addForeignKeyConstraint:
@@ -274,101 +319,42 @@ databaseChangeLog:
             referencedTableName: iam_account
             validate: true
   - changeSet:
-      id: 1626859044307-9
+      id: 1627905024389-10
       author: Leijendary (generated)
-      changes:
-        - addForeignKeyConstraint:
-            baseColumnNames: iam_role_id
-            baseTableName: iam_user
-            constraintName: fk_iam_user_iam_role_id
-            deferrable: false
-            initiallyDeferred: false
-            onDelete: NO ACTION
-            onUpdate: NO ACTION
-            referencedColumnNames: id
-            referencedTableName: iam_role
-            validate: true
-  - changeSet:
-      id: 1626859044307-10
-      author: Leijendary (generated)
-      changes:
-        - addForeignKeyConstraint:
-            baseColumnNames: iam_user_id
-            baseTableName: iam_user_credential
-            constraintName: fk_iam_user_credential_iam_user_id
-            deferrable: false
-            initiallyDeferred: false
-            onDelete: NO ACTION
-            onUpdate: NO ACTION
-            referencedColumnNames: id
-            referencedTableName: iam_user
-            validate: true
-  - changeSet:
-      id: 1626859044307-16
-      author: Leijendary (generated)
-      dbms: '!h2'
       changes:
         - createIndex:
             columns:
               - column:
-                  name: email_address
-            indexName: idx_iam_user_email_address
-            tableName: iam_user
-  - changeSet:
-      id: 1626859044307-17
-      author: Leijendary (generated)
-      dbms: '!h2'
-      changes:
-        - createIndex:
-            columns:
-              - column:
-                  name: country_code
-              - column:
-                  name: mobile_number
-            indexName: idx_iam_user_country_code_mobile_number
-            tableName: iam_user
-  - changeSet:
-      id: 1626859044307-11
-      author: Leijendary (generated)
-      dbms: '!h2'
-      changes:
-        - createIndex:
-            columns:
-              - column:
-                  name: username
-              - column:
-                  name: type
-            indexName: idx_iam_user_credential_username_type
-            tableName: iam_user_credential
-  - changeSet:
-      id: 1626859044307-12
-      author: Leijendary (generated)
-      dbms: '!h2'
-      changes:
-        - createIndex:
-            columns:
-              - column:
-                  name: permission
-            indexName: uidx_iam_permission_urn
-            tableName: iam_permission
+                  name: name
+            indexName: uidx_iam_role_name
+            tableName: iam_role
             unique: true
   - changeSet:
-      id: 1626859044307-13
+      id: 1627905024389-11
       author: Leijendary (generated)
       changes:
-        - addForeignKeyConstraint:
-            baseColumnNames: iam_permission_id
-            baseTableName: iam_role_permission
-            constraintName: fk_iam_role_permission_iam_permission_id
-            deferrable: false
-            initiallyDeferred: false
-            onDelete: NO ACTION
-            onUpdate: NO ACTION
-            referencedColumnNames: id
-            referencedTableName: iam_permission
-            validate: true
+        - createIndex:
+            columns:
+              - column:
+                  name: name
+              - column:
+                  name: description
+            indexName: idx_iam_role_name_description
+            tableName: iam_role
   - changeSet:
-      id: 1626859044307-14
+      id: 1627905024389-12
+      author: Leijendary (generated)
+      changes:
+        - createIndex:
+            columns:
+              - column:
+                  name: name
+              - column:
+                  name: id
+            indexName: idx_iam_role_name_id
+            tableName: iam_role
+  - changeSet:
+      id: 1627905024389-13
       author: Leijendary (generated)
       changes:
         - addForeignKeyConstraint:
@@ -383,7 +369,162 @@ databaseChangeLog:
             referencedTableName: iam_role
             validate: true
   - changeSet:
-      id: 1626859044307-15
+      id: 1627905024389-14
+      author: Leijendary (generated)
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: iam_role_id
+            baseTableName: iam_user
+            constraintName: fk_iam_user_iam_role_id
+            deferrable: false
+            initiallyDeferred: false
+            onDelete: NO ACTION
+            onUpdate: NO ACTION
+            referencedColumnNames: id
+            referencedTableName: iam_role
+            validate: true
+  - changeSet:
+      id: 1627905024389-15
+      author: Leijendary (generated)
+      changes:
+        - createIndex:
+            columns:
+              - column:
+                  name: first_name
+              - column:
+                  name: middle_name
+              - column:
+                  name: last_name
+              - column:
+                  name: deactivated_date
+            indexName: idx_iam_user_names_deactivated_date
+            tableName: iam_user
+  - changeSet:
+      id: 1627905024389-16
+      author: Leijendary (generated)
+      changes:
+        - createIndex:
+            columns:
+              - column:
+                  name: email_address
+              - column:
+                  name: id
+              - column:
+                  name: deactivated_date
+            indexName: idx_iam_user_email_address_id_deactivated_date
+            tableName: iam_user
+  - changeSet:
+      id: 1627905024389-17
+      author: Leijendary (generated)
+      changes:
+        - createIndex:
+            columns:
+              - column:
+                  name: country_code
+              - column:
+                  name: mobile_number
+              - column:
+                  name: id
+              - column:
+                  name: deactivated_date
+            indexName: idx_iam_user_country_code_mobile_number_id_deactivated_date
+            tableName: iam_user
+  - changeSet:
+      id: 1627905024389-18
+      author: Leijendary (generated)
+      changes:
+        - createIndex:
+            columns:
+              - column:
+                  name: iam_account_id
+              - column:
+                  name: deactivated_date
+            indexName: idx_iam_user_iam_account_id_deactivated_date
+            tableName: iam_user
+  - changeSet:
+      id: 1627905024389-19
+      author: Leijendary (generated)
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: iam_user_id
+            baseTableName: iam_user_credential
+            constraintName: fk_iam_user_credential_iam_user_id
+            deferrable: false
+            initiallyDeferred: false
+            onDelete: NO ACTION
+            onUpdate: NO ACTION
+            referencedColumnNames: id
+            referencedTableName: iam_user
+            validate: true
+  - changeSet:
+      id: 1627905024389-20
+      author: Leijendary (generated)
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: iam_user_id
+            baseTableName: iam_verification
+            constraintName: fk_iam_verification_iam_user_id
+            deferrable: false
+            initiallyDeferred: false
+            onDelete: NO ACTION
+            onUpdate: NO ACTION
+            referencedColumnNames: id
+            referencedTableName: iam_user
+            validate: true
+  - changeSet:
+      id: 1627905024389-21
+      author: Leijendary (generated)
+      changes:
+        - createIndex:
+            columns:
+              - column:
+                  name: username
+              - column:
+                  name: type
+              - column:
+                  name: iam_user_id
+            indexName: idx_iam_user_credential_username_type_iam_user_id
+            tableName: iam_user_credential
+  - changeSet:
+      id: 1627905024389-22
+      author: Leijendary (generated)
+      changes:
+        - createIndex:
+            columns:
+              - column:
+                  name: permission
+            indexName: uidx_iam_permission_permission
+            tableName: iam_permission
+            unique: true
+  - changeSet:
+      id: 1627905024389-23
+      author: Leijendary (generated)
+      changes:
+        - createIndex:
+            columns:
+              - column:
+                  name: permission
+              - column:
+                  name: id
+            indexName: idx_iam_permission_permission_id
+            tableName: iam_permission
+  - changeSet:
+      id: 1627905024389-24
+      author: Leijendary (generated)
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: iam_permission_id
+            baseTableName: iam_role_permission
+            constraintName: fk_iam_role_permission_iam_permission_id
+            deferrable: false
+            initiallyDeferred: false
+            onDelete: NO ACTION
+            onUpdate: NO ACTION
+            referencedColumnNames: id
+            referencedTableName: iam_permission
+            validate: true
+  - changeSet:
+      id: 1627905024389-25
       author: Leijendary (generated)
       changes:
         - createIndex:
@@ -395,3 +536,33 @@ databaseChangeLog:
             indexName: uidx_iam_role_permission_iam_role_id_iam_permission_id
             tableName: iam_role_permission
             unique: true
+  - changeSet:
+      id: 1627905024389-26
+      author: Leijendary (generated)
+      changes:
+        - createIndex:
+            columns:
+              - column:
+                  name: iam_user_id
+              - column:
+                  name: type
+            indexName: idx_iam_verification_iam_user_id_type
+            tableName: iam_verification
+  - changeSet:
+      id: 1627905024389-27
+      author: Leijendary (generated)
+      changes:
+        - createIndex:
+            columns:
+              - column:
+                  name: id
+              - column:
+                  name: iam_user_id
+              - column:
+                  name: code
+              - column:
+                  name: field
+              - column:
+                  name: type
+            indexName: idx_iam_verification_id_iam_user_id_code_field_type
+            tableName: iam_verification
