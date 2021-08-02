@@ -5,7 +5,7 @@ import com.leijendary.spring.iamtemplate.data.request.v1.RegisterCustomerEmailRe
 import com.leijendary.spring.iamtemplate.data.request.v1.RegisterCustomerFullRequestV1;
 import com.leijendary.spring.iamtemplate.data.request.v1.RegisterCustomerMobileRequestV1;
 import com.leijendary.spring.iamtemplate.data.response.DataResponse;
-import com.leijendary.spring.iamtemplate.data.response.v1.VerificationResponseV1;
+import com.leijendary.spring.iamtemplate.data.response.v1.NextCodeV1;
 import com.leijendary.spring.iamtemplate.flow.RegisterCustomerFlow;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -32,13 +32,13 @@ public class RegisterCustomerControllerV1 extends AbstractController {
     @ApiOperation("A customer account can register using this API. Although, this API only requires the " +
             "countryCode, mobileNumber, and deviceId. This is only for the mobile number credential. " +
             "Once registered, this API should send an SMS verification to the mobile number")
-    public CompletableFuture<DataResponse<VerificationResponseV1>> mobile(
+    public CompletableFuture<DataResponse<NextCodeV1>> mobile(
             @Valid @RequestBody final RegisterCustomerMobileRequestV1 request) {
         final var registerResponse = registerCustomerFlow.mobileV1(request);
-        final var response = DataResponse.<VerificationResponseV1>builder()
+        final var response = DataResponse.<NextCodeV1>builder()
                 .data(registerResponse)
                 .status(ACCEPTED)
-                .object(VerificationResponseV1.class)
+                .object(NextCodeV1.class)
                 .build();
 
         return completedFuture(response);
@@ -49,13 +49,13 @@ public class RegisterCustomerControllerV1 extends AbstractController {
     @ApiOperation("A customer account can register using this API. Although, this API only requires the " +
             "emailAddress, and deviceId. This is only for the email address credential. Once registered, " +
             "this API should send a verification to the email address")
-    public CompletableFuture<DataResponse<VerificationResponseV1>> email(
+    public CompletableFuture<DataResponse<NextCodeV1>> email(
             @Valid @RequestBody final RegisterCustomerEmailRequestV1 request) {
         final var registerResponse = registerCustomerFlow.emailV1(request);
-        final var response = DataResponse.<VerificationResponseV1>builder()
+        final var response = DataResponse.<NextCodeV1>builder()
                 .data(registerResponse)
                 .status(ACCEPTED)
-                .object(VerificationResponseV1.class)
+                .object(NextCodeV1.class)
                 .build();
 
         return completedFuture(response);
@@ -66,13 +66,13 @@ public class RegisterCustomerControllerV1 extends AbstractController {
     @ApiOperation("A customer account can register using this API. This API requires the full information of " +
             "the user. preferredUsername is required to identify what the username should be. Once registered, " +
             "this API should send a verification to the preferredUsername")
-    public CompletableFuture<DataResponse<VerificationResponseV1>> full(
+    public CompletableFuture<DataResponse<NextCodeV1>> full(
             @Valid @RequestBody final RegisterCustomerFullRequestV1 request) {
         final var registerResponse = registerCustomerFlow.fullV1(request);
-        final var response = DataResponse.<VerificationResponseV1>builder()
+        final var response = DataResponse.<NextCodeV1>builder()
                 .data(registerResponse)
                 .status(ACCEPTED)
-                .object(VerificationResponseV1.class)
+                .object(NextCodeV1.class)
                 .build();
 
         return completedFuture(response);

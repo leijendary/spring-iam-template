@@ -2,7 +2,7 @@ package com.leijendary.spring.iamtemplate.controller.v1;
 
 import com.leijendary.spring.iamtemplate.data.request.v1.NominatePasswordRequestV1;
 import com.leijendary.spring.iamtemplate.data.response.DataResponse;
-import com.leijendary.spring.iamtemplate.data.response.v1.VerificationResponseV1;
+import com.leijendary.spring.iamtemplate.data.response.v1.NextCodeV1;
 import com.leijendary.spring.iamtemplate.flow.NominatePasswordFlow;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -28,12 +28,12 @@ public class NominatePasswordControllerV1 {
 
     @PostMapping
     @ApiOperation("Create a password using the verification code sent")
-    public CompletableFuture<DataResponse<VerificationResponseV1>> nominate(
+    public CompletableFuture<DataResponse<NextCodeV1>> nominate(
             @Valid @RequestBody final NominatePasswordRequestV1 request) {
         final var verifyResponse = nominatePasswordFlow.nominateV1(request);
-        final var response = DataResponse.<VerificationResponseV1>builder()
+        final var response = DataResponse.<NextCodeV1>builder()
                 .data(verifyResponse)
-                .object(VerificationResponseV1.class)
+                .object(NextCodeV1.class)
                 .build();
 
         return completedFuture(response);

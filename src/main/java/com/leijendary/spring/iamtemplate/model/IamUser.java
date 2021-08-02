@@ -14,6 +14,7 @@ import java.time.OffsetDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
+import static java.lang.String.join;
 import static javax.persistence.FetchType.EAGER;
 
 @Data
@@ -57,6 +58,10 @@ public class IamUser extends SnowflakeIdModel {
 
     private OffsetDateTime deactivatedDate;
     private String deactivatedBy;
+
+    public String getFullName() {
+        return join(" ", firstName, lastName);
+    }
 
     public boolean isIncomplete() {
         return firstName == null || lastName == null;

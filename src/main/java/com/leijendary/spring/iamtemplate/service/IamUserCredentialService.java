@@ -1,9 +1,11 @@
 package com.leijendary.spring.iamtemplate.service;
 
 import com.leijendary.spring.iamtemplate.data.UsernameField;
+import com.leijendary.spring.iamtemplate.exception.ResourceNotFoundException;
 import com.leijendary.spring.iamtemplate.model.IamUser;
 import com.leijendary.spring.iamtemplate.model.IamUserCredential;
 import com.leijendary.spring.iamtemplate.repository.IamUserCredentialRepository;
+import com.leijendary.spring.iamtemplate.specification.UserCredentialUsernameSpecification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -17,6 +19,8 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 @Service
 @RequiredArgsConstructor
 public class IamUserCredentialService extends AbstractService {
+
+    private static final String RESOURCE_NAME = "IAM User Credential";
 
     private final IamUserCredentialRepository iamUserCredentialRepository;
     private final PasswordEncoder passwordEncoder;
@@ -49,7 +53,12 @@ public class IamUserCredentialService extends AbstractService {
     }
 
     public IamUserCredential getByUsername(final String username) {
-        final var specification = Specification
+        final var specification = UserCredentialUsernameSpecification.builder()
+                .username(username)
+                .build();
+
+        return iamUserCredentialRepository.findOne(specification)
+                .orElseThrow(() -> new ResourceNotFoundException(RESOURCE_NAME, username));
     }
 
     @Transactional

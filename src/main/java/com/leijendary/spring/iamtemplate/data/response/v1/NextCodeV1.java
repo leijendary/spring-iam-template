@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class VerificationResponseV1 {
+public class NextCodeV1 {
 
     private String next;
     private String code;

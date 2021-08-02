@@ -1,6 +1,6 @@
 databaseChangeLog:
   - changeSet:
-      id: 1627905024389-1
+      id: 1627926489056-1
       author: Leijendary (generated)
       changes:
         - createTable:
@@ -42,7 +42,7 @@ databaseChangeLog:
                   type: TEXT
             tableName: iam_account
   - changeSet:
-      id: 1627905024389-2
+      id: 1627926489056-2
       author: Leijendary (generated)
       changes:
         - createTable:
@@ -87,7 +87,7 @@ databaseChangeLog:
                   type: TIMESTAMP WITH TIME ZONE
             tableName: iam_role
   - changeSet:
-      id: 1627905024389-3
+      id: 1627926489056-3
       author: Leijendary (generated)
       changes:
         - createTable:
@@ -161,7 +161,7 @@ databaseChangeLog:
                   type: TEXT
             tableName: iam_user
   - changeSet:
-      id: 1627905024389-4
+      id: 1627926489056-4
       author: Leijendary (generated)
       changes:
         - createTable:
@@ -203,7 +203,7 @@ databaseChangeLog:
                   type: TIMESTAMP WITH TIME ZONE
             tableName: iam_user_credential
   - changeSet:
-      id: 1627905024389-5
+      id: 1627926489056-5
       author: Leijendary (generated)
       changes:
         - createTable:
@@ -223,7 +223,7 @@ databaseChangeLog:
                   type: TEXT
             tableName: iam_permission
   - changeSet:
-      id: 1627905024389-6
+      id: 1627926489056-6
       author: Leijendary (generated)
       changes:
         - createTable:
@@ -248,7 +248,7 @@ databaseChangeLog:
                   type: BIGINT
             tableName: iam_role_permission
   - changeSet:
-      id: 1627905024389-7
+      id: 1627926489056-7
       author: Leijendary (generated)
       changes:
         - createTable:
@@ -294,7 +294,7 @@ databaseChangeLog:
                   type: TIMESTAMP WITH TIME ZONE
             tableName: iam_verification
   - changeSet:
-      id: 1627905024389-8
+      id: 1627926489056-8
       author: Leijendary (generated)
       changes:
         - createIndex:
@@ -304,7 +304,7 @@ databaseChangeLog:
             indexName: idx_iam_account_deactivated_date
             tableName: iam_account
   - changeSet:
-      id: 1627905024389-9
+      id: 1627926489056-9
       author: Leijendary (generated)
       changes:
         - addForeignKeyConstraint:
@@ -319,7 +319,7 @@ databaseChangeLog:
             referencedTableName: iam_account
             validate: true
   - changeSet:
-      id: 1627905024389-10
+      id: 1627926489056-10
       author: Leijendary (generated)
       changes:
         - createIndex:
@@ -330,7 +330,7 @@ databaseChangeLog:
             tableName: iam_role
             unique: true
   - changeSet:
-      id: 1627905024389-11
+      id: 1627926489056-11
       author: Leijendary (generated)
       changes:
         - createIndex:
@@ -342,7 +342,7 @@ databaseChangeLog:
             indexName: idx_iam_role_name_description
             tableName: iam_role
   - changeSet:
-      id: 1627905024389-12
+      id: 1627926489056-12
       author: Leijendary (generated)
       changes:
         - createIndex:
@@ -354,7 +354,7 @@ databaseChangeLog:
             indexName: idx_iam_role_name_id
             tableName: iam_role
   - changeSet:
-      id: 1627905024389-13
+      id: 1627926489056-13
       author: Leijendary (generated)
       changes:
         - addForeignKeyConstraint:
@@ -369,7 +369,7 @@ databaseChangeLog:
             referencedTableName: iam_role
             validate: true
   - changeSet:
-      id: 1627905024389-14
+      id: 1627926489056-14
       author: Leijendary (generated)
       changes:
         - addForeignKeyConstraint:
@@ -384,7 +384,7 @@ databaseChangeLog:
             referencedTableName: iam_role
             validate: true
   - changeSet:
-      id: 1627905024389-15
+      id: 1627926489056-15
       author: Leijendary (generated)
       changes:
         - createIndex:
@@ -400,7 +400,7 @@ databaseChangeLog:
             indexName: idx_iam_user_names_deactivated_date
             tableName: iam_user
   - changeSet:
-      id: 1627905024389-16
+      id: 1627926489056-16
       author: Leijendary (generated)
       changes:
         - createIndex:
@@ -414,7 +414,7 @@ databaseChangeLog:
             indexName: idx_iam_user_email_address_id_deactivated_date
             tableName: iam_user
   - changeSet:
-      id: 1627905024389-17
+      id: 1627926489056-17
       author: Leijendary (generated)
       changes:
         - createIndex:
@@ -430,7 +430,7 @@ databaseChangeLog:
             indexName: idx_iam_user_country_code_mobile_number_id_deactivated_date
             tableName: iam_user
   - changeSet:
-      id: 1627905024389-18
+      id: 1627926489056-18
       author: Leijendary (generated)
       changes:
         - createIndex:
@@ -442,7 +442,7 @@ databaseChangeLog:
             indexName: idx_iam_user_iam_account_id_deactivated_date
             tableName: iam_user
   - changeSet:
-      id: 1627905024389-19
+      id: 1627926489056-19
       author: Leijendary (generated)
       changes:
         - addForeignKeyConstraint:
@@ -457,7 +457,7 @@ databaseChangeLog:
             referencedTableName: iam_user
             validate: true
   - changeSet:
-      id: 1627905024389-20
+      id: 1627926489056-20
       author: Leijendary (generated)
       changes:
         - addForeignKeyConstraint:
@@ -472,21 +472,33 @@ databaseChangeLog:
             referencedTableName: iam_user
             validate: true
   - changeSet:
-      id: 1627905024389-21
+      id: 1627926489056-21
       author: Leijendary (generated)
       changes:
         - createIndex:
             columns:
               - column:
+                  name: iam_user_id
+              - column:
                   name: username
               - column:
                   name: type
-              - column:
-                  name: iam_user_id
-            indexName: idx_iam_user_credential_username_type_iam_user_id
+            indexName: idx_iam_user_credential_iam_user_id_username_type
             tableName: iam_user_credential
   - changeSet:
-      id: 1627905024389-22
+      id: 1627926489056-22
+      author: Leijendary (generated)
+      changes:
+        - createIndex:
+            columns:
+              - column:
+                  name: iam_user_id
+              - column:
+                  name: username
+            indexName: idx_iam_user_credential_iam_user_id_username
+            tableName: iam_user_credential
+  - changeSet:
+      id: 1627926489056-23
       author: Leijendary (generated)
       changes:
         - createIndex:
@@ -497,7 +509,7 @@ databaseChangeLog:
             tableName: iam_permission
             unique: true
   - changeSet:
-      id: 1627905024389-23
+      id: 1627926489056-24
       author: Leijendary (generated)
       changes:
         - createIndex:
@@ -509,7 +521,7 @@ databaseChangeLog:
             indexName: idx_iam_permission_permission_id
             tableName: iam_permission
   - changeSet:
-      id: 1627905024389-24
+      id: 1627926489056-25
       author: Leijendary (generated)
       changes:
         - addForeignKeyConstraint:
@@ -524,7 +536,7 @@ databaseChangeLog:
             referencedTableName: iam_permission
             validate: true
   - changeSet:
-      id: 1627905024389-25
+      id: 1627926489056-26
       author: Leijendary (generated)
       changes:
         - createIndex:
@@ -537,7 +549,7 @@ databaseChangeLog:
             tableName: iam_role_permission
             unique: true
   - changeSet:
-      id: 1627905024389-26
+      id: 1627926489056-27
       author: Leijendary (generated)
       changes:
         - createIndex:
@@ -549,7 +561,7 @@ databaseChangeLog:
             indexName: idx_iam_verification_iam_user_id_type
             tableName: iam_verification
   - changeSet:
-      id: 1627905024389-27
+      id: 1627926489056-28
       author: Leijendary (generated)
       changes:
         - createIndex:

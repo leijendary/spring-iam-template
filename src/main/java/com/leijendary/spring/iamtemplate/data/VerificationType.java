@@ -9,4 +9,5 @@ public class VerificationType {
     public static final String VERIFICATION = "verification";
     public static final String NOMINATE_PASSWORD = "nominatePassword";
     public static final String AUTHENTICATE = "authenticate";
+    public static final String RESET_PASSWORD = "resetPassword";
 }

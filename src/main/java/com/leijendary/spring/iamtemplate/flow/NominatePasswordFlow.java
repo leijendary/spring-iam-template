@@ -1,8 +1,7 @@
 package com.leijendary.spring.iamtemplate.flow;
 
-import com.leijendary.spring.iamtemplate.data.Status;
 import com.leijendary.spring.iamtemplate.data.request.v1.NominatePasswordRequestV1;
-import com.leijendary.spring.iamtemplate.data.response.v1.VerificationResponseV1;
+import com.leijendary.spring.iamtemplate.data.response.v1.NextCodeV1;
 import com.leijendary.spring.iamtemplate.factory.UsernameFieldFactory;
 import com.leijendary.spring.iamtemplate.factory.VerificationDataFactory;
 import com.leijendary.spring.iamtemplate.service.IamUserCredentialService;
@@ -26,7 +25,7 @@ public class NominatePasswordFlow {
     private final IamVerificationService iamVerificationService;
 
     @Transactional
-    public VerificationResponseV1 nominateV1(final NominatePasswordRequestV1 request) {
+    public NextCodeV1 nominateV1(final NominatePasswordRequestV1 request) {
         final var verificationData = VerificationDataFactory.of(request);
         verificationData.setType(NOMINATE_PASSWORD);
 
@@ -50,6 +49,6 @@ public class NominatePasswordFlow {
         // here should also be incomplete
         iamUserService.setStatus(iamUser, status);
 
-        return new VerificationResponseV1(AUTHENTICATE, null);
+        return new NextCodeV1(AUTHENTICATE, null);
     }
 }

@@ -1,7 +1,7 @@
 package com.leijendary.spring.iamtemplate.flow;
 
 import com.leijendary.spring.iamtemplate.data.request.v1.VerifyRequestV1;
-import com.leijendary.spring.iamtemplate.data.response.v1.VerificationResponseV1;
+import com.leijendary.spring.iamtemplate.data.response.v1.NextCodeV1;
 import com.leijendary.spring.iamtemplate.factory.VerificationDataFactory;
 import com.leijendary.spring.iamtemplate.generator.UuidCodeGenerationStrategy;
 import com.leijendary.spring.iamtemplate.service.IamUserCredentialService;
@@ -20,7 +20,7 @@ public class RegisterVerifyFlow {
     private final IamVerificationService iamVerificationService;
 
     @Transactional
-    public VerificationResponseV1 verifyV1(final VerifyRequestV1 request) {
+    public NextCodeV1 verifyV1(final VerifyRequestV1 request) {
         final var verificationData = VerificationDataFactory.of(request);
         verificationData.setType(REGISTRATION);
 
@@ -41,9 +41,9 @@ public class RegisterVerifyFlow {
             // Code to use when nominating a password
             final var code = iamVerification.getCode();
 
-            return new VerificationResponseV1(NOMINATE_PASSWORD, code);
+            return new NextCodeV1(NOMINATE_PASSWORD, code);
         }
 
-        return new VerificationResponseV1(AUTHENTICATE, null);
+        return new NextCodeV1(AUTHENTICATE, null);
     }
 }

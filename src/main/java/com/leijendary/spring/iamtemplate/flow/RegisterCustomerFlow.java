@@ -5,7 +5,7 @@ import com.leijendary.spring.iamtemplate.data.VerificationData;
 import com.leijendary.spring.iamtemplate.data.request.v1.RegisterCustomerEmailRequestV1;
 import com.leijendary.spring.iamtemplate.data.request.v1.RegisterCustomerFullRequestV1;
 import com.leijendary.spring.iamtemplate.data.request.v1.RegisterCustomerMobileRequestV1;
-import com.leijendary.spring.iamtemplate.data.response.v1.VerificationResponseV1;
+import com.leijendary.spring.iamtemplate.data.response.v1.NextCodeV1;
 import com.leijendary.spring.iamtemplate.exception.ResourceNotFoundException;
 import com.leijendary.spring.iamtemplate.factory.MobileNumberDataFactory;
 import com.leijendary.spring.iamtemplate.factory.UserDataFactory;
@@ -38,7 +38,7 @@ public class RegisterCustomerFlow {
     private final UsernameValidator usernameValidator;
 
     @Transactional
-    public VerificationResponseV1 mobileV1(final RegisterCustomerMobileRequestV1 request) {
+    public NextCodeV1 mobileV1(final RegisterCustomerMobileRequestV1 request) {
         final var mobileNumberData = MobileNumberDataFactory.of(request);
 
         // Check if the mobile number is still unique. Will exclude users
@@ -56,11 +56,11 @@ public class RegisterCustomerFlow {
 
         // Since this is a registration via mobile number, the API consumer's
         // next action is to do a verification process
-        return new VerificationResponseV1(VERIFICATION, null);
+        return new NextCodeV1(VERIFICATION, null);
     }
 
     @Transactional
-    public VerificationResponseV1 emailV1(final RegisterCustomerEmailRequestV1 request) {
+    public NextCodeV1 emailV1(final RegisterCustomerEmailRequestV1 request) {
         final var emailAddress = request.getEmailAddress();
 
         // Check if the email address is still unique. Will exclude users
@@ -78,11 +78,11 @@ public class RegisterCustomerFlow {
 
         // Since this is a registration via email address, the API consumer's
         // next action is to do a verification process
-        return new VerificationResponseV1(VERIFICATION, null);
+        return new NextCodeV1(VERIFICATION, null);
     }
 
     @Transactional
-    public VerificationResponseV1 fullV1(final RegisterCustomerFullRequestV1 request) {
+    public NextCodeV1 fullV1(final RegisterCustomerFullRequestV1 request) {
         final var preferredUsername = request.getPreferredUsername();
         final var usernameField = UsernameFieldFactory.of(request);
 
@@ -121,7 +121,7 @@ public class RegisterCustomerFlow {
         // Send a verification code to the user's preferred username
         verificationProcess(iamUser, deviceId, preferredUsername);
 
-        return new VerificationResponseV1(VERIFICATION, null);
+        return new NextCodeV1(VERIFICATION, null);
     }
 
     private IamUser userCreationProcess(final Supplier<IamUser> iamUserSupplier,

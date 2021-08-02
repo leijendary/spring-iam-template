@@ -2,7 +2,7 @@ package com.leijendary.spring.iamtemplate.controller.v1;
 
 import com.leijendary.spring.iamtemplate.data.request.v1.VerifyRequestV1;
 import com.leijendary.spring.iamtemplate.data.response.DataResponse;
-import com.leijendary.spring.iamtemplate.data.response.v1.VerificationResponseV1;
+import com.leijendary.spring.iamtemplate.data.response.v1.NextCodeV1;
 import com.leijendary.spring.iamtemplate.flow.RegisterVerifyFlow;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -29,12 +29,12 @@ public class RegisterVerifyControllerV1 {
     @PostMapping
     @ApiOperation("Verify the user's registration. If the user doesnt have a password yet, a nominate pin" +
             "verification code will return")
-    public CompletableFuture<DataResponse<VerificationResponseV1>> verify(
+    public CompletableFuture<DataResponse<NextCodeV1>> verify(
             @Valid @RequestBody final VerifyRequestV1 request) {
         final var verifyResponse = registerVerifyFlow.verifyV1(request);
-        final var response = DataResponse.<VerificationResponseV1>builder()
+        final var response = DataResponse.<NextCodeV1>builder()
                 .data(verifyResponse)
-                .object(VerificationResponseV1.class)
+                .object(NextCodeV1.class)
                 .build();
 
         return completedFuture(response);
