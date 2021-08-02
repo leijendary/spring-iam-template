@@ -1,8 +1,9 @@
 package com.leijendary.spring.iamtemplate.service;
 
+import com.leijendary.spring.iamtemplate.config.properties.RoleProperties;
+import com.leijendary.spring.iamtemplate.data.RoleData;
+import com.leijendary.spring.iamtemplate.data.RolePermissionData;
 import com.leijendary.spring.iamtemplate.data.request.QueryRequest;
-import com.leijendary.spring.iamtemplate.data.request.v1.RolePermissionRequestV1;
-import com.leijendary.spring.iamtemplate.data.request.v1.RoleRequestV1;
 import com.leijendary.spring.iamtemplate.exception.ResourceNotFoundException;
 import com.leijendary.spring.iamtemplate.exception.ResourceNotUniqueException;
 import com.leijendary.spring.iamtemplate.factory.IamRoleFactory;
@@ -29,6 +30,7 @@ public class IamRoleService extends AbstractService {
     private final IamPermissionRepository iamPermissionRepository;
     private final IamRolePermissionRepository iamRolePermissionRepository;
     private final IamRoleRepository iamRoleRepository;
+    private final RoleProperties roleProperties;
 
     public Page<IamRole> list(final QueryRequest queryRequest, final Pageable pageable) {
         final var specification = RoleListSpecification.builder()
@@ -38,11 +40,11 @@ public class IamRoleService extends AbstractService {
         return iamRoleRepository.findAll(specification, pageable);
     }
 
-    public IamRole create(final RoleRequestV1 roleRequest) {
-        final var iamRole = IamRoleFactory.of(roleRequest);
+    public IamRole create(final RoleData roleData) {
+        final var iamRole = IamRoleFactory.of(roleData);
 
         iamRoleRepository
-                .findFirstByNameIgnoreCaseAndIdNot(roleRequest.getName(), 0)
+                .findFirstByNameIgnoreCaseAndIdNot(roleData.getName(), 0)
                 .ifPresent(role -> {
                     throw new ResourceNotUniqueException("name", role.getName());
                 });
@@ -56,17 +58,23 @@ public class IamRoleService extends AbstractService {
                 .orElseThrow(() -> new ResourceNotFoundException(RESOURCE_NAME, id));
     }
 
-    public IamRole update(final long id, final RoleRequestV1 roleRequest) {
-        var iamRole = iamRoleRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException(RESOURCE_NAME, id));
+    public IamRole getCustomer() {
+        final var roleName = roleProperties.getCustomer().getName();
+
+        return iamRoleRepository.findFirstByName(roleName)
+                .orElseThrow(() -> new ResourceNotFoundException(RESOURCE_NAME, roleName));
+    }
+
+    public IamRole update(final long id, final RoleData roleData) {
+        var iamRole = get(id);
 
         iamRoleRepository
-                .findFirstByNameIgnoreCaseAndIdNot(roleRequest.getName(), id)
+                .findFirstByNameIgnoreCaseAndIdNot(roleData.getName(), id)
                 .ifPresent(role -> {
                     throw new ResourceNotUniqueException("name", role.getName());
                 });
 
-        IamRoleFactory.map(roleRequest, iamRole);
+        IamRoleFactory.map(roleData, iamRole);
 
         return iamRoleRepository.save(iamRole);
     }
@@ -86,12 +94,12 @@ public class IamRoleService extends AbstractService {
     }
 
     @Transactional
-    public Set<IamPermission> addPermissions(final long id, final RolePermissionRequestV1 request) {
+    public Set<IamPermission> addPermissions(final long id, final RolePermissionData rolePermissionData) {
         final var iamRole = iamRoleRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(RESOURCE_NAME, id));
         final var permissions = iamRole.getPermissions();
 
-        request.getPermissions().forEach(permission -> iamPermissionRepository
+        rolePermissionData.getPermissions().forEach(permission -> iamPermissionRepository
                 .findById(permission.getId())
                 .ifPresent(permissions::add));
 

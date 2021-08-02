@@ -1,9 +1,11 @@
 package com.leijendary.spring.iamtemplate.service;
 
 import com.leijendary.spring.iamtemplate.config.properties.VerificationProperties;
+import com.leijendary.spring.iamtemplate.data.VerificationData;
 import com.leijendary.spring.iamtemplate.data.request.v1.VerifyRequestV1;
 import com.leijendary.spring.iamtemplate.exception.ResourceNotFoundException;
 import com.leijendary.spring.iamtemplate.exception.VerificationExpiredException;
+import com.leijendary.spring.iamtemplate.generator.CodeGenerationStrategy;
 import com.leijendary.spring.iamtemplate.model.IamUser;
 import com.leijendary.spring.iamtemplate.model.IamVerification;
 import com.leijendary.spring.iamtemplate.repository.IamUserRepository;
@@ -19,10 +21,8 @@ import static com.leijendary.spring.iamtemplate.data.PreferredUsername.MOBILE_NU
 import static com.leijendary.spring.iamtemplate.data.Status.ACTIVE;
 import static com.leijendary.spring.iamtemplate.data.VerificationType.NOMINATE_PASSWORD;
 import static com.leijendary.spring.iamtemplate.data.VerificationType.REGISTRATION;
-import static com.leijendary.spring.iamtemplate.generator.RandomGenerator.otp;
 import static com.leijendary.spring.iamtemplate.util.RequestContextUtil.getLocale;
 import static com.leijendary.spring.iamtemplate.util.RequestContextUtil.now;
-import static java.util.UUID.randomUUID;
 
 @Service
 @RequiredArgsConstructor
@@ -36,36 +36,43 @@ public class IamVerificationService extends AbstractService {
     private final VerificationProperties verificationProperties;
 
     @Transactional
-    public IamVerification create(final IamUser iamUser, final String deviceId,
-                                  final String preferredUsername, final String type) {
+    public IamVerification create(final IamUser iamUser, final VerificationData verificationData,
+                                  final CodeGenerationStrategy codeGenerationStrategy) {
+        final var deviceId = verificationData.getDeviceId();
+        final var field = verificationData.getField();
+        final var type = verificationData.getType();
+
         // Remove the old verifications first
         iamVerificationRepository.deleteAllByUserIdAndType(iamUser.getId(), type);
 
         final var expiry = verificationProperties.getExpiry();
-        String code;
-
-        if (preferredUsername.equals(MOBILE_NUMBER) && type.equals(REGISTRATION)) {
-            code = otp();
-        } else {
-            code = randomUUID().toString();
-        }
-
-        final var iamVerification = new IamVerification(iamUser, code, expiry, deviceId, preferredUsername, type);
+        final var code = codeGenerationStrategy.generate();
+        final var iamVerification = new IamVerification(iamUser, code, expiry, deviceId, field, type);
 
         // Save the verification object into the database.
         // Should fire a notification event
         return iamVerificationRepository.save(iamVerification);
     }
 
+    public IamVerification get(final VerificationSpecification specification) {
+        return iamVerificationRepository.findOne(specification)
+                .orElseThrow(() -> new ResourceNotFoundException(RESOURCE_NAME, specification.getId()));
+    }
+
     @Transactional(noRollbackFor = VerificationExpiredException.class)
-    public IamVerification verify(final VerifyRequestV1 verifyRequest, final String type) {
+    public void verify(final VerificationData verificationData) {
+        final var verificationId = verificationData.getVerificationId();
+        final var deviceId = verificationData.getDeviceId();
+        final var code = verificationData.getCode();
+        final var field = verificationData.getField();
+        final var type = verificationData.getType();
+        // Filter the IamVerification object using the verification ID, code, and type
         final var specification = VerificationSpecification.builder()
-                .id(verifyRequest.getVerificationId())
-                .code(verifyRequest.getCode())
+                .id(verificationId)
+                .code(code)
                 .type(type)
                 .build();
-        final var iamVerification = iamVerificationRepository.findOne(specification)
-                .orElseThrow(() -> new ResourceNotFoundException(RESOURCE_NAME, verifyRequest.getVerificationId()));
+        final var iamVerification = get(specification);
         final var expiry = iamVerification.getExpiry();
 
         // The verification has already expired
@@ -76,15 +83,21 @@ public class IamVerificationService extends AbstractService {
             throw new VerificationExpiredException("verificationId");
         }
 
-        final var deviceId = iamVerification.getDeviceId();
-        final var field = iamVerification.getField();
+        final var isSameDeviceId = deviceId.equals(iamVerification.getDeviceId());
 
-        if (field.equals(MOBILE_NUMBER) && !deviceId.equals(verifyRequest.getDeviceId())) {
+        if (field.equals(MOBILE_NUMBER) && !isSameDeviceId) {
             final var message = messageSource.getMessage("access.deviceId.notMatch", new Object[0],
                     getLocale());
 
             throw new AccessDeniedException(message);
         }
+
+        // Remove the IamVerification record since this is already verified
+        iamVerificationRepository.delete(iamVerification);
+    }
+
+    @Transactional(noRollbackFor = VerificationExpiredException.class)
+    public IamVerification verify(final VerifyRequestV1 verifyRequest, final String type) {
 
         // Remove the IamVerification record since this is already verified
         iamVerificationRepository.delete(iamVerification);

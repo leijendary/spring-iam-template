@@ -1,7 +1,7 @@
 package com.leijendary.spring.iamtemplate.service;
 
+import com.leijendary.spring.iamtemplate.data.PermissionData;
 import com.leijendary.spring.iamtemplate.data.request.QueryRequest;
-import com.leijendary.spring.iamtemplate.data.request.v1.PermissionRequestV1;
 import com.leijendary.spring.iamtemplate.exception.ResourceNotFoundException;
 import com.leijendary.spring.iamtemplate.exception.ResourceNotUniqueException;
 import com.leijendary.spring.iamtemplate.factory.IamPermissionFactory;
@@ -35,7 +35,7 @@ public class IamPermissionService extends AbstractService {
         return page;
     }
 
-    public IamPermission create(final PermissionRequestV1 permissionRequest) {
+    public IamPermission create(final PermissionData permissionRequest) {
         final var iamPermission = IamPermissionFactory.of(permissionRequest);
 
         iamPermissionRepository
@@ -53,9 +53,8 @@ public class IamPermissionService extends AbstractService {
                 .orElseThrow(() -> new ResourceNotFoundException(RESOURCE_NAME, id));
     }
 
-    public IamPermission update(final long id, final PermissionRequestV1 permissionRequest) {
-        var iamPermission = iamPermissionRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException(RESOURCE_NAME, id));
+    public IamPermission update(final long id, final PermissionData permissionRequest) {
+        var iamPermission = get(id);
 
         iamPermissionRepository
                 .findFirstByPermissionIgnoreCaseAndIdNot(permissionRequest.getPermission(), id)

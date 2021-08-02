@@ -35,4 +35,9 @@ public class IamAccount extends SnowflakeIdModel {
 
     private OffsetDateTime deactivatedDate;
     private String deactivatedBy;
+
+    public IamAccount(final String type, final String status) {
+        this.type = type;
+        this.status = status;
+    }
 }

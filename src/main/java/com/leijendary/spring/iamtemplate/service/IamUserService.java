@@ -1,36 +1,33 @@
 package com.leijendary.spring.iamtemplate.service;
 
+import com.leijendary.spring.iamtemplate.data.MobileNumberData;
+import com.leijendary.spring.iamtemplate.data.UserData;
+import com.leijendary.spring.iamtemplate.data.UsernameField;
 import com.leijendary.spring.iamtemplate.data.request.QueryRequest;
-import com.leijendary.spring.iamtemplate.data.request.UserQueryRequest;
-import com.leijendary.spring.iamtemplate.data.request.v1.UserRequestV1;
-import com.leijendary.spring.iamtemplate.exception.InvalidRoleException;
+import com.leijendary.spring.iamtemplate.data.request.UserExclusionRequest;
 import com.leijendary.spring.iamtemplate.exception.ResourceNotFoundException;
-import com.leijendary.spring.iamtemplate.factory.IamAccountFactory;
+import com.leijendary.spring.iamtemplate.exception.ResourceNotUniqueException;
 import com.leijendary.spring.iamtemplate.factory.IamUserFactory;
-import com.leijendary.spring.iamtemplate.factory.UsernameFieldFactory;
+import com.leijendary.spring.iamtemplate.factory.MobileNumberDataFactory;
+import com.leijendary.spring.iamtemplate.model.IamAccount;
+import com.leijendary.spring.iamtemplate.model.IamRole;
 import com.leijendary.spring.iamtemplate.model.IamUser;
-import com.leijendary.spring.iamtemplate.model.IamUserCredential;
-import com.leijendary.spring.iamtemplate.repository.IamAccountRepository;
-import com.leijendary.spring.iamtemplate.repository.IamRoleRepository;
-import com.leijendary.spring.iamtemplate.repository.IamUserCredentialRepository;
 import com.leijendary.spring.iamtemplate.repository.IamUserRepository;
+import com.leijendary.spring.iamtemplate.specification.NonDeactivatedAccountUser;
 import com.leijendary.spring.iamtemplate.specification.UserListSpecification;
-import com.leijendary.spring.iamtemplate.util.RequestContextUtil;
-import com.leijendary.spring.iamtemplate.validator.UserValidator;
+import com.leijendary.spring.iamtemplate.specification.UserMobileEmailSpecification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
-import java.util.Set;
-
-import static com.leijendary.spring.iamtemplate.data.Status.ACTIVE;
+import static com.leijendary.spring.iamtemplate.data.PreferredUsername.EMAIL_ADDRESS;
+import static com.leijendary.spring.iamtemplate.data.PreferredUsername.MOBILE_NUMBER;
 import static com.leijendary.spring.iamtemplate.data.Status.FOR_VERIFICATION;
+import static com.leijendary.spring.iamtemplate.util.RequestContextUtil.getUsername;
 import static com.leijendary.spring.iamtemplate.util.RequestContextUtil.now;
-import static com.leijendary.spring.iamtemplate.util.UsernameUtil.getUsername;
-import static java.util.Collections.singleton;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 
 @Service
 @RequiredArgsConstructor
@@ -38,136 +35,156 @@ public class IamUserService extends AbstractService {
 
     private static final String RESOURCE_NAME = "IAM User";
 
-    private final IamAccountRepository iamAccountRepository;
-    private final IamRoleRepository iamRoleRepository;
-    private final IamUserCredentialRepository iamUserCredentialRepository;
     private final IamUserRepository iamUserRepository;
-    private final UserValidator userValidator;
 
-    public Page<IamUser> list(final QueryRequest queryRequest, final UserQueryRequest userQueryRequest,
+    public Page<IamUser> list(final QueryRequest queryRequest, final UserExclusionRequest userExclusionRequest,
                               final Pageable pageable) {
         final var specification = UserListSpecification.builder()
                 .query(queryRequest.getQuery())
-                .excludeWithAccounts(userQueryRequest.isExcludeWithAccounts())
-                .excludeDeactivated(userQueryRequest.isExcludeDeactivated())
+                .excludeWithAccounts(userExclusionRequest.isExcludeWithAccounts())
+                .excludeDeactivated(userExclusionRequest.isExcludeDeactivated())
                 .build();
 
         return iamUserRepository.findAll(specification, pageable);
     }
 
     @Transactional
-    public IamUser create(final UserRequestV1 userRequest) {
-        final var iamRole = iamRoleRepository.findById(userRequest.getRole().getId())
-                .orElseThrow(() -> new InvalidRoleException("role.id", userRequest.getRole().getId()));
-        final var iamAccount = Optional.ofNullable(userRequest.getAccount())
-                .map(accountRequest -> {
-                    // Create a new IamAccount
-                    final var account = IamAccountFactory.of(accountRequest);
-                    // With the default status of "active"
-                    account.setStatus(ACTIVE);
-
-                    return account;
-                })
-                .orElse(null);
-
-        final var usernameField = UsernameFieldFactory.of(userRequest);
-
-        // Validate the uniqueness of the user
-        userValidator.checkUniqueness(usernameField, 0);
-
-        // Save the account if the user gave it an account
-        if (iamAccount != null) {
-            iamAccountRepository.save(iamAccount);
-        }
-
-        final var iamUser = IamUserFactory.of(userRequest);
+    public IamUser create(final UserData userData, final IamAccount iamAccount, final IamRole iamRole) {
+        final var iamUser = IamUserFactory.of(userData);
         iamUser.setAccount(iamAccount);
         iamUser.setRole(iamRole);
         iamUser.setStatus(FOR_VERIFICATION);
 
-        // Save the user
-        iamUserRepository.save(iamUser);
-
-        final var username = getUsername(usernameField, userRequest.getPreferredUsername());
-        // Set the credential based on the username from the preferredUsername field
-        final var iamUserCredential = new IamUserCredential();
-        iamUserCredential.setUser(iamUser);
-        iamUserCredential.setUsername(username);
-        iamUserCredential.setType(userRequest.getPreferredUsername());
-
-        // Save the credentials
-        iamUserCredentialRepository.save(iamUserCredential);
-
-        // Set the credentials of the IamUser object for return
-        iamUser.setCredentials(singleton(iamUserCredential));
-
-        return iamUser;
+        return iamUserRepository.save(iamUser);
     }
 
     public IamUser get(final long id) {
-        return iamUserRepository.findById(id)
-                // Cannot show a deactivated user
-                .filter(user -> user.getDeactivatedDate() == null)
+        final var specification = NonDeactivatedAccountUser.builder()
+                .userId(id)
+                .build();
+
+        return iamUserRepository.findOne(specification)
                 .orElseThrow(() -> new ResourceNotFoundException(RESOURCE_NAME, id));
     }
 
-    public IamUser update(final long id, final UserRequestV1 userRequest) {
-        final var iamUser = iamUserRepository.findById(id)
-                // Cannot show a deactivated user
-                .filter(user -> user.getDeactivatedDate() == null)
-                .orElseThrow(() -> new ResourceNotFoundException(RESOURCE_NAME, id));
-        final var iamRole = Optional.of(iamUser.getRole())
-                .map(role -> {
-                    if (role.getId() == userRequest.getRole().getId()) {
-                        return role;
-                    }
+    public IamUser getByMobileNumber(final MobileNumberData mobileNumberData) {
+        final var countryCode = mobileNumberData.getCountryCode();
+        final var mobileNumber = mobileNumberData.getMobileNumber();
+        final var specification = UserMobileEmailSpecification.builder()
+                .countryCode(countryCode)
+                .mobileNumber(mobileNumber)
+                .build();
 
-                    return iamRoleRepository.findById(userRequest.getRole().getId())
-                            .orElseThrow(() -> new InvalidRoleException("role.id", userRequest.getRole().getId()));
-                });
+        return iamUserRepository.findOne(specification)
+                .orElseThrow(() -> new ResourceNotFoundException(RESOURCE_NAME, countryCode + mobileNumber));
+    }
 
-        // Update the user's role
-        iamRole.ifPresent(iamUser::setRole);
-
-        final var usernameField = UsernameFieldFactory.of(userRequest);
-
-        // Validate the uniqueness of the user
-        userValidator.checkUniqueness(usernameField, iamUser.getId());
+    @Transactional
+    public IamUser update(final long id, final UserData userData, final IamRole iamRole) {
+        final var iamUser = get(id);
+        iamUser.setRole(iamRole);
 
         // Update the values of the current IamUser object
-        IamUserFactory.map(userRequest, iamUser);
-
-        final var username = getUsername(usernameField, userRequest.getPreferredUsername());
-
-        // Update the credentials based on the preferredUsername
-        updateCredentialUsername(iamUser.getCredentials(), userRequest.getPreferredUsername(), username);
+        IamUserFactory.map(userData, iamUser);
 
         // Save the updated IamUser object
         return iamUserRepository.save(iamUser);
     }
 
+    @Transactional
     public void deactivate(final long id) {
-        final var iamUser = iamUserRepository.findById(id)
-                // Cannot show a deactivated user
-                .filter(user -> user.getDeactivatedDate() == null)
-                .orElseThrow(() -> new ResourceNotFoundException(RESOURCE_NAME, id));
-
+        final var iamUser = get(id);
         iamUser.setDeactivatedDate(now());
-        iamUser.setDeactivatedBy(RequestContextUtil.getUsername());
+        iamUser.setDeactivatedBy(getUsername());
 
         iamUserRepository.save(iamUser);
     }
 
-    private void updateCredentialUsername(final Set<IamUserCredential> credentials, final String type,
-                                          final String newValue) {
-        credentials
-                .stream()
-                .filter(c -> c.getType().equals(type))
-                .findFirst()
-                .ifPresent((credential) -> {
-                    if (!credential.getUsername().equals(newValue)) {
-                        credential.setUsername(newValue);
-                    }
-                });
+    public void setStatus(final int id, final String status) {
+        final var iamUser = get(id);
+
+        setStatus(iamUser, status);
+    }
+
+    public void setStatus(final IamUser iamUser, final String status) {
+        iamUser.setStatus(status);
+
+        iamUserRepository.save(iamUser);
+    }
+
+    public void checkUniqueness(long id, final UsernameField usernameField) {
+        checkUniqueness(id, usernameField, false);
+    }
+
+    public void checkUniqueness(long id, final UsernameField usernameField, final boolean checkIfForVerification) {
+        final var mobileNumberData = MobileNumberDataFactory.of(usernameField);
+        final var emailAddress = usernameField.getEmailAddress();
+
+        checkUniqueMobileNumber(id, mobileNumberData, checkIfForVerification);
+        checkUniqueEmailAddress(id, emailAddress, checkIfForVerification);
+    }
+
+    public void checkUniqueMobileNumber(final long id, final MobileNumberData mobileNumberData,
+                                        final boolean checkIfForVerification) {
+        final var countryCode = mobileNumberData.getCountryCode();
+        final var mobileNumber = mobileNumberData.getMobileNumber();
+
+        if (isBlank(countryCode) || isBlank(mobileNumber)) {
+            return;
+        }
+
+        // Validate country code and mobile number first
+        final var specification = UserMobileEmailSpecification.builder()
+                .id(id)
+                .countryCode(countryCode)
+                .mobileNumber(mobileNumber)
+                .build();
+        // Get the user based on the country code and mobile number
+        final var iamUser = iamUserRepository.findOne(specification);
+
+        if (iamUser.isEmpty()) {
+            return;
+        }
+
+        final var iamUserValue = iamUser.get();
+
+        // If we enabled "checkIfForVerification", this will check the status of the
+        // found user. If the status is forVerification, skip throwing an exception
+        // and consider this as "unique"
+        if (checkIfForVerification && iamUserValue.getStatus().equals(FOR_VERIFICATION)) {
+            return;
+        }
+
+        throw new ResourceNotUniqueException(MOBILE_NUMBER, countryCode + mobileNumber);
+    }
+
+    public void checkUniqueEmailAddress(final long id, final String emailAddress,
+                                        final boolean checkIfForVerification) {
+        if (isBlank(emailAddress)) {
+            return;
+        }
+
+        // Validate email address
+        final var specification = UserMobileEmailSpecification.builder()
+                .id(id)
+                .emailAddress(emailAddress)
+                .build();
+        // Get the user based on the email address
+        final var iamUser = iamUserRepository.findOne(specification);
+
+        if (iamUser.isEmpty()) {
+            return;
+        }
+
+        final var iamUserValue = iamUser.get();
+
+        // If we enabled "checkIfForVerification", this will check the status of the
+        // found user. If the status is forVerification, skip throwing an exception
+        // and consider this as "unique"
+        if (checkIfForVerification && iamUserValue.getStatus().equals(FOR_VERIFICATION)) {
+            return;
+        }
+
+        throw new ResourceNotUniqueException(EMAIL_ADDRESS, emailAddress);
     }
 }

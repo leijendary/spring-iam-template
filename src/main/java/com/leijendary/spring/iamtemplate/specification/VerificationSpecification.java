@@ -2,6 +2,7 @@ package com.leijendary.spring.iamtemplate.specification;
 
 import com.leijendary.spring.iamtemplate.model.IamVerification;
 import lombok.Builder;
+import lombok.Getter;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.lang.NonNull;
 
@@ -17,7 +18,9 @@ import static javax.persistence.criteria.JoinType.INNER;
 @Builder
 public class VerificationSpecification implements Specification<IamVerification> {
 
+    @Getter
     private final long id;
+
     private final String code;
     private final String type;
 

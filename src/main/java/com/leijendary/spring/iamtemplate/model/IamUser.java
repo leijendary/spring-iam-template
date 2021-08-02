@@ -11,6 +11,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.time.OffsetDateTime;
+import java.util.HashSet;
 import java.util.Set;
 
 import static javax.persistence.FetchType.EAGER;
@@ -32,7 +33,7 @@ public class IamUser extends SnowflakeIdModel {
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = EAGER)
-    private Set<IamUserCredential> credentials;
+    private Set<IamUserCredential> credentials = new HashSet<>();
 
     private String firstName;
     private String middleName;

@@ -1,16 +1,13 @@
 package com.leijendary.spring.iamtemplate.data;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-public class UsernameField {
+public class UserData {
 
+    private String firstName;
+    private String middleName;
+    private String lastName;
     private String emailAddress;
     private String countryCode;
     private String mobileNumber;

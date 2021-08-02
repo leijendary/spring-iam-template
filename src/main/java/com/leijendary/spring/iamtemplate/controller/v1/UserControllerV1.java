@@ -2,7 +2,7 @@ package com.leijendary.spring.iamtemplate.controller.v1;
 
 import com.leijendary.spring.iamtemplate.controller.AbstractController;
 import com.leijendary.spring.iamtemplate.data.request.QueryRequest;
-import com.leijendary.spring.iamtemplate.data.request.UserQueryRequest;
+import com.leijendary.spring.iamtemplate.data.request.UserExclusionRequest;
 import com.leijendary.spring.iamtemplate.data.request.v1.UserRequestV1;
 import com.leijendary.spring.iamtemplate.data.response.DataResponse;
 import com.leijendary.spring.iamtemplate.data.response.v1.UserResponseV1;
@@ -36,7 +36,7 @@ public class UserControllerV1 extends AbstractController {
     @PreAuthorize("hasAuthority('SCOPE_urn:user:list:v1')")
     @ApiOperation("Get the paginated list of users without an account")
     public CompletableFuture<DataResponse<List<UserResponseV1>>> list(
-            final QueryRequest queryRequest, final UserQueryRequest userQueryRequest, final Pageable pageable) {
+            final QueryRequest queryRequest, final UserExclusionRequest userQueryRequest, final Pageable pageable) {
         final var page = userFlow.listV1(queryRequest, userQueryRequest, pageable);
         final var response = DataResponse.<List<UserResponseV1>>builder()
                 .data(page.getContent())

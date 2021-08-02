@@ -7,6 +7,8 @@ import com.leijendary.spring.iamtemplate.data.response.v1.PermissionResponseV1;
 import com.leijendary.spring.iamtemplate.data.response.v1.RoleResponseV1;
 import com.leijendary.spring.iamtemplate.factory.IamPermissionFactory;
 import com.leijendary.spring.iamtemplate.factory.IamRoleFactory;
+import com.leijendary.spring.iamtemplate.factory.RoleDataFactory;
+import com.leijendary.spring.iamtemplate.factory.RolePermissionDataFactory;
 import com.leijendary.spring.iamtemplate.service.IamRoleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
@@ -42,7 +44,8 @@ public class RoleFlow {
             evict = @CacheEvict(value = PAGE_CACHE_V1, allEntries = true),
             put = @CachePut(value = CACHE_V1, key = "#result.id"))
     public RoleResponseV1 createV1(final RoleRequestV1 request) {
-        final var iamRole = roleService.create(request);
+        final var roleData = RoleDataFactory.of(request);
+        final var iamRole = roleService.create(roleData);
 
         return toResponseV1(iamRole);
     }
@@ -58,7 +61,8 @@ public class RoleFlow {
             evict = @CacheEvict(value = PAGE_CACHE_V1, allEntries = true),
             put = @CachePut(value = CACHE_V1, key = "#result.id"))
     public RoleResponseV1 updateV1(final long id, final RoleRequestV1 request) {
-        final var iamRole = roleService.update(id, request);
+        final var roleData = RoleDataFactory.of(request);
+        final var iamRole = roleService.update(id, roleData);
 
         return toResponseV1(iamRole);
     }
@@ -82,7 +86,10 @@ public class RoleFlow {
             evict = @CacheEvict(value = CACHE_V1, key = "#id + '/permissions'"),
             put = @CachePut(value = CACHE_V1, key = "#id + '/permissions'"))
     public Set<PermissionResponseV1> addPermissionsV1(final long id, final RolePermissionRequestV1 request) {
-        return roleService.addPermissions(id, request).stream()
+        final var rolePermissionData = RolePermissionDataFactory.of(request);
+
+        return roleService.addPermissions(id, rolePermissionData)
+                .stream()
                 .map(IamPermissionFactory::toResponseV1)
                 .collect(Collectors.toSet());
     }

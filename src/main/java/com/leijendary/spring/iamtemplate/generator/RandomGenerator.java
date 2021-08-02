@@ -1,6 +1,5 @@
 package com.leijendary.spring.iamtemplate.generator;
 
-import java.util.Arrays;
 import java.util.Random;
 
 import static java.lang.Character.getNumericValue;
@@ -11,12 +10,6 @@ public class RandomGenerator {
     public static final String NUMBERS = "0123456789";
 
     public static String otp() {
-        final var digits = digits(6);
-        final var builder = new StringBuilder();
-
-        Arrays.stream(digits).forEach(builder::append);
-
-        return builder.toString();
     }
 
     public static int[] digits(int length) {

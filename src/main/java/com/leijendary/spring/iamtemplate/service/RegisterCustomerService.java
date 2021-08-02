@@ -16,7 +16,6 @@ import com.leijendary.spring.iamtemplate.repository.IamRoleRepository;
 import com.leijendary.spring.iamtemplate.repository.IamUserCredentialRepository;
 import com.leijendary.spring.iamtemplate.repository.IamUserRepository;
 import com.leijendary.spring.iamtemplate.specification.UserMobileEmailSpecification;
-import com.leijendary.spring.iamtemplate.validator.UserValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;

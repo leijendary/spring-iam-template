@@ -4,6 +4,7 @@ import com.leijendary.spring.iamtemplate.data.request.QueryRequest;
 import com.leijendary.spring.iamtemplate.data.request.v1.PermissionRequestV1;
 import com.leijendary.spring.iamtemplate.data.response.v1.PermissionResponseV1;
 import com.leijendary.spring.iamtemplate.factory.IamPermissionFactory;
+import com.leijendary.spring.iamtemplate.factory.PermissionDataFactory;
 import com.leijendary.spring.iamtemplate.service.IamPermissionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
@@ -37,7 +38,8 @@ public class PermissionFlow {
             evict = @CacheEvict(value = PAGE_CACHE_V1, allEntries = true),
             put = @CachePut(value = CACHE_V1, key = "#result.id"))
     public PermissionResponseV1 createV1(final PermissionRequestV1 permissionRequest) {
-        final var iamPermission = permissionService.create(permissionRequest);
+        final var permissionData = PermissionDataFactory.of(permissionRequest);
+        final var iamPermission = permissionService.create(permissionData);
 
         return toResponseV1(iamPermission);
     }
@@ -54,7 +56,8 @@ public class PermissionFlow {
             evict = @CacheEvict(value = PAGE_CACHE_V1, allEntries = true),
             put = @CachePut(value = CACHE_V1, key = "#result.id"))
     public PermissionResponseV1 updateV1(final long id, final PermissionRequestV1 permissionRequest) {
-        final var iamPermission = permissionService.update(id, permissionRequest);
+        final var permissionData = PermissionDataFactory.of(permissionRequest);
+        final var iamPermission = permissionService.update(id, permissionData);
 
         return toResponseV1(iamPermission);
     }
