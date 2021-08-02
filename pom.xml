@@ -237,13 +237,12 @@
                             <goal>schema</goal>
                         </goals>
                         <configuration>
-                            <sourceDirectory>${project.basedir}/src/main/resources/avro</sourceDirectory>
                             <outputDirectory>${project.basedir}/src/main/java</outputDirectory>
                             <stringType>String</stringType>
                             <!-- In Avro, you have to define the nested schemas first -->
                             <imports>
-                                <import>${project.basedir}/src/main/resources/avro/AccountSchema.avsc</import>
-                                <import>${project.basedir}/src/main/resources/avro/RoleSchema.avsc</import>
+                                <import>${project.basedir}/src/main/avro/AccountSchema.avsc</import>
+                                <import>${project.basedir}/src/main/avro/RoleSchema.avsc</import>
                             </imports>
                         </configuration>
                     </execution>
