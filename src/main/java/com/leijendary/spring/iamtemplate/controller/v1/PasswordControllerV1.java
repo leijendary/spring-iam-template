@@ -1,10 +1,11 @@
 package com.leijendary.spring.iamtemplate.controller.v1;
 
 import com.leijendary.spring.iamtemplate.data.ResetPasswordRequestV1;
+import com.leijendary.spring.iamtemplate.data.request.v1.NominatePasswordRequestV1;
 import com.leijendary.spring.iamtemplate.data.request.v1.VerifyRequestV1;
 import com.leijendary.spring.iamtemplate.data.response.DataResponse;
 import com.leijendary.spring.iamtemplate.data.response.v1.NextCodeV1;
-import com.leijendary.spring.iamtemplate.flow.ResetPasswordFlow;
+import com.leijendary.spring.iamtemplate.flow.PasswordFlow;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
@@ -20,18 +21,18 @@ import static com.leijendary.spring.iamtemplate.controller.AbstractController.BA
 import static java.util.concurrent.CompletableFuture.completedFuture;
 
 @RestController
-@RequestMapping(BASE_API_PATH + "/v1/reset-password")
+@RequestMapping(BASE_API_PATH + "/v1/password")
 @RequiredArgsConstructor
-@Api("Reset password API resource. Two calls; initiate the reset password flow, then verify.")
-public class ResetPasswordControllerV1 {
+@Api("Password API reference. All actions regarding password should be here")
+public class PasswordControllerV1 {
 
-    private final ResetPasswordFlow resetPasswordFlow;
+    private final PasswordFlow passwordFlow;
 
-    @PostMapping
+    @PostMapping("reset")
     @ApiOperation("Create a verification code for the reset password flow")
-    public CompletableFuture<DataResponse<NextCodeV1>> initiate(
+    public CompletableFuture<DataResponse<NextCodeV1>> reset(
             @Valid @RequestBody final ResetPasswordRequestV1 request) {
-        final var verifyResponse = resetPasswordFlow.initiateV1(request);
+        final var verifyResponse = passwordFlow.resetV1(request);
         final var response = DataResponse.<NextCodeV1>builder()
                 .data(verifyResponse)
                 .object(NextCodeV1.class)
@@ -40,12 +41,25 @@ public class ResetPasswordControllerV1 {
         return completedFuture(response);
     }
 
-    @PostMapping("verify")
+    @PostMapping("reset/verify")
     @ApiOperation("Use the verification code from the reset password initiation to create a verification" +
             "code for the nominate password process")
-    public CompletableFuture<DataResponse<NextCodeV1>> verify(
+    public CompletableFuture<DataResponse<NextCodeV1>> resetVerify(
             @Valid @RequestBody final VerifyRequestV1 request) {
-        final var verifyResponse = resetPasswordFlow.verifyV1(request);
+        final var verifyResponse = passwordFlow.resetVerifyV1(request);
+        final var response = DataResponse.<NextCodeV1>builder()
+                .data(verifyResponse)
+                .object(NextCodeV1.class)
+                .build();
+
+        return completedFuture(response);
+    }
+
+    @PostMapping("nominate")
+    @ApiOperation("Create a password using the verification code sent")
+    public CompletableFuture<DataResponse<NextCodeV1>> nominate(
+            @Valid @RequestBody final NominatePasswordRequestV1 request) {
+        final var verifyResponse = passwordFlow.nominateV1(request);
         final var response = DataResponse.<NextCodeV1>builder()
                 .data(verifyResponse)
                 .object(NextCodeV1.class)
