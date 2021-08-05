@@ -1,5 +1,6 @@
 package com.leijendary.spring.iamtemplate.controller.v1;
 
+import com.leijendary.spring.iamtemplate.controller.AbstractController;
 import com.leijendary.spring.iamtemplate.data.request.v1.VerifyRequestV1;
 import com.leijendary.spring.iamtemplate.data.response.DataResponse;
 import com.leijendary.spring.iamtemplate.data.response.v1.NextCodeV1;
@@ -22,7 +23,7 @@ import static java.util.concurrent.CompletableFuture.completedFuture;
 @RequestMapping(BASE_API_PATH + "/v1/register/verify")
 @RequiredArgsConstructor
 @Api("API for the verifying the registration flow. After this, the user should go to the nominate password flow")
-public class RegisterVerifyControllerV1 {
+public class RegisterVerifyControllerV1 extends AbstractController {
 
     private final RegisterVerifyFlow registerVerifyFlow;
 

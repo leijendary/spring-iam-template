@@ -1,5 +1,6 @@
 package com.leijendary.spring.iamtemplate.controller.v1;
 
+import com.leijendary.spring.iamtemplate.controller.AbstractController;
 import com.leijendary.spring.iamtemplate.data.ResetPasswordRequestV1;
 import com.leijendary.spring.iamtemplate.data.request.v1.NominatePasswordRequestV1;
 import com.leijendary.spring.iamtemplate.data.request.v1.VerifyRequestV1;
@@ -24,7 +25,7 @@ import static java.util.concurrent.CompletableFuture.completedFuture;
 @RequestMapping(BASE_API_PATH + "/v1/password")
 @RequiredArgsConstructor
 @Api("Password API reference. All actions regarding password should be here")
-public class PasswordControllerV1 {
+public class PasswordControllerV1 extends AbstractController {
 
     private final PasswordFlow passwordFlow;
 

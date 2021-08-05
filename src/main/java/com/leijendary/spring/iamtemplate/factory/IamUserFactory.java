@@ -6,6 +6,7 @@ import com.leijendary.spring.iamtemplate.data.request.v1.RegisterCustomerEmailRe
 import com.leijendary.spring.iamtemplate.data.request.v1.RegisterCustomerFullRequestV1;
 import com.leijendary.spring.iamtemplate.data.request.v1.RegisterCustomerMobileRequestV1;
 import com.leijendary.spring.iamtemplate.data.request.v1.UserRequestV1;
+import com.leijendary.spring.iamtemplate.data.response.v1.ProfileResponseV1;
 import com.leijendary.spring.iamtemplate.data.response.v1.UserResponseV1;
 import com.leijendary.spring.iamtemplate.event.schema.UserSchema;
 import com.leijendary.spring.iamtemplate.model.IamUser;
@@ -54,5 +55,9 @@ public class IamUserFactory extends AbstractFactory {
 
     public static UserSchema toSchema(final IamUser iamUser) {
         return MAPPER.map(iamUser, UserSchema.class);
+    }
+
+    public static ProfileResponseV1 toProfileV1(final IamUser iamUser) {
+        return MAPPER.map(iamUser, ProfileResponseV1.class);
     }
 }
