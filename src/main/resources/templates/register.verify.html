@@ -8,6 +8,18 @@
   <title>Welcome!</title>
 </head>
 <body>
+<h3>
+  Hi, <span th:text="${name}" th:remove="tag">Legend</span>
+</h3>
 
+<div>Welcome to the app!</div>
+
+<div>To continue your registration, kindly use the link below to verify your app</div>
+
+<div>
+  <a th:href="${url}" target="_blank">
+    <span th:text="${url}" th:remove="tag"></span>
+  </a>
+</div>
 </body>
 </html>

@@ -60,6 +60,10 @@ public class IamUser extends SnowflakeIdModel {
     private String deactivatedBy;
 
     public String getFullName() {
+        if (firstName == null && lastName == null) {
+            return "";
+        }
+
         return join(" ", firstName, lastName);
     }
 

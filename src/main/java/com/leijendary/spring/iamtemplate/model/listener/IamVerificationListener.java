@@ -1,12 +1,16 @@
 package com.leijendary.spring.iamtemplate.model.listener;
 
+import com.leijendary.spring.iamtemplate.config.properties.VerificationProperties;
 import com.leijendary.spring.iamtemplate.event.producer.NotificationProducer;
 import com.leijendary.spring.iamtemplate.event.schema.NotificationSchema;
 import com.leijendary.spring.iamtemplate.factory.UsernameFieldFactory;
+import com.leijendary.spring.iamtemplate.generator.HtmlGenerator;
 import com.leijendary.spring.iamtemplate.model.IamVerification;
 import org.springframework.context.MessageSource;
 
 import javax.persistence.PostPersist;
+import java.util.HashMap;
+import java.util.Map;
 
 import static com.leijendary.spring.iamtemplate.data.PreferredUsername.EMAIL_ADDRESS;
 import static com.leijendary.spring.iamtemplate.data.PreferredUsername.MOBILE_NUMBER;
@@ -79,13 +83,21 @@ public class IamVerificationListener {
     }
 
     private String registrationEmail(final String name, final String code) {
+        final var htmlGenerator = getBean(HtmlGenerator.class);
+        final var verification = getBean(VerificationProperties.class);
+        final var url = verification.getRegister().getUrl();
+        final var parameters = buildParameters(name, code, url);
 
-        return "";
+        return htmlGenerator.parse("register.verify", parameters);
     }
 
     private String resetPasswordEmail(final String name, final String code) {
+        final var htmlGenerator = getBean(HtmlGenerator.class);
+        final var verification = getBean(VerificationProperties.class);
+        final var url = verification.getResetPassword().getUrl();
+        final var parameters = buildParameters(name, code, url);
 
-        return "";
+        return htmlGenerator.parse("reset-password.verify", parameters);
     }
 
     private void sendViaSms(final String to, final String field, final String content) {
@@ -108,6 +120,16 @@ public class IamVerificationListener {
         notificationSchema.setContent(content);
 
         // Send the notification schema to the notification email topic
-        notificationProducer.sms(notificationSchema);
+        notificationProducer.email(notificationSchema);
+    }
+
+    private Map<String, Object> buildParameters(final String name, final String code, String url) {
+        url = url.replace("{code}", code);
+
+        final var parameters = new HashMap<String, Object>();
+        parameters.put("name", name);
+        parameters.put("url", url);
+
+        return parameters;
     }
 }
