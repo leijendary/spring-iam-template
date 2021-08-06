@@ -83,19 +83,19 @@ spring:
     stream:
       bindings:
         userCreate-out-0:
-          destination: ${info.app.artifactId}.user.create
+          destination: ${info.app.organization}.user.create
           producer:
             useNativeEncoding: true
         userUpdate-out-0:
-          destination: ${info.app.artifactId}.user.update
+          destination: ${info.app.organization}.user.update
           producer:
             useNativeEncoding: true
         userDeactivate-out-0:
-          destination: ${info.app.artifactId}.user.deactivate
+          destination: ${info.app.organization}.user.deactivate
           producer:
             useNativeEncoding: true
         notificationSms-out-0:
-          destination: ${info.app.artifactId}.notification.sms
+          destination: ${info.app.organization}.notification.sms
           producer:
             useNativeEncoding: true
       function:
@@ -113,13 +113,13 @@ spring:
                   serde: io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde
             functions:
               userCreate:
-                applicationId: ${info.app.organization}.${info.app.artifactId}.user.create
+                applicationId: ${info.app.artifactId}.${info.app.organization}.user.create
               userUpdate:
-                applicationId: ${info.app.organization}.${info.app.artifactId}.user.update
+                applicationId: ${info.app.artifactId}.${info.app.organization}.user.update
               userDeactivate:
-                applicationId: ${info.app.organization}.${info.app.artifactId}.user.deactivate
+                applicationId: ${info.app.artifactId}.${info.app.organization}.user.deactivate
               notificationSms:
-                applicationId: ${info.app.organization}.${info.app.artifactId}.notification.sms
+                applicationId: ${info.app.artifactId}.${info.app.organization}.notification.sms
   kafka:
     bootstrapServers:
     consumer:
