@@ -140,6 +140,8 @@ spring:
       schema:
         registry:
           url:
+  redis:
+    host:
   security:
     oauth2:
       resourceserver:
