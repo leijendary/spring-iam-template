@@ -3,7 +3,7 @@
  *
  * DO NOT EDIT DIRECTLY
  */
-package com.leijendary.spring.iamtemplate.event.schema;
+package com.leijendary.schema;
 
 import org.apache.avro.generic.GenericArray;
 import org.apache.avro.specific.SpecificData;
@@ -14,8 +14,8 @@ import org.apache.avro.message.SchemaStore;
 
 @org.apache.avro.specific.AvroGenerated
 public class UserSchema extends org.apache.avro.specific.SpecificRecordBase implements org.apache.avro.specific.SpecificRecord {
-  private static final long serialVersionUID = 4324224645308274515L;
-  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"UserSchema\",\"namespace\":\"com.leijendary.spring.iamtemplate.event.schema\",\"fields\":[{\"name\":\"id\",\"type\":\"long\"},{\"name\":\"account\",\"type\":[\"null\",{\"type\":\"record\",\"name\":\"AccountSchema\",\"fields\":[{\"name\":\"id\",\"type\":\"long\"},{\"name\":\"type\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}},{\"name\":\"createdDate\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}},{\"name\":\"createdBy\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}}]}],\"default\":null},{\"name\":\"role\",\"type\":{\"type\":\"record\",\"name\":\"RoleSchema\",\"fields\":[{\"name\":\"id\",\"type\":\"long\"},{\"name\":\"name\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}},{\"name\":\"createdDate\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}},{\"name\":\"createdBy\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}},{\"name\":\"lastModifiedDate\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}},{\"name\":\"lastModifiedBy\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}}]}},{\"name\":\"firstName\",\"type\":[\"null\",{\"type\":\"string\",\"avro.java.string\":\"String\"}],\"default\":null},{\"name\":\"middleName\",\"type\":[\"null\",{\"type\":\"string\",\"avro.java.string\":\"String\"}],\"default\":null},{\"name\":\"lastName\",\"type\":[\"null\",{\"type\":\"string\",\"avro.java.string\":\"String\"}],\"default\":null},{\"name\":\"emailAddress\",\"type\":[\"null\",{\"type\":\"string\",\"avro.java.string\":\"String\"}],\"default\":null},{\"name\":\"countryCode\",\"type\":[\"null\",{\"type\":\"string\",\"avro.java.string\":\"String\"}],\"default\":null},{\"name\":\"mobileNumber\",\"type\":[\"null\",{\"type\":\"string\",\"avro.java.string\":\"String\"}],\"default\":null},{\"name\":\"createdDate\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}},{\"name\":\"createdBy\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}},{\"name\":\"lastModifiedDate\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}},{\"name\":\"lastModifiedBy\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}}]}");
+  private static final long serialVersionUID = 3634968510731994124L;
+  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"UserSchema\",\"namespace\":\"com.leijendary.schema\",\"fields\":[{\"name\":\"id\",\"type\":\"long\"},{\"name\":\"account\",\"type\":[\"null\",{\"type\":\"record\",\"name\":\"AccountSchema\",\"fields\":[{\"name\":\"id\",\"type\":\"long\"},{\"name\":\"type\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}},{\"name\":\"createdDate\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}},{\"name\":\"createdBy\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}}]}],\"default\":null},{\"name\":\"role\",\"type\":{\"type\":\"record\",\"name\":\"RoleSchema\",\"fields\":[{\"name\":\"id\",\"type\":\"long\"},{\"name\":\"name\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}},{\"name\":\"createdDate\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}},{\"name\":\"createdBy\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}},{\"name\":\"lastModifiedDate\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}},{\"name\":\"lastModifiedBy\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}}]}},{\"name\":\"firstName\",\"type\":[\"null\",{\"type\":\"string\",\"avro.java.string\":\"String\"}],\"default\":null},{\"name\":\"middleName\",\"type\":[\"null\",{\"type\":\"string\",\"avro.java.string\":\"String\"}],\"default\":null},{\"name\":\"lastName\",\"type\":[\"null\",{\"type\":\"string\",\"avro.java.string\":\"String\"}],\"default\":null},{\"name\":\"emailAddress\",\"type\":[\"null\",{\"type\":\"string\",\"avro.java.string\":\"String\"}],\"default\":null},{\"name\":\"countryCode\",\"type\":[\"null\",{\"type\":\"string\",\"avro.java.string\":\"String\"}],\"default\":null},{\"name\":\"mobileNumber\",\"type\":[\"null\",{\"type\":\"string\",\"avro.java.string\":\"String\"}],\"default\":null},{\"name\":\"createdDate\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}},{\"name\":\"createdBy\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}},{\"name\":\"lastModifiedDate\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}},{\"name\":\"lastModifiedBy\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}}]}");
   public static org.apache.avro.Schema getClassSchema() { return SCHEMA$; }
 
   private static SpecificData MODEL$ = new SpecificData();
@@ -72,8 +72,8 @@ public class UserSchema extends org.apache.avro.specific.SpecificRecordBase impl
   }
 
    private long id;
-   private com.leijendary.spring.iamtemplate.event.schema.AccountSchema account;
-   private com.leijendary.spring.iamtemplate.event.schema.RoleSchema role;
+   private com.leijendary.schema.AccountSchema account;
+   private com.leijendary.schema.RoleSchema role;
    private java.lang.String firstName;
    private java.lang.String middleName;
    private java.lang.String lastName;
@@ -108,7 +108,7 @@ public class UserSchema extends org.apache.avro.specific.SpecificRecordBase impl
    * @param lastModifiedDate The new value for lastModifiedDate
    * @param lastModifiedBy The new value for lastModifiedBy
    */
-  public UserSchema(java.lang.Long id, com.leijendary.spring.iamtemplate.event.schema.AccountSchema account, com.leijendary.spring.iamtemplate.event.schema.RoleSchema role, java.lang.String firstName, java.lang.String middleName, java.lang.String lastName, java.lang.String emailAddress, java.lang.String countryCode, java.lang.String mobileNumber, java.lang.String createdDate, java.lang.String createdBy, java.lang.String lastModifiedDate, java.lang.String lastModifiedBy) {
+  public UserSchema(java.lang.Long id, com.leijendary.schema.AccountSchema account, com.leijendary.schema.RoleSchema role, java.lang.String firstName, java.lang.String middleName, java.lang.String lastName, java.lang.String emailAddress, java.lang.String countryCode, java.lang.String mobileNumber, java.lang.String createdDate, java.lang.String createdBy, java.lang.String lastModifiedDate, java.lang.String lastModifiedBy) {
     this.id = id;
     this.account = account;
     this.role = role;
@@ -151,8 +151,8 @@ public class UserSchema extends org.apache.avro.specific.SpecificRecordBase impl
   public void put(int field$, java.lang.Object value$) {
     switch (field$) {
     case 0: id = (java.lang.Long)value$; break;
-    case 1: account = (com.leijendary.spring.iamtemplate.event.schema.AccountSchema)value$; break;
-    case 2: role = (com.leijendary.spring.iamtemplate.event.schema.RoleSchema)value$; break;
+    case 1: account = (com.leijendary.schema.AccountSchema)value$; break;
+    case 2: role = (com.leijendary.schema.RoleSchema)value$; break;
     case 3: firstName = value$ != null ? value$.toString() : null; break;
     case 4: middleName = value$ != null ? value$.toString() : null; break;
     case 5: lastName = value$ != null ? value$.toString() : null; break;
@@ -188,7 +188,7 @@ public class UserSchema extends org.apache.avro.specific.SpecificRecordBase impl
    * Gets the value of the 'account' field.
    * @return The value of the 'account' field.
    */
-  public com.leijendary.spring.iamtemplate.event.schema.AccountSchema getAccount() {
+  public com.leijendary.schema.AccountSchema getAccount() {
     return account;
   }
 
@@ -197,7 +197,7 @@ public class UserSchema extends org.apache.avro.specific.SpecificRecordBase impl
    * Sets the value of the 'account' field.
    * @param value the value to set.
    */
-  public void setAccount(com.leijendary.spring.iamtemplate.event.schema.AccountSchema value) {
+  public void setAccount(com.leijendary.schema.AccountSchema value) {
     this.account = value;
   }
 
@@ -205,7 +205,7 @@ public class UserSchema extends org.apache.avro.specific.SpecificRecordBase impl
    * Gets the value of the 'role' field.
    * @return The value of the 'role' field.
    */
-  public com.leijendary.spring.iamtemplate.event.schema.RoleSchema getRole() {
+  public com.leijendary.schema.RoleSchema getRole() {
     return role;
   }
 
@@ -214,7 +214,7 @@ public class UserSchema extends org.apache.avro.specific.SpecificRecordBase impl
    * Sets the value of the 'role' field.
    * @param value the value to set.
    */
-  public void setRole(com.leijendary.spring.iamtemplate.event.schema.RoleSchema value) {
+  public void setRole(com.leijendary.schema.RoleSchema value) {
     this.role = value;
   }
 
@@ -392,8 +392,8 @@ public class UserSchema extends org.apache.avro.specific.SpecificRecordBase impl
    * Creates a new UserSchema RecordBuilder.
    * @return A new UserSchema RecordBuilder
    */
-  public static com.leijendary.spring.iamtemplate.event.schema.UserSchema.Builder newBuilder() {
-    return new com.leijendary.spring.iamtemplate.event.schema.UserSchema.Builder();
+  public static com.leijendary.schema.UserSchema.Builder newBuilder() {
+    return new com.leijendary.schema.UserSchema.Builder();
   }
 
   /**
@@ -401,11 +401,11 @@ public class UserSchema extends org.apache.avro.specific.SpecificRecordBase impl
    * @param other The existing builder to copy.
    * @return A new UserSchema RecordBuilder
    */
-  public static com.leijendary.spring.iamtemplate.event.schema.UserSchema.Builder newBuilder(com.leijendary.spring.iamtemplate.event.schema.UserSchema.Builder other) {
+  public static com.leijendary.schema.UserSchema.Builder newBuilder(com.leijendary.schema.UserSchema.Builder other) {
     if (other == null) {
-      return new com.leijendary.spring.iamtemplate.event.schema.UserSchema.Builder();
+      return new com.leijendary.schema.UserSchema.Builder();
     } else {
-      return new com.leijendary.spring.iamtemplate.event.schema.UserSchema.Builder(other);
+      return new com.leijendary.schema.UserSchema.Builder(other);
     }
   }
 
@@ -414,11 +414,11 @@ public class UserSchema extends org.apache.avro.specific.SpecificRecordBase impl
    * @param other The existing instance to copy.
    * @return A new UserSchema RecordBuilder
    */
-  public static com.leijendary.spring.iamtemplate.event.schema.UserSchema.Builder newBuilder(com.leijendary.spring.iamtemplate.event.schema.UserSchema other) {
+  public static com.leijendary.schema.UserSchema.Builder newBuilder(com.leijendary.schema.UserSchema other) {
     if (other == null) {
-      return new com.leijendary.spring.iamtemplate.event.schema.UserSchema.Builder();
+      return new com.leijendary.schema.UserSchema.Builder();
     } else {
-      return new com.leijendary.spring.iamtemplate.event.schema.UserSchema.Builder(other);
+      return new com.leijendary.schema.UserSchema.Builder(other);
     }
   }
 
@@ -430,10 +430,10 @@ public class UserSchema extends org.apache.avro.specific.SpecificRecordBase impl
     implements org.apache.avro.data.RecordBuilder<UserSchema> {
 
     private long id;
-    private com.leijendary.spring.iamtemplate.event.schema.AccountSchema account;
-    private com.leijendary.spring.iamtemplate.event.schema.AccountSchema.Builder accountBuilder;
-    private com.leijendary.spring.iamtemplate.event.schema.RoleSchema role;
-    private com.leijendary.spring.iamtemplate.event.schema.RoleSchema.Builder roleBuilder;
+    private com.leijendary.schema.AccountSchema account;
+    private com.leijendary.schema.AccountSchema.Builder accountBuilder;
+    private com.leijendary.schema.RoleSchema role;
+    private com.leijendary.schema.RoleSchema.Builder roleBuilder;
     private java.lang.String firstName;
     private java.lang.String middleName;
     private java.lang.String lastName;
@@ -454,7 +454,7 @@ public class UserSchema extends org.apache.avro.specific.SpecificRecordBase impl
      * Creates a Builder by copying an existing Builder.
      * @param other The existing Builder to copy.
      */
-    private Builder(com.leijendary.spring.iamtemplate.event.schema.UserSchema.Builder other) {
+    private Builder(com.leijendary.schema.UserSchema.Builder other) {
       super(other);
       if (isValidValue(fields()[0], other.id)) {
         this.id = data().deepCopy(fields()[0].schema(), other.id);
@@ -465,14 +465,14 @@ public class UserSchema extends org.apache.avro.specific.SpecificRecordBase impl
         fieldSetFlags()[1] = other.fieldSetFlags()[1];
       }
       if (other.hasAccountBuilder()) {
-        this.accountBuilder = com.leijendary.spring.iamtemplate.event.schema.AccountSchema.newBuilder(other.getAccountBuilder());
+        this.accountBuilder = com.leijendary.schema.AccountSchema.newBuilder(other.getAccountBuilder());
       }
       if (isValidValue(fields()[2], other.role)) {
         this.role = data().deepCopy(fields()[2].schema(), other.role);
         fieldSetFlags()[2] = other.fieldSetFlags()[2];
       }
       if (other.hasRoleBuilder()) {
-        this.roleBuilder = com.leijendary.spring.iamtemplate.event.schema.RoleSchema.newBuilder(other.getRoleBuilder());
+        this.roleBuilder = com.leijendary.schema.RoleSchema.newBuilder(other.getRoleBuilder());
       }
       if (isValidValue(fields()[3], other.firstName)) {
         this.firstName = data().deepCopy(fields()[3].schema(), other.firstName);
@@ -520,7 +520,7 @@ public class UserSchema extends org.apache.avro.specific.SpecificRecordBase impl
      * Creates a Builder by copying an existing UserSchema instance
      * @param other The existing instance to copy.
      */
-    private Builder(com.leijendary.spring.iamtemplate.event.schema.UserSchema other) {
+    private Builder(com.leijendary.schema.UserSchema other) {
       super(SCHEMA$);
       if (isValidValue(fields()[0], other.id)) {
         this.id = data().deepCopy(fields()[0].schema(), other.id);
@@ -592,7 +592,7 @@ public class UserSchema extends org.apache.avro.specific.SpecificRecordBase impl
       * @param value The value of 'id'.
       * @return This builder.
       */
-    public com.leijendary.spring.iamtemplate.event.schema.UserSchema.Builder setId(long value) {
+    public com.leijendary.schema.UserSchema.Builder setId(long value) {
       validate(fields()[0], value);
       this.id = value;
       fieldSetFlags()[0] = true;
@@ -612,7 +612,7 @@ public class UserSchema extends org.apache.avro.specific.SpecificRecordBase impl
       * Clears the value of the 'id' field.
       * @return This builder.
       */
-    public com.leijendary.spring.iamtemplate.event.schema.UserSchema.Builder clearId() {
+    public com.leijendary.schema.UserSchema.Builder clearId() {
       fieldSetFlags()[0] = false;
       return this;
     }
@@ -621,7 +621,7 @@ public class UserSchema extends org.apache.avro.specific.SpecificRecordBase impl
       * Gets the value of the 'account' field.
       * @return The value.
       */
-    public com.leijendary.spring.iamtemplate.event.schema.AccountSchema getAccount() {
+    public com.leijendary.schema.AccountSchema getAccount() {
       return account;
     }
 
@@ -631,7 +631,7 @@ public class UserSchema extends org.apache.avro.specific.SpecificRecordBase impl
       * @param value The value of 'account'.
       * @return This builder.
       */
-    public com.leijendary.spring.iamtemplate.event.schema.UserSchema.Builder setAccount(com.leijendary.spring.iamtemplate.event.schema.AccountSchema value) {
+    public com.leijendary.schema.UserSchema.Builder setAccount(com.leijendary.schema.AccountSchema value) {
       validate(fields()[1], value);
       this.accountBuilder = null;
       this.account = value;
@@ -651,12 +651,12 @@ public class UserSchema extends org.apache.avro.specific.SpecificRecordBase impl
      * Gets the Builder instance for the 'account' field and creates one if it doesn't exist yet.
      * @return This builder.
      */
-    public com.leijendary.spring.iamtemplate.event.schema.AccountSchema.Builder getAccountBuilder() {
+    public com.leijendary.schema.AccountSchema.Builder getAccountBuilder() {
       if (accountBuilder == null) {
         if (hasAccount()) {
-          setAccountBuilder(com.leijendary.spring.iamtemplate.event.schema.AccountSchema.newBuilder(account));
+          setAccountBuilder(com.leijendary.schema.AccountSchema.newBuilder(account));
         } else {
-          setAccountBuilder(com.leijendary.spring.iamtemplate.event.schema.AccountSchema.newBuilder());
+          setAccountBuilder(com.leijendary.schema.AccountSchema.newBuilder());
         }
       }
       return accountBuilder;
@@ -668,7 +668,7 @@ public class UserSchema extends org.apache.avro.specific.SpecificRecordBase impl
      * @return This builder.
      */
 
-    public com.leijendary.spring.iamtemplate.event.schema.UserSchema.Builder setAccountBuilder(com.leijendary.spring.iamtemplate.event.schema.AccountSchema.Builder value) {
+    public com.leijendary.schema.UserSchema.Builder setAccountBuilder(com.leijendary.schema.AccountSchema.Builder value) {
       clearAccount();
       accountBuilder = value;
       return this;
@@ -686,7 +686,7 @@ public class UserSchema extends org.apache.avro.specific.SpecificRecordBase impl
       * Clears the value of the 'account' field.
       * @return This builder.
       */
-    public com.leijendary.spring.iamtemplate.event.schema.UserSchema.Builder clearAccount() {
+    public com.leijendary.schema.UserSchema.Builder clearAccount() {
       account = null;
       accountBuilder = null;
       fieldSetFlags()[1] = false;
@@ -697,7 +697,7 @@ public class UserSchema extends org.apache.avro.specific.SpecificRecordBase impl
       * Gets the value of the 'role' field.
       * @return The value.
       */
-    public com.leijendary.spring.iamtemplate.event.schema.RoleSchema getRole() {
+    public com.leijendary.schema.RoleSchema getRole() {
       return role;
     }
 
@@ -707,7 +707,7 @@ public class UserSchema extends org.apache.avro.specific.SpecificRecordBase impl
       * @param value The value of 'role'.
       * @return This builder.
       */
-    public com.leijendary.spring.iamtemplate.event.schema.UserSchema.Builder setRole(com.leijendary.spring.iamtemplate.event.schema.RoleSchema value) {
+    public com.leijendary.schema.UserSchema.Builder setRole(com.leijendary.schema.RoleSchema value) {
       validate(fields()[2], value);
       this.roleBuilder = null;
       this.role = value;
@@ -727,12 +727,12 @@ public class UserSchema extends org.apache.avro.specific.SpecificRecordBase impl
      * Gets the Builder instance for the 'role' field and creates one if it doesn't exist yet.
      * @return This builder.
      */
-    public com.leijendary.spring.iamtemplate.event.schema.RoleSchema.Builder getRoleBuilder() {
+    public com.leijendary.schema.RoleSchema.Builder getRoleBuilder() {
       if (roleBuilder == null) {
         if (hasRole()) {
-          setRoleBuilder(com.leijendary.spring.iamtemplate.event.schema.RoleSchema.newBuilder(role));
+          setRoleBuilder(com.leijendary.schema.RoleSchema.newBuilder(role));
         } else {
-          setRoleBuilder(com.leijendary.spring.iamtemplate.event.schema.RoleSchema.newBuilder());
+          setRoleBuilder(com.leijendary.schema.RoleSchema.newBuilder());
         }
       }
       return roleBuilder;
@@ -744,7 +744,7 @@ public class UserSchema extends org.apache.avro.specific.SpecificRecordBase impl
      * @return This builder.
      */
 
-    public com.leijendary.spring.iamtemplate.event.schema.UserSchema.Builder setRoleBuilder(com.leijendary.spring.iamtemplate.event.schema.RoleSchema.Builder value) {
+    public com.leijendary.schema.UserSchema.Builder setRoleBuilder(com.leijendary.schema.RoleSchema.Builder value) {
       clearRole();
       roleBuilder = value;
       return this;
@@ -762,7 +762,7 @@ public class UserSchema extends org.apache.avro.specific.SpecificRecordBase impl
       * Clears the value of the 'role' field.
       * @return This builder.
       */
-    public com.leijendary.spring.iamtemplate.event.schema.UserSchema.Builder clearRole() {
+    public com.leijendary.schema.UserSchema.Builder clearRole() {
       role = null;
       roleBuilder = null;
       fieldSetFlags()[2] = false;
@@ -783,7 +783,7 @@ public class UserSchema extends org.apache.avro.specific.SpecificRecordBase impl
       * @param value The value of 'firstName'.
       * @return This builder.
       */
-    public com.leijendary.spring.iamtemplate.event.schema.UserSchema.Builder setFirstName(java.lang.String value) {
+    public com.leijendary.schema.UserSchema.Builder setFirstName(java.lang.String value) {
       validate(fields()[3], value);
       this.firstName = value;
       fieldSetFlags()[3] = true;
@@ -803,7 +803,7 @@ public class UserSchema extends org.apache.avro.specific.SpecificRecordBase impl
       * Clears the value of the 'firstName' field.
       * @return This builder.
       */
-    public com.leijendary.spring.iamtemplate.event.schema.UserSchema.Builder clearFirstName() {
+    public com.leijendary.schema.UserSchema.Builder clearFirstName() {
       firstName = null;
       fieldSetFlags()[3] = false;
       return this;
@@ -823,7 +823,7 @@ public class UserSchema extends org.apache.avro.specific.SpecificRecordBase impl
       * @param value The value of 'middleName'.
       * @return This builder.
       */
-    public com.leijendary.spring.iamtemplate.event.schema.UserSchema.Builder setMiddleName(java.lang.String value) {
+    public com.leijendary.schema.UserSchema.Builder setMiddleName(java.lang.String value) {
       validate(fields()[4], value);
       this.middleName = value;
       fieldSetFlags()[4] = true;
@@ -843,7 +843,7 @@ public class UserSchema extends org.apache.avro.specific.SpecificRecordBase impl
       * Clears the value of the 'middleName' field.
       * @return This builder.
       */
-    public com.leijendary.spring.iamtemplate.event.schema.UserSchema.Builder clearMiddleName() {
+    public com.leijendary.schema.UserSchema.Builder clearMiddleName() {
       middleName = null;
       fieldSetFlags()[4] = false;
       return this;
@@ -863,7 +863,7 @@ public class UserSchema extends org.apache.avro.specific.SpecificRecordBase impl
       * @param value The value of 'lastName'.
       * @return This builder.
       */
-    public com.leijendary.spring.iamtemplate.event.schema.UserSchema.Builder setLastName(java.lang.String value) {
+    public com.leijendary.schema.UserSchema.Builder setLastName(java.lang.String value) {
       validate(fields()[5], value);
       this.lastName = value;
       fieldSetFlags()[5] = true;
@@ -883,7 +883,7 @@ public class UserSchema extends org.apache.avro.specific.SpecificRecordBase impl
       * Clears the value of the 'lastName' field.
       * @return This builder.
       */
-    public com.leijendary.spring.iamtemplate.event.schema.UserSchema.Builder clearLastName() {
+    public com.leijendary.schema.UserSchema.Builder clearLastName() {
       lastName = null;
       fieldSetFlags()[5] = false;
       return this;
@@ -903,7 +903,7 @@ public class UserSchema extends org.apache.avro.specific.SpecificRecordBase impl
       * @param value The value of 'emailAddress'.
       * @return This builder.
       */
-    public com.leijendary.spring.iamtemplate.event.schema.UserSchema.Builder setEmailAddress(java.lang.String value) {
+    public com.leijendary.schema.UserSchema.Builder setEmailAddress(java.lang.String value) {
       validate(fields()[6], value);
       this.emailAddress = value;
       fieldSetFlags()[6] = true;
@@ -923,7 +923,7 @@ public class UserSchema extends org.apache.avro.specific.SpecificRecordBase impl
       * Clears the value of the 'emailAddress' field.
       * @return This builder.
       */
-    public com.leijendary.spring.iamtemplate.event.schema.UserSchema.Builder clearEmailAddress() {
+    public com.leijendary.schema.UserSchema.Builder clearEmailAddress() {
       emailAddress = null;
       fieldSetFlags()[6] = false;
       return this;
@@ -943,7 +943,7 @@ public class UserSchema extends org.apache.avro.specific.SpecificRecordBase impl
       * @param value The value of 'countryCode'.
       * @return This builder.
       */
-    public com.leijendary.spring.iamtemplate.event.schema.UserSchema.Builder setCountryCode(java.lang.String value) {
+    public com.leijendary.schema.UserSchema.Builder setCountryCode(java.lang.String value) {
       validate(fields()[7], value);
       this.countryCode = value;
       fieldSetFlags()[7] = true;
@@ -963,7 +963,7 @@ public class UserSchema extends org.apache.avro.specific.SpecificRecordBase impl
       * Clears the value of the 'countryCode' field.
       * @return This builder.
       */
-    public com.leijendary.spring.iamtemplate.event.schema.UserSchema.Builder clearCountryCode() {
+    public com.leijendary.schema.UserSchema.Builder clearCountryCode() {
       countryCode = null;
       fieldSetFlags()[7] = false;
       return this;
@@ -983,7 +983,7 @@ public class UserSchema extends org.apache.avro.specific.SpecificRecordBase impl
       * @param value The value of 'mobileNumber'.
       * @return This builder.
       */
-    public com.leijendary.spring.iamtemplate.event.schema.UserSchema.Builder setMobileNumber(java.lang.String value) {
+    public com.leijendary.schema.UserSchema.Builder setMobileNumber(java.lang.String value) {
       validate(fields()[8], value);
       this.mobileNumber = value;
       fieldSetFlags()[8] = true;
@@ -1003,7 +1003,7 @@ public class UserSchema extends org.apache.avro.specific.SpecificRecordBase impl
       * Clears the value of the 'mobileNumber' field.
       * @return This builder.
       */
-    public com.leijendary.spring.iamtemplate.event.schema.UserSchema.Builder clearMobileNumber() {
+    public com.leijendary.schema.UserSchema.Builder clearMobileNumber() {
       mobileNumber = null;
       fieldSetFlags()[8] = false;
       return this;
@@ -1023,7 +1023,7 @@ public class UserSchema extends org.apache.avro.specific.SpecificRecordBase impl
       * @param value The value of 'createdDate'.
       * @return This builder.
       */
-    public com.leijendary.spring.iamtemplate.event.schema.UserSchema.Builder setCreatedDate(java.lang.String value) {
+    public com.leijendary.schema.UserSchema.Builder setCreatedDate(java.lang.String value) {
       validate(fields()[9], value);
       this.createdDate = value;
       fieldSetFlags()[9] = true;
@@ -1043,7 +1043,7 @@ public class UserSchema extends org.apache.avro.specific.SpecificRecordBase impl
       * Clears the value of the 'createdDate' field.
       * @return This builder.
       */
-    public com.leijendary.spring.iamtemplate.event.schema.UserSchema.Builder clearCreatedDate() {
+    public com.leijendary.schema.UserSchema.Builder clearCreatedDate() {
       createdDate = null;
       fieldSetFlags()[9] = false;
       return this;
@@ -1063,7 +1063,7 @@ public class UserSchema extends org.apache.avro.specific.SpecificRecordBase impl
       * @param value The value of 'createdBy'.
       * @return This builder.
       */
-    public com.leijendary.spring.iamtemplate.event.schema.UserSchema.Builder setCreatedBy(java.lang.String value) {
+    public com.leijendary.schema.UserSchema.Builder setCreatedBy(java.lang.String value) {
       validate(fields()[10], value);
       this.createdBy = value;
       fieldSetFlags()[10] = true;
@@ -1083,7 +1083,7 @@ public class UserSchema extends org.apache.avro.specific.SpecificRecordBase impl
       * Clears the value of the 'createdBy' field.
       * @return This builder.
       */
-    public com.leijendary.spring.iamtemplate.event.schema.UserSchema.Builder clearCreatedBy() {
+    public com.leijendary.schema.UserSchema.Builder clearCreatedBy() {
       createdBy = null;
       fieldSetFlags()[10] = false;
       return this;
@@ -1103,7 +1103,7 @@ public class UserSchema extends org.apache.avro.specific.SpecificRecordBase impl
       * @param value The value of 'lastModifiedDate'.
       * @return This builder.
       */
-    public com.leijendary.spring.iamtemplate.event.schema.UserSchema.Builder setLastModifiedDate(java.lang.String value) {
+    public com.leijendary.schema.UserSchema.Builder setLastModifiedDate(java.lang.String value) {
       validate(fields()[11], value);
       this.lastModifiedDate = value;
       fieldSetFlags()[11] = true;
@@ -1123,7 +1123,7 @@ public class UserSchema extends org.apache.avro.specific.SpecificRecordBase impl
       * Clears the value of the 'lastModifiedDate' field.
       * @return This builder.
       */
-    public com.leijendary.spring.iamtemplate.event.schema.UserSchema.Builder clearLastModifiedDate() {
+    public com.leijendary.schema.UserSchema.Builder clearLastModifiedDate() {
       lastModifiedDate = null;
       fieldSetFlags()[11] = false;
       return this;
@@ -1143,7 +1143,7 @@ public class UserSchema extends org.apache.avro.specific.SpecificRecordBase impl
       * @param value The value of 'lastModifiedBy'.
       * @return This builder.
       */
-    public com.leijendary.spring.iamtemplate.event.schema.UserSchema.Builder setLastModifiedBy(java.lang.String value) {
+    public com.leijendary.schema.UserSchema.Builder setLastModifiedBy(java.lang.String value) {
       validate(fields()[12], value);
       this.lastModifiedBy = value;
       fieldSetFlags()[12] = true;
@@ -1163,7 +1163,7 @@ public class UserSchema extends org.apache.avro.specific.SpecificRecordBase impl
       * Clears the value of the 'lastModifiedBy' field.
       * @return This builder.
       */
-    public com.leijendary.spring.iamtemplate.event.schema.UserSchema.Builder clearLastModifiedBy() {
+    public com.leijendary.schema.UserSchema.Builder clearLastModifiedBy() {
       lastModifiedBy = null;
       fieldSetFlags()[12] = false;
       return this;
@@ -1183,7 +1183,7 @@ public class UserSchema extends org.apache.avro.specific.SpecificRecordBase impl
             throw e;
           }
         } else {
-          record.account = fieldSetFlags()[1] ? this.account : (com.leijendary.spring.iamtemplate.event.schema.AccountSchema) defaultValue(fields()[1]);
+          record.account = fieldSetFlags()[1] ? this.account : (com.leijendary.schema.AccountSchema) defaultValue(fields()[1]);
         }
         if (roleBuilder != null) {
           try {
@@ -1193,7 +1193,7 @@ public class UserSchema extends org.apache.avro.specific.SpecificRecordBase impl
             throw e;
           }
         } else {
-          record.role = fieldSetFlags()[2] ? this.role : (com.leijendary.spring.iamtemplate.event.schema.RoleSchema) defaultValue(fields()[2]);
+          record.role = fieldSetFlags()[2] ? this.role : (com.leijendary.schema.RoleSchema) defaultValue(fields()[2]);
         }
         record.firstName = fieldSetFlags()[3] ? this.firstName : (java.lang.String) defaultValue(fields()[3]);
         record.middleName = fieldSetFlags()[4] ? this.middleName : (java.lang.String) defaultValue(fields()[4]);
@@ -1319,13 +1319,13 @@ public class UserSchema extends org.apache.avro.specific.SpecificRecordBase impl
         this.account = null;
       } else {
         if (this.account == null) {
-          this.account = new com.leijendary.spring.iamtemplate.event.schema.AccountSchema();
+          this.account = new com.leijendary.schema.AccountSchema();
         }
         this.account.customDecode(in);
       }
 
       if (this.role == null) {
-        this.role = new com.leijendary.spring.iamtemplate.event.schema.RoleSchema();
+        this.role = new com.leijendary.schema.RoleSchema();
       }
       this.role.customDecode(in);
 
@@ -1392,7 +1392,7 @@ public class UserSchema extends org.apache.avro.specific.SpecificRecordBase impl
             this.account = null;
           } else {
             if (this.account == null) {
-              this.account = new com.leijendary.spring.iamtemplate.event.schema.AccountSchema();
+              this.account = new com.leijendary.schema.AccountSchema();
             }
             this.account.customDecode(in);
           }
@@ -1400,7 +1400,7 @@ public class UserSchema extends org.apache.avro.specific.SpecificRecordBase impl
 
         case 2:
           if (this.role == null) {
-            this.role = new com.leijendary.spring.iamtemplate.event.schema.RoleSchema();
+            this.role = new com.leijendary.schema.RoleSchema();
           }
           this.role.customDecode(in);
           break;

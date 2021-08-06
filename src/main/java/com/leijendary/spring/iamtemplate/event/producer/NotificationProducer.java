@@ -1,6 +1,6 @@
 package com.leijendary.spring.iamtemplate.event.producer;
 
-import com.leijendary.spring.iamtemplate.event.schema.NotificationSchema;
+import com.leijendary.schema.NotificationSchema;
 import org.springframework.context.annotation.Bean;
 import org.springframework.messaging.Message;
 import org.springframework.stereotype.Component;

@@ -1,5 +1,6 @@
 package com.leijendary.spring.iamtemplate.factory;
 
+import com.leijendary.schema.UserSchema;
 import com.leijendary.spring.iamtemplate.data.MobileNumberData;
 import com.leijendary.spring.iamtemplate.data.UserData;
 import com.leijendary.spring.iamtemplate.data.request.v1.RegisterCustomerEmailRequestV1;
@@ -8,7 +9,6 @@ import com.leijendary.spring.iamtemplate.data.request.v1.RegisterCustomerMobileR
 import com.leijendary.spring.iamtemplate.data.request.v1.UserRequestV1;
 import com.leijendary.spring.iamtemplate.data.response.v1.ProfileResponseV1;
 import com.leijendary.spring.iamtemplate.data.response.v1.UserResponseV1;
-import com.leijendary.spring.iamtemplate.event.schema.UserSchema;
 import com.leijendary.spring.iamtemplate.model.IamUser;
 
 public class IamUserFactory extends AbstractFactory {

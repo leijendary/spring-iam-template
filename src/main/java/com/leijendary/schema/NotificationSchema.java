@@ -3,7 +3,7 @@
  *
  * DO NOT EDIT DIRECTLY
  */
-package com.leijendary.spring.iamtemplate.event.schema;
+package com.leijendary.schema;
 
 import org.apache.avro.generic.GenericArray;
 import org.apache.avro.specific.SpecificData;
@@ -14,8 +14,8 @@ import org.apache.avro.message.SchemaStore;
 
 @org.apache.avro.specific.AvroGenerated
 public class NotificationSchema extends org.apache.avro.specific.SpecificRecordBase implements org.apache.avro.specific.SpecificRecord {
-  private static final long serialVersionUID = 6085367822538299323L;
-  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"NotificationSchema\",\"namespace\":\"com.leijendary.spring.iamtemplate.event.schema\",\"fields\":[{\"name\":\"to\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}},{\"name\":\"content\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}},{\"name\":\"name\",\"type\":[\"null\",{\"type\":\"string\",\"avro.java.string\":\"String\"}]},{\"name\":\"type\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}}]}");
+  private static final long serialVersionUID = 6386106081701339620L;
+  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"NotificationSchema\",\"namespace\":\"com.leijendary.schema\",\"fields\":[{\"name\":\"to\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}},{\"name\":\"content\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}},{\"name\":\"name\",\"type\":[\"null\",{\"type\":\"string\",\"avro.java.string\":\"String\"}]},{\"name\":\"type\",\"type\":{\"type\":\"string\",\"avro.java.string\":\"String\"}}]}");
   public static org.apache.avro.Schema getClassSchema() { return SCHEMA$; }
 
   private static SpecificData MODEL$ = new SpecificData();
@@ -194,8 +194,8 @@ public class NotificationSchema extends org.apache.avro.specific.SpecificRecordB
    * Creates a new NotificationSchema RecordBuilder.
    * @return A new NotificationSchema RecordBuilder
    */
-  public static com.leijendary.spring.iamtemplate.event.schema.NotificationSchema.Builder newBuilder() {
-    return new com.leijendary.spring.iamtemplate.event.schema.NotificationSchema.Builder();
+  public static com.leijendary.schema.NotificationSchema.Builder newBuilder() {
+    return new com.leijendary.schema.NotificationSchema.Builder();
   }
 
   /**
@@ -203,11 +203,11 @@ public class NotificationSchema extends org.apache.avro.specific.SpecificRecordB
    * @param other The existing builder to copy.
    * @return A new NotificationSchema RecordBuilder
    */
-  public static com.leijendary.spring.iamtemplate.event.schema.NotificationSchema.Builder newBuilder(com.leijendary.spring.iamtemplate.event.schema.NotificationSchema.Builder other) {
+  public static com.leijendary.schema.NotificationSchema.Builder newBuilder(com.leijendary.schema.NotificationSchema.Builder other) {
     if (other == null) {
-      return new com.leijendary.spring.iamtemplate.event.schema.NotificationSchema.Builder();
+      return new com.leijendary.schema.NotificationSchema.Builder();
     } else {
-      return new com.leijendary.spring.iamtemplate.event.schema.NotificationSchema.Builder(other);
+      return new com.leijendary.schema.NotificationSchema.Builder(other);
     }
   }
 
@@ -216,11 +216,11 @@ public class NotificationSchema extends org.apache.avro.specific.SpecificRecordB
    * @param other The existing instance to copy.
    * @return A new NotificationSchema RecordBuilder
    */
-  public static com.leijendary.spring.iamtemplate.event.schema.NotificationSchema.Builder newBuilder(com.leijendary.spring.iamtemplate.event.schema.NotificationSchema other) {
+  public static com.leijendary.schema.NotificationSchema.Builder newBuilder(com.leijendary.schema.NotificationSchema other) {
     if (other == null) {
-      return new com.leijendary.spring.iamtemplate.event.schema.NotificationSchema.Builder();
+      return new com.leijendary.schema.NotificationSchema.Builder();
     } else {
-      return new com.leijendary.spring.iamtemplate.event.schema.NotificationSchema.Builder(other);
+      return new com.leijendary.schema.NotificationSchema.Builder(other);
     }
   }
 
@@ -245,7 +245,7 @@ public class NotificationSchema extends org.apache.avro.specific.SpecificRecordB
      * Creates a Builder by copying an existing Builder.
      * @param other The existing Builder to copy.
      */
-    private Builder(com.leijendary.spring.iamtemplate.event.schema.NotificationSchema.Builder other) {
+    private Builder(com.leijendary.schema.NotificationSchema.Builder other) {
       super(other);
       if (isValidValue(fields()[0], other.to)) {
         this.to = data().deepCopy(fields()[0].schema(), other.to);
@@ -269,7 +269,7 @@ public class NotificationSchema extends org.apache.avro.specific.SpecificRecordB
      * Creates a Builder by copying an existing NotificationSchema instance
      * @param other The existing instance to copy.
      */
-    private Builder(com.leijendary.spring.iamtemplate.event.schema.NotificationSchema other) {
+    private Builder(com.leijendary.schema.NotificationSchema other) {
       super(SCHEMA$);
       if (isValidValue(fields()[0], other.to)) {
         this.to = data().deepCopy(fields()[0].schema(), other.to);
@@ -303,7 +303,7 @@ public class NotificationSchema extends org.apache.avro.specific.SpecificRecordB
       * @param value The value of 'to'.
       * @return This builder.
       */
-    public com.leijendary.spring.iamtemplate.event.schema.NotificationSchema.Builder setTo(java.lang.String value) {
+    public com.leijendary.schema.NotificationSchema.Builder setTo(java.lang.String value) {
       validate(fields()[0], value);
       this.to = value;
       fieldSetFlags()[0] = true;
@@ -323,7 +323,7 @@ public class NotificationSchema extends org.apache.avro.specific.SpecificRecordB
       * Clears the value of the 'to' field.
       * @return This builder.
       */
-    public com.leijendary.spring.iamtemplate.event.schema.NotificationSchema.Builder clearTo() {
+    public com.leijendary.schema.NotificationSchema.Builder clearTo() {
       to = null;
       fieldSetFlags()[0] = false;
       return this;
@@ -343,7 +343,7 @@ public class NotificationSchema extends org.apache.avro.specific.SpecificRecordB
       * @param value The value of 'content'.
       * @return This builder.
       */
-    public com.leijendary.spring.iamtemplate.event.schema.NotificationSchema.Builder setContent(java.lang.String value) {
+    public com.leijendary.schema.NotificationSchema.Builder setContent(java.lang.String value) {
       validate(fields()[1], value);
       this.content = value;
       fieldSetFlags()[1] = true;
@@ -363,7 +363,7 @@ public class NotificationSchema extends org.apache.avro.specific.SpecificRecordB
       * Clears the value of the 'content' field.
       * @return This builder.
       */
-    public com.leijendary.spring.iamtemplate.event.schema.NotificationSchema.Builder clearContent() {
+    public com.leijendary.schema.NotificationSchema.Builder clearContent() {
       content = null;
       fieldSetFlags()[1] = false;
       return this;
@@ -383,7 +383,7 @@ public class NotificationSchema extends org.apache.avro.specific.SpecificRecordB
       * @param value The value of 'name'.
       * @return This builder.
       */
-    public com.leijendary.spring.iamtemplate.event.schema.NotificationSchema.Builder setName(java.lang.String value) {
+    public com.leijendary.schema.NotificationSchema.Builder setName(java.lang.String value) {
       validate(fields()[2], value);
       this.name = value;
       fieldSetFlags()[2] = true;
@@ -403,7 +403,7 @@ public class NotificationSchema extends org.apache.avro.specific.SpecificRecordB
       * Clears the value of the 'name' field.
       * @return This builder.
       */
-    public com.leijendary.spring.iamtemplate.event.schema.NotificationSchema.Builder clearName() {
+    public com.leijendary.schema.NotificationSchema.Builder clearName() {
       name = null;
       fieldSetFlags()[2] = false;
       return this;
@@ -423,7 +423,7 @@ public class NotificationSchema extends org.apache.avro.specific.SpecificRecordB
       * @param value The value of 'type'.
       * @return This builder.
       */
-    public com.leijendary.spring.iamtemplate.event.schema.NotificationSchema.Builder setType(java.lang.String value) {
+    public com.leijendary.schema.NotificationSchema.Builder setType(java.lang.String value) {
       validate(fields()[3], value);
       this.type = value;
       fieldSetFlags()[3] = true;
@@ -443,7 +443,7 @@ public class NotificationSchema extends org.apache.avro.specific.SpecificRecordB
       * Clears the value of the 'type' field.
       * @return This builder.
       */
-    public com.leijendary.spring.iamtemplate.event.schema.NotificationSchema.Builder clearType() {
+    public com.leijendary.schema.NotificationSchema.Builder clearType() {
       type = null;
       fieldSetFlags()[3] = false;
       return this;

@@ -1,6 +1,6 @@
 {
   "type": "record",
-  "namespace": "com.leijendary.spring.iamtemplate.event.schema",
+  "namespace": "com.leijendary.schema",
   "name": "RoleSchema",
   "fields": [
     {

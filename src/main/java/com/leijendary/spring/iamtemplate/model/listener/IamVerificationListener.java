@@ -1,8 +1,8 @@
 package com.leijendary.spring.iamtemplate.model.listener;
 
+import com.leijendary.schema.NotificationSchema;
 import com.leijendary.spring.iamtemplate.config.properties.VerificationProperties;
 import com.leijendary.spring.iamtemplate.event.producer.NotificationProducer;
-import com.leijendary.spring.iamtemplate.event.schema.NotificationSchema;
 import com.leijendary.spring.iamtemplate.factory.UsernameFieldFactory;
 import com.leijendary.spring.iamtemplate.generator.HtmlGenerator;
 import com.leijendary.spring.iamtemplate.model.IamVerification;
