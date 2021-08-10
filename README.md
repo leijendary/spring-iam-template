@@ -26,6 +26,7 @@
 - Lombok
 - Swagger
 - ModelMapper
+- Caffeine
 - Docker
 - AOP
 - Avro
