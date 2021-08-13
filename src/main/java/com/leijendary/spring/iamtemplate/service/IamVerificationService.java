@@ -11,7 +11,6 @@ import com.leijendary.spring.iamtemplate.model.IamUser;
 import com.leijendary.spring.iamtemplate.model.IamVerification;
 import com.leijendary.spring.iamtemplate.repository.IamVerificationRepository;
 import com.leijendary.spring.iamtemplate.specification.VerificationSpecification;
-import javassist.compiler.CodeGen;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
 import org.springframework.security.access.AccessDeniedException;
@@ -19,8 +18,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import static com.leijendary.spring.iamtemplate.data.PreferredUsername.MOBILE_NUMBER;
-import static com.leijendary.spring.iamtemplate.util.RequestContextUtil.getLocale;
-import static com.leijendary.spring.iamtemplate.util.RequestContextUtil.now;
+import static com.leijendary.spring.iamtemplate.util.RequestContext.getLocale;
+import static com.leijendary.spring.iamtemplate.util.RequestContext.now;
 import static java.util.Optional.ofNullable;
 
 @Service

@@ -16,7 +16,7 @@ import static com.leijendary.spring.iamtemplate.data.PreferredUsername.EMAIL_ADD
 import static com.leijendary.spring.iamtemplate.data.PreferredUsername.MOBILE_NUMBER;
 import static com.leijendary.spring.iamtemplate.data.VerificationType.REGISTRATION;
 import static com.leijendary.spring.iamtemplate.data.VerificationType.RESET_PASSWORD;
-import static com.leijendary.spring.iamtemplate.util.RequestContextUtil.getLocale;
+import static com.leijendary.spring.iamtemplate.util.RequestContext.getLocale;
 import static com.leijendary.spring.iamtemplate.util.SpringContext.getBean;
 import static com.leijendary.spring.iamtemplate.util.UsernameUtil.getUsername;
 

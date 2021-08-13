@@ -17,7 +17,7 @@ import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import static com.leijendary.spring.iamtemplate.util.RequestContextUtil.*;
+import static com.leijendary.spring.iamtemplate.util.RequestContext.*;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 

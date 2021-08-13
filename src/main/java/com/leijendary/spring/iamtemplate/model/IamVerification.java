@@ -13,7 +13,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import java.time.OffsetDateTime;
 
-import static com.leijendary.spring.iamtemplate.util.RequestContextUtil.now;
+import static com.leijendary.spring.iamtemplate.util.RequestContext.now;
 
 @Data
 @EqualsAndHashCode(callSuper = true)

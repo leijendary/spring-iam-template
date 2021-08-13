@@ -27,8 +27,8 @@ import org.springframework.transaction.annotation.Transactional;
 import static com.leijendary.spring.iamtemplate.data.PreferredUsername.EMAIL_ADDRESS;
 import static com.leijendary.spring.iamtemplate.data.PreferredUsername.MOBILE_NUMBER;
 import static com.leijendary.spring.iamtemplate.data.Status.FOR_VERIFICATION;
-import static com.leijendary.spring.iamtemplate.util.RequestContextUtil.getUsername;
-import static com.leijendary.spring.iamtemplate.util.RequestContextUtil.now;
+import static com.leijendary.spring.iamtemplate.util.RequestContext.getUsername;
+import static com.leijendary.spring.iamtemplate.util.RequestContext.now;
 import static java.util.Optional.ofNullable;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 

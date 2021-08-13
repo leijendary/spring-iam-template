@@ -9,7 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import static com.leijendary.spring.iamtemplate.util.RequestContextUtil.getUsername;
+import static com.leijendary.spring.iamtemplate.util.RequestContext.getUsername;
 import static java.lang.Long.parseLong;
 
 @Component

@@ -2,7 +2,7 @@ package com.leijendary.spring.iamtemplate.controller;
 
 import javax.servlet.http.HttpServletResponse;
 
-import static com.leijendary.spring.iamtemplate.util.RequestContextUtil.getPath;
+import static com.leijendary.spring.iamtemplate.util.RequestContext.getPath;
 import static org.springframework.http.HttpHeaders.LOCATION;
 
 public abstract class AbstractController {

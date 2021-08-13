@@ -7,7 +7,7 @@ import org.thymeleaf.spring5.SpringTemplateEngine;
 
 import java.util.Map;
 
-import static com.leijendary.spring.iamtemplate.util.RequestContextUtil.getLocale;
+import static com.leijendary.spring.iamtemplate.util.RequestContext.getLocale;
 
 @Component
 @RequiredArgsConstructor
