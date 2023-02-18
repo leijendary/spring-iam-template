@@ -22,4 +22,4 @@ ENV JAVA_TOOL_OPTIONS "-XX:MaxRAMPercentage=80.0 \
     -Dcom.sun.management.jmxremote.port=1099 \
     -Dcom.sun.management.jmxremote.rmi.port=1099 \
     -Djava.rmi.server.hostname=0.0.0.0"
-ENTRYPOINT ["java", "--enable-preview", "-cp", "app:app/lib/*", "com.leijendary.spring.iam.ApplicationKt"]
+ENTRYPOINT ["java", "--enable-preview", "-cp", "app:app/lib/*", "com.leijendary.spring.template.iam.ApplicationKt"]
