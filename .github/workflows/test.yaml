@@ -1,0 +1,25 @@
+on: workflow_call
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: 17
+          distribution: 'zulu'
+          cache: 'gradle'
+      - name: Execute Gradle Test
+        uses: gradle/gradle-build-action@v2
+        with:
+          arguments: test --info
+        env:
+          SPRING_PROFILES_ACTIVE: ci
+          SPRING_CLOUD_AWS_CREDENTIALS_INSTANCE_PROFILE: false
+          SPRING_CLOUD_AWS_CREDENTIALS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          SPRING_CLOUD_AWS_CREDENTIALS_SECRET_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          SPRING_CLOUD_AWS_REGION_INSTANCE_PROFILE: false
+          SPRING_CLOUD_AWS_REGION_STATIC: ${{ secrets.AWS_REGION }}

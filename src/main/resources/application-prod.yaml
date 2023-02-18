@@ -1,8 +1,5 @@
-spring:
-  main:
-    bannerMode: off
-
-springfox:
-  documentation:
-    swaggerUi:
-      enabled: false
+springdoc:
+  apiDocs:
+    enabled: false
+  swaggerUi:
+    enabled: false

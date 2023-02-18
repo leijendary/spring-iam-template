@@ -1,166 +1,160 @@
 info:
   app:
     organization: leijendary
-    groupId: "@[project.groupId]"
-    artifactId: "@[project.artifactId]"
-    name: "@[project.name]"
-    description: "@[project.description]"
-    version: "@[project.version]"
+    group: ${group}
+    name: ${name}
+    description: ${description}
+    version: ${version}
   api:
-    termsOfServiceUrl:
+    termsOfService:
     contact:
       name: Jonathan Leijendekker
       url: https://leijendary.com
       email:
     license:
-    licenseUrl:
-    vendorExtensions:
+      name: Jonathan Leijendekker
+      url: https://leijendary.com
 
 auth:
-  audience: http://localhost:8080
+  audience: https://localhost:8443
   realm: IAM Template API v1
-  anonymousUser:
-    principal: Anonymous User
+  system:
+    principal: System
 
-cors:
-  allowCredentials: true
-  allowedOrigins:
-  allowedOriginPatterns: '*'
-  allowedHeaders: '*'
-  allowedMethods:
-    - get
-    - post
-    - put
-    - patch
-    - delete
-    - options
-    - head
-    - trace
-  exposedHeaders: '*'
-
-role:
-  customer:
-    name: Customer
+encrypt:
+  key:
+  salt:
 
 verification:
   # 15 minutes
   expiry: 15
   register:
-    url: http://localhost:4000/register/verify/{code}
+    subject: Welcome!
+    url: http://localhost:3000/register/verify/{code}
   resetPassword:
-    url: http://localhost:4000/reset/password/{code}
+    subject: Password Reset
+    url: http://localhost:3000/reset/password/{code}
 
 spring:
   application:
-    name: ${info.app.name}
-  autoconfigure:
-    exclude:
-      - org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConfiguration
-      - org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration
+    name: \${info.app.name}
+  main:
+    bannerMode: log
   datasource:
-    url:
-    username:
-    password:
-    hikari:
+    primary:
+      poolName: Primary
+      jdbcUrl:
+      username:
+      password:
       dataSourceProperties:
         cachePrepStmts: true
         rewriteBatchedStatements: true
         useServerPrepStmts: true
       maximumPoolSize: 20
+    readonly:
+      poolName: Read-only
+      jdbcUrl:
+      username:
+      password:
+      maximumPoolSize: 10
   data:
+    jdbc:
+      repositories:
+        enabled: false
+    ldap:
+      repositories:
+        enabled: false
+    redis:
+      repositories:
+        enabled: false
+      host:
+      port:
     web:
       pageable:
         maxPageSize: 100
-        oneIndexedParameters: true
+  devtools:
+    livereload:
+      port: 35730
+  jmx:
+    enabled: true
   jpa:
     openInView: false
     properties:
       hibernate:
+        globally_quoted_identifiers: true
         jdbc:
           batch_size: 1000
+      jakarta:
+        persistence:
+          lock:
+            timeout: 2000
+          sharedCache:
+            mode: UNSPECIFIED
   messages:
-    basename: messages.access, messages.error, messages.notification, messages.validation
+    basename: messages.error, messages.notification, messages.validation
+  mvc:
+    throwExceptionIfNoHandlerFound: true
+  web:
+    resources:
+      addMappings: false
   cache:
     type: redis
+    redis:
+      timeToLive: 5h
   cloud:
-    stream:
-      bindings:
-        userCreate-out-0:
-          destination: ${info.app.organization}.user.create
-          producer:
-            useNativeEncoding: true
-        userUpdate-out-0:
-          destination: ${info.app.organization}.user.update
-          producer:
-            useNativeEncoding: true
-        userDeactivate-out-0:
-          destination: ${info.app.organization}.user.deactivate
-          producer:
-            useNativeEncoding: true
-        notificationSms-out-0:
-          destination: ${info.app.organization}.notification.sms
-          producer:
-            useNativeEncoding: true
-        notificationEmail-out-0:
-          destination: ${info.app.organization}.notification.email
-          producer:
-            useNativeEncoding: true
-      function:
-        definition: userCreate;userUpdate;userDeactivate;notificationSms;notificationEmail
-      kafka:
-        binder:
-          autoAddPartitions: true
-        streams:
-          binder:
-            configuration:
-              default:
-                key:
-                  serde: org.apache.kafka.common.serialization.Serdes$StringSerde
-                value:
-                  serde: io.confluent.kafka.streams.serdes.avro.SpecificAvroSerde
-            functions:
-              userCreate:
-                applicationId: ${info.app.artifactId}.${info.app.organization}.user.create
-              userUpdate:
-                applicationId: ${info.app.artifactId}.${info.app.organization}.user.update
-              userDeactivate:
-                applicationId: ${info.app.artifactId}.${info.app.organization}.user.deactivate
-              notificationSms:
-                applicationId: ${info.app.artifactId}.${info.app.organization}.notification.sms
-              notificationEmail:
-                applicationId: ${info.app.artifactId}.${info.app.organization}.notification.email
+    aws:
+      credentials:
+        instanceProfile: true
+      region:
+        instanceProfile: true
+      s3:
+        bucketName: leijendary
   kafka:
     bootstrapServers:
     consumer:
-      keyDeserializer: org.apache.kafka.common.serialization.StringDeserializer
-      valueDeserializer: io.confluent.kafka.streams.serdes.avro.SpecificAvroDeserializer
-    producer:
-      keySerializer: org.apache.kafka.common.serialization.StringSerializer
-      valueSerializer: io.confluent.kafka.streams.serdes.avro.SpecificAvroSerializer
-    properties:
-      schema:
-        registry:
-          url:
-  redis:
-    host:
-  security:
-    oauth2:
-      resourceserver:
-        jwt:
-          jwkSetUri:
+      groupId: \${info.app.name}
+    topic:
 
 server:
-  compression:
-    enabled: true
-    mimeTypes: application/json
   error:
     whitelabel:
       enabled: false
   http2:
     enabled: true
-  servlet:
-    contextPath: /identity
-  tomcat:
-    relaxedQueryChars: '[,]'
-    threads:
-      max: 500
+  port: 443
+  ssl:
+    enabled: true
+    keyAlias: spring-boot
+    keyStoreType: PKCS12
+    keyStore: classpath:ssl/keystore.p12
+    keyStorePassword: spring-boot
+
+springdoc:
+  pathsToMatch: /api/**
+  swaggerUi:
+    disableSwaggerDefaultUrl: true
+
+management:
+  endpoint:
+    health:
+      showDetails: ALWAYS
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+  tracing:
+    sampling:
+      probability: 1.0
+  zipkin:
+    tracing:
+      endpoint:
+
+logging:
+  level:
+    liquibase:
+      hub: ERROR
+    org:
+      apache:
+        kafka: ERROR
+  pattern:
+    level: '%5p [\${spring.application.name:},%X{traceId:-},%X{spanId:-}]'

@@ -1,578 +1,557 @@
 databaseChangeLog:
   - changeSet:
-      id: 1627926489056-1
-      author: Leijendary (generated)
+      id: create-account-table
+      author: Leijendekker
       changes:
         - createTable:
             columns:
               - column:
-                  constraints:
-                    nullable: false
-                    primaryKey: true
-                    primaryKeyName: pk_iam_account
                   name: id
-                  type: BIGINT
-              - column:
+                  type: uuid
                   constraints:
+                    primaryKey: true
                     nullable: false
-                  name: type
-                  type: VARCHAR(8)
+                    unique: true
               - column:
-                  constraints:
-                    nullable: false
-                  defaultValue: active
-                  name: status
-                  type: VARCHAR(10)
-              - column:
-                  constraints:
-                    nullable: false
-                  defaultValueComputed: now()
-                  name: created_date
-                  type: TIMESTAMP WITH TIME ZONE
-              - column:
-                  constraints:
-                    nullable: false
-                  name: created_by
-                  type: TEXT
-              - column:
-                  name: deactivated_date
-                  type: TIMESTAMP WITH TIME ZONE
-              - column:
-                  name: deactivated_by
-                  type: TEXT
-            tableName: iam_account
-  - changeSet:
-      id: 1627926489056-2
-      author: Leijendary (generated)
-      changes:
-        - createTable:
-            columns:
-              - column:
+                  name: row_id
+                  type: bigserial
                   autoIncrement: true
                   constraints:
                     nullable: false
-                    primaryKey: true
-                    primaryKeyName: pk_iam_role
-                  name: id
-                  type: BIGINT
+                    unique: true
               - column:
+                  name: type
+                  type: varchar(8)
                   constraints:
                     nullable: false
+              - column:
+                  defaultValue: active
+                  name: status
+                  type: varchar(10)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamp with time zone
+                  constraints:
+                    nullable: false
+                  defaultValueDate: current_timestamp
+              - column:
+                  name: created_by
+                  type: text
+                  constraints:
+                    nullable: false
+              - column:
+                  name: deleted_at
+                  type: timestamp with time zone
+              - column:
+                  name: deleted_by
+                  type: text
+            tableName: account
+  - changeSet:
+      id: create-role-table
+      author: Leijendekker
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+                    unique: true
+              - column:
+                  name: row_id
+                  type: bigserial
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
                   name: name
-                  type: VARCHAR(100)
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
               - column:
                   name: description
-                  type: TEXT
+                  type: text
               - column:
+                  name: version
+                  type: int
+                  defaultValueNumeric: 0
                   constraints:
                     nullable: false
+              - column:
+                  name: created_at
+                  type: timestamp with time zone
+                  constraints:
+                    nullable: false
+                  defaultValueDate: current_timestamp
+              - column:
                   name: created_by
-                  type: TEXT
-              - column:
+                  type: text
                   constraints:
                     nullable: false
-                  defaultValueComputed: now()
-                  name: created_date
-                  type: TIMESTAMP WITH TIME ZONE
               - column:
+                  name: last_modified_at
+                  type: timestamp with time zone
                   constraints:
                     nullable: false
+                  defaultValueDate: current_timestamp
+              - column:
                   name: last_modified_by
-                  type: TEXT
-              - column:
+                  type: text
                   constraints:
                     nullable: false
-                  defaultValueComputed: now()
-                  name: last_modified_date
-                  type: TIMESTAMP WITH TIME ZONE
-            tableName: iam_role
+            tableName: role
   - changeSet:
-      id: 1627926489056-3
-      author: Leijendary (generated)
+      id: create-user-table
+      author: Leijendekker
       changes:
         - createTable:
             columns:
               - column:
-                  constraints:
-                    nullable: false
-                    primaryKey: true
-                    primaryKeyName: pk_iam_user
                   name: id
-                  type: BIGINT
-              - column:
-                  name: iam_account_id
-                  type: BIGINT
-              - column:
+                  type: uuid
                   constraints:
+                    primaryKey: true
                     nullable: false
-                  name: iam_role_id
-                  type: BIGINT
+                    unique: true
               - column:
-                  name: first_name
-                  type: TEXT
-              - column:
-                  name: middle_name
-                  type: TEXT
-              - column:
-                  name: last_name
-                  type: TEXT
-              - column:
-                  name: email_address
-                  type: TEXT
-              - column:
-                  name: country_code
-                  type: VARCHAR(4)
-              - column:
-                  name: mobile_number
-                  type: TEXT
-              - column:
-                  constraints:
-                    nullable: false
-                  defaultValue: active
-                  name: status
-                  type: VARCHAR(20)
-              - column:
-                  constraints:
-                    nullable: false
-                  name: created_by
-                  type: TEXT
-              - column:
-                  constraints:
-                    nullable: false
-                  defaultValueComputed: now()
-                  name: created_date
-                  type: TIMESTAMP WITH TIME ZONE
-              - column:
-                  constraints:
-                    nullable: false
-                  name: last_modified_by
-                  type: TEXT
-              - column:
-                  constraints:
-                    nullable: false
-                  defaultValueComputed: now()
-                  name: last_modified_date
-                  type: TIMESTAMP WITH TIME ZONE
-              - column:
-                  name: deactivated_date
-                  type: TIMESTAMP WITH TIME ZONE
-              - column:
-                  name: deactivated_by
-                  type: TEXT
-            tableName: iam_user
-  - changeSet:
-      id: 1627926489056-4
-      author: Leijendary (generated)
-      changes:
-        - createTable:
-            columns:
-              - column:
+                  name: row_id
+                  type: bigserial
                   autoIncrement: true
                   constraints:
                     nullable: false
-                    primaryKey: true
-                    primaryKeyName: pk_iam_user_credential
+                    unique: true
+              - column:
+                  name: account_id
+                  type: uuid
+              - column:
+                  name: role_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: first_name
+                  type: text
+              - column:
+                  name: middle_name
+                  type: text
+              - column:
+                  name: last_name
+                  type: text
+              - column:
+                  name: email
+                  type: text
+              - column:
+                  name: email_verified
+                  type: boolean
+              - column:
+                  name: country_code
+                  type: varchar(4)
+              - column:
+                  name: phone
+                  type: text
+              - column:
+                  name: phone_verified
+                  type: boolean
+              - column:
+                  name: status
+                  type: varchar(20)
+                  defaultValue: active
+                  constraints:
+                    nullable: false
+              - column:
+                  name: version
+                  type: int
+                  defaultValueNumeric: 0
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamp with time zone
+                  constraints:
+                    nullable: false
+                  defaultValueDate: current_timestamp
+              - column:
+                  name: created_by
+                  type: text
+                  constraints:
+                    nullable: false
+              - column:
+                  name: last_modified_at
+                  type: timestamp with time zone
+                  constraints:
+                    nullable: false
+                  defaultValueDate: current_timestamp
+              - column:
+                  name: last_modified_by
+                  type: text
+                  constraints:
+                    nullable: false
+              - column:
+                  name: deleted_at
+                  type: timestamp with time zone
+              - column:
+                  name: deleted_by
+                  type: text
+            tableName: user
+  - changeSet:
+      id: create-user-credential-table
+      author: Leijendekker
+      changes:
+        - createTable:
+            columns:
+              - column:
                   name: id
-                  type: BIGINT
-              - column:
+                  type: bigserial
+                  autoIncrement: true
                   constraints:
                     nullable: false
-                  name: iam_user_id
-                  type: BIGINT
+                    unique: true
               - column:
+                  name: user_id
+                  type: uuid
                   constraints:
                     nullable: false
+              - column:
                   name: username
-                  type: TEXT
+                  type: text
+                  constraints:
+                    nullable: false
               - column:
                   name: password
-                  type: CHAR(60)
+                  type: char(60)
               - column:
-                  constraints:
-                    nullable: false
                   name: type
-                  type: VARCHAR(12)
-              - column:
+                  type: varchar(12)
                   constraints:
                     nullable: false
-                  defaultValueComputed: now()
-                  name: created_date
-                  type: TIMESTAMP WITH TIME ZONE
               - column:
-                  name: last_used_date
-                  type: TIMESTAMP WITH TIME ZONE
-            tableName: iam_user_credential
+                  name: created_at
+                  type: timestamp with time zone
+                  constraints:
+                    nullable: false
+                  defaultValueDate: current_timestamp
+              - column:
+                  name: last_used_at
+                  type: timestamp with time zone
+            tableName: user_credential
   - changeSet:
-      id: 1627926489056-5
-      author: Leijendary (generated)
+      id: create-permission-table
+      author: Leijendekker
       changes:
         - createTable:
             columns:
               - column:
+                  name: id
+                  type: bigserial
                   autoIncrement: true
                   constraints:
                     nullable: false
                     primaryKey: true
-                    primaryKeyName: pk_iam_permission
-                  name: id
-                  type: BIGINT
               - column:
-                  constraints:
-                    nullable: false
                   name: permission
-                  type: TEXT
-            tableName: iam_permission
+                  type: text
+                  constraints:
+                    nullable: false
+            tableName: permission
   - changeSet:
-      id: 1627926489056-6
-      author: Leijendary (generated)
+      id: create-role-permission-table
+      author: Leijendekker
       changes:
         - createTable:
             columns:
               - column:
+                  name: id
+                  type: bigserial
                   autoIncrement: true
                   constraints:
                     nullable: false
                     primaryKey: true
-                    primaryKeyName: pk_iam_role_permission
-                  name: id
-                  type: BIGINT
               - column:
+                  name: role_id
+                  type: uuid
                   constraints:
                     nullable: false
-                  name: iam_role_id
-                  type: BIGINT
               - column:
+                  name: permission_id
+                  type: bigint
                   constraints:
                     nullable: false
-                  name: iam_permission_id
-                  type: BIGINT
-            tableName: iam_role_permission
+            tableName: role_permission
   - changeSet:
-      id: 1627926489056-7
-      author: Leijendary (generated)
+      id: create-verification-table
+      author: Leijendekker
       changes:
         - createTable:
             columns:
               - column:
+                  name: id
+                  type: bigserial
                   constraints:
                     nullable: false
                     primaryKey: true
-                    primaryKeyName: pk_iam_verification
-                  name: id
-                  type: BIGINT
               - column:
+                  name: user_id
+                  type: uuid
                   constraints:
                     nullable: false
-                  name: iam_user_id
-                  type: BIGINT
               - column:
-                  constraints:
-                    nullable: false
                   name: code
-                  type: VARCHAR(36)
+                  type: varchar(36)
+                  constraints:
+                    nullable: false
+                    unique: true
               - column:
                   name: expiry
-                  type: TIMESTAMP WITH TIME ZONE
+                  type: timestamp with time zone
               - column:
+                  name: device_id
+                  type: text
                   constraints:
                     nullable: false
-                  name: device_id
-                  type: TEXT
               - column:
                   name: field
-                  type: VARCHAR(12)
+                  type: varchar(12)
               - column:
-                  constraints:
-                    nullable: false
                   name: type
-                  type: VARCHAR(16)
-              - column:
+                  type: varchar(16)
                   constraints:
                     nullable: false
-                  defaultValueComputed: now()
-                  name: created_date
-                  type: TIMESTAMP WITH TIME ZONE
-            tableName: iam_verification
-  - changeSet:
-      id: 1627926489056-8
-      author: Leijendary (generated)
-      changes:
-        - createIndex:
-            columns:
               - column:
-                  name: deactivated_date
-            indexName: idx_iam_account_deactivated_date
-            tableName: iam_account
+                  name: created_at
+                  type: timestamp with time zone
+                  constraints:
+                    nullable: false
+                  defaultValueDate: current_timestamp
+            tableName: verification
   - changeSet:
-      id: 1627926489056-9
-      author: Leijendary (generated)
+      id: create-user-account-id-foreign-key
+      author: Leijendekker
       changes:
         - addForeignKeyConstraint:
-            baseColumnNames: iam_account_id
-            baseTableName: iam_user
-            constraintName: fk_iam_user_iam_account_id
+            baseColumnNames: account_id
+            baseTableName: user
+            constraintName: user_account_id_fkey
             deferrable: false
             initiallyDeferred: false
             onDelete: NO ACTION
             onUpdate: NO ACTION
             referencedColumnNames: id
-            referencedTableName: iam_account
+            referencedTableName: account
             validate: true
   - changeSet:
-      id: 1627926489056-10
-      author: Leijendary (generated)
+      id: add-role-name-case-insensitive-unique-constraint
+      author: Leijendekker
       changes:
-        - createIndex:
-            columns:
-              - column:
-                  name: name
-            indexName: uidx_iam_role_name
-            tableName: iam_role
-            unique: true
+        - sql:
+            sql: create unique index role_name_key on role (lower(name));
   - changeSet:
-      id: 1627926489056-11
-      author: Leijendary (generated)
-      changes:
-        - createIndex:
-            columns:
-              - column:
-                  name: name
-              - column:
-                  name: description
-            indexName: idx_iam_role_name_description
-            tableName: iam_role
-  - changeSet:
-      id: 1627926489056-12
-      author: Leijendary (generated)
-      changes:
-        - createIndex:
-            columns:
-              - column:
-                  name: name
-              - column:
-                  name: id
-            indexName: idx_iam_role_name_id
-            tableName: iam_role
-  - changeSet:
-      id: 1627926489056-13
-      author: Leijendary (generated)
+      id: add-role-permission-role-id-foreign-key
+      author: Leijendekker
       changes:
         - addForeignKeyConstraint:
-            baseColumnNames: iam_role_id
-            baseTableName: iam_role_permission
-            constraintName: fk_iam_role_permission_iam_role_id
+            baseColumnNames: role_id
+            baseTableName: role_permission
+            constraintName: role_permission_role_id_fkey
             deferrable: false
             initiallyDeferred: false
             onDelete: NO ACTION
             onUpdate: NO ACTION
             referencedColumnNames: id
-            referencedTableName: iam_role
+            referencedTableName: role
             validate: true
   - changeSet:
-      id: 1627926489056-14
-      author: Leijendary (generated)
+      id: add-user-role-id-foreign-key
+      author: Leijendekker
       changes:
         - addForeignKeyConstraint:
-            baseColumnNames: iam_role_id
-            baseTableName: iam_user
-            constraintName: fk_iam_user_iam_role_id
+            baseColumnNames: role_id
+            baseTableName: user
+            constraintName: user_role_id_fkey
             deferrable: false
             initiallyDeferred: false
             onDelete: NO ACTION
             onUpdate: NO ACTION
             referencedColumnNames: id
-            referencedTableName: iam_role
+            referencedTableName: role
             validate: true
   - changeSet:
-      id: 1627926489056-15
-      author: Leijendary (generated)
+      id: add-user-email-case-insensitive-unique-constraint
+      author: Leijendekker
       changes:
-        - createIndex:
-            columns:
-              - column:
-                  name: first_name
-              - column:
-                  name: middle_name
-              - column:
-                  name: last_name
-              - column:
-                  name: deactivated_date
-            indexName: idx_iam_user_names_deactivated_date
-            tableName: iam_user
+        - sql:
+            sql: create unique index user_email_key
+              on "user" (lower(email))
+              where deleted_at is null;
   - changeSet:
-      id: 1627926489056-16
-      author: Leijendary (generated)
+      id: add-user-country-code-phone-unique-constraint
+      author: Leijendekker
       changes:
-        - createIndex:
-            columns:
-              - column:
-                  name: email_address
-              - column:
-                  name: id
-              - column:
-                  name: deactivated_date
-            indexName: idx_iam_user_email_address_id_deactivated_date
-            tableName: iam_user
+        - sql:
+            sql: create unique index user_country_code_phone_key
+              on "user" (country_code, phone)
+              where deleted_at is null;
   - changeSet:
-      id: 1627926489056-17
-      author: Leijendary (generated)
-      changes:
-        - createIndex:
-            columns:
-              - column:
-                  name: country_code
-              - column:
-                  name: mobile_number
-              - column:
-                  name: id
-              - column:
-                  name: deactivated_date
-            indexName: idx_iam_user_country_code_mobile_number_id_deactivated_date
-            tableName: iam_user
-  - changeSet:
-      id: 1627926489056-18
-      author: Leijendary (generated)
-      changes:
-        - createIndex:
-            columns:
-              - column:
-                  name: iam_account_id
-              - column:
-                  name: deactivated_date
-            indexName: idx_iam_user_iam_account_id_deactivated_date
-            tableName: iam_user
-  - changeSet:
-      id: 1627926489056-19
-      author: Leijendary (generated)
+      id: add-user-credential-user-id-foreign-key
+      author: Leijendekker
       changes:
         - addForeignKeyConstraint:
-            baseColumnNames: iam_user_id
-            baseTableName: iam_user_credential
-            constraintName: fk_iam_user_credential_iam_user_id
+            baseColumnNames: user_id
+            baseTableName: user_credential
+            constraintName: user_credential_user_id_fkey
             deferrable: false
             initiallyDeferred: false
             onDelete: NO ACTION
             onUpdate: NO ACTION
             referencedColumnNames: id
-            referencedTableName: iam_user
+            referencedTableName: user
             validate: true
   - changeSet:
-      id: 1627926489056-20
-      author: Leijendary (generated)
+      id: add-verification-user-id-foreign-key
+      author: Leijendekker
       changes:
         - addForeignKeyConstraint:
-            baseColumnNames: iam_user_id
-            baseTableName: iam_verification
-            constraintName: fk_iam_verification_iam_user_id
+            baseColumnNames: user_id
+            baseTableName: verification
+            constraintName: verification_user_id_fkey
             deferrable: false
             initiallyDeferred: false
             onDelete: NO ACTION
             onUpdate: NO ACTION
             referencedColumnNames: id
-            referencedTableName: iam_user
+            referencedTableName: user
             validate: true
   - changeSet:
-      id: 1627926489056-21
-      author: Leijendary (generated)
+      id: add-user-credential-user-id-username-type-index
+      author: Leijendekker
       changes:
         - createIndex:
             columns:
               - column:
-                  name: iam_user_id
+                  name: user_id
               - column:
                   name: username
               - column:
                   name: type
-            indexName: idx_iam_user_credential_iam_user_id_username_type
-            tableName: iam_user_credential
+            indexName: user_credential_user_id_username_type_idx
+            tableName: user_credential
   - changeSet:
-      id: 1627926489056-22
-      author: Leijendary (generated)
+      id: add-user-credential-user-id-username-index
+      author: Leijendekker
       changes:
         - createIndex:
             columns:
               - column:
-                  name: iam_user_id
+                  name: user_id
               - column:
                   name: username
-            indexName: idx_iam_user_credential_iam_user_id_username
-            tableName: iam_user_credential
+            indexName: user_credential_user_id_username_idx
+            tableName: user_credential
   - changeSet:
-      id: 1627926489056-23
-      author: Leijendary (generated)
+      id: add-permission-permission-case-insensitive-unique-constraint
+      author: Leijendekker
       changes:
-        - createIndex:
-            columns:
-              - column:
-                  name: permission
-            indexName: uidx_iam_permission_permission
-            tableName: iam_permission
-            unique: true
+        - sql:
+            sql: create unique index permission_permission_key on permission (lower(permission));
   - changeSet:
-      id: 1627926489056-24
-      author: Leijendary (generated)
-      changes:
-        - createIndex:
-            columns:
-              - column:
-                  name: permission
-              - column:
-                  name: id
-            indexName: idx_iam_permission_permission_id
-            tableName: iam_permission
-  - changeSet:
-      id: 1627926489056-25
-      author: Leijendary (generated)
+      id: add-role-permission-permission-id-foreign-key
+      author: Leijendekker
       changes:
         - addForeignKeyConstraint:
-            baseColumnNames: iam_permission_id
-            baseTableName: iam_role_permission
-            constraintName: fk_iam_role_permission_iam_permission_id
+            baseColumnNames: permission_id
+            baseTableName: role_permission
+            constraintName: role_permission_permission_id_fkey
             deferrable: false
             initiallyDeferred: false
             onDelete: NO ACTION
             onUpdate: NO ACTION
             referencedColumnNames: id
-            referencedTableName: iam_permission
+            referencedTableName: permission
             validate: true
   - changeSet:
-      id: 1627926489056-26
-      author: Leijendary (generated)
+      id: add-role-permission-role-id-permission-id-unique-constraint
+      author: Leijendekker
       changes:
         - createIndex:
             columns:
               - column:
-                  name: iam_role_id
+                  name: role_id
               - column:
-                  name: iam_permission_id
-            indexName: uidx_iam_role_permission_iam_role_id_iam_permission_id
-            tableName: iam_role_permission
+                  name: permission_id
+            indexName: role_permission_role_id_permission_id_key
+            tableName: role_permission
             unique: true
   - changeSet:
-      id: 1627926489056-27
-      author: Leijendary (generated)
+      id: add-verification-user-id-type-index
+      author: Leijendekker
       changes:
         - createIndex:
             columns:
               - column:
-                  name: iam_user_id
+                  name: user_id
               - column:
                   name: type
-            indexName: idx_iam_verification_iam_user_id_type
-            tableName: iam_verification
+            indexName: verification_user_id_type_idx
+            tableName: verification
   - changeSet:
-      id: 1627926489056-28
-      author: Leijendary (generated)
+      id: add-verification-user-id-code-field-type-index
+      author: Leijendekker
       changes:
         - createIndex:
             columns:
               - column:
-                  name: iam_user_id
+                  name: user_id
               - column:
                   name: code
               - column:
                   name: field
               - column:
                   name: type
-            indexName: idx_iam_verification_iam_user_id_code_field_type
-            tableName: iam_verification
+            indexName: verification_user_id_code_field_type_idx
+            tableName: verification
+  - changeSet:
+      id: add-user-created-at-row-id-index
+      author: Leijendekker
+      changes:
+        - createIndex:
+            columns:
+              - column:
+                  name: created_at
+                  descending: true
+              - column:
+                  name: row_id
+                  descending: true
+            indexName: user_created_at_row_id_idx
+            tableName: user
+  - changeSet:
+      id: add-account-created-at-row-id-index
+      author: Leijendekker
+      changes:
+        - createIndex:
+            columns:
+              - column:
+                  name: created_at
+                  descending: true
+              - column:
+                  name: row_id
+                  descending: true
+            indexName: account_created_at_row_id_idx
+            tableName: account
+  - changeSet:
+      id: add-role-created-at-row-id-index
+      author: Leijendekker
+      changes:
+        - createIndex:
+            columns:
+              - column:
+                  name: created_at
+                  descending: true
+              - column:
+                  name: row_id
+                  descending: true
+            indexName: role_created_at_row_id_idx
+            tableName: role

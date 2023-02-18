@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: spring-iam-template-config
+  namespace: template
+data:
+  SPRING_PROFILES_ACTIVE: dev
+  SPRING_DATASOURCE_PRIMARY_JDBC_URL: "jdbc:postgresql://postgres-service.database.svc.cluster.local:5432/spring_iam_template"
+  SPRING_DATASOURCE_PRIMARY_USERNAME: postgres
+  SPRING_DATASOURCE_READONLY_JDBC_URL: "jdbc:postgresql://postgres-service.database.svc.cluster.local:5432/spring_iam_template"
+  SPRING_DATASOURCE_READONLY_USERNAME: postgres
+  SPRING_CLOUD_AWS_CREDENTIALS_INSTANCE_PROFILE: "false"
+  SPRING_CLOUD_AWS_REGION_INSTANCE_PROFILE: "false"
+  SPRING_CLOUD_AWS_REGION_STATIC: eu-central-1
+  SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka-service.kafka.svc.cluster.local:9092
+  SPRING_DATA_REDIS_HOST: redis-service.cache.svc.cluster.local
+  SPRING_DATA_REDIS_PORT: "6379"
+  AWS_EC2_METADATA_DISABLED: "true"
+  MANAGEMENT_ZIPKIN_TRACING_ENDPOINT: http://jaeger-service.monitoring.svc.cluster.local:9411/api/v2/spans
