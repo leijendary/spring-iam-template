@@ -13,13 +13,15 @@
 - Spring Actuator
 - Spring Cache
 - Spring Cloud AWS S3
+- Spring Cloud AWS SES
+- Spring Cloud AWS SNS
 - Spring Configuration Processor
 - Spring Data JPA
 - Spring Data Redis
 - Spring Devtools
 - Spring Kafka
 - Spring Retry
-- Spring Security OAuth2 JOSE
+- Spring Security Crypto
 - Spring Thymeleaf
 - Spring Validation
 - Spring Web
