@@ -180,7 +180,6 @@ class TokenService(
 
     private fun removeByAccessId(accessTokenId: String) {
         val accessId = UUID.fromString(accessTokenId)
-
         val auth = transactional(readOnly = true) {
             authRepository.findFirstByAccessId(accessId)
         } ?: return
