@@ -16,7 +16,7 @@ info:
       url: https://leijendary.com
 
 auth:
-  issuer: https://localhost
+  issuer:
   keyId: spring-iam-template
   accessToken:
     expiry: 5m
@@ -37,10 +37,10 @@ verification:
   expiry: 2h
   register:
     subject: Welcome!
-    url: http://localhost:3000/register/verify/{code}
+    url:
   resetPassword:
     subject: Password Reset
-    url: http://localhost:3000/reset/password/{code}
+    url:
 
 spring:
   application:
