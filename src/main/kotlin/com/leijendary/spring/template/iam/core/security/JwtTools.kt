@@ -57,6 +57,7 @@ class JwtTools(private val authProperties: AuthProperties) {
         val expiration = config.computeExpiration()
         val expirationMilli = MAPPER.toEpochMilli(expiration)
         val expirationTime = Date(expirationMilli)
+        val scope = scopes.joinToString(" ")
         val claims = JWTClaimsSet.Builder()
             .jwtID(id.toString())
             .issuer(authProperties.issuer)
@@ -64,7 +65,7 @@ class JwtTools(private val authProperties: AuthProperties) {
             .audience(audience)
             .expirationTime(expirationTime)
             .claim(CLAIM_ISSUE_TIME, now.toEpochSecond())
-            .claim(CLAIM_SCOPE, scopes.joinToString { " " })
+            .claim(CLAIM_SCOPE, scope)
 
         ati?.let {
             claims.claim(CLAIM_ATI, it)
