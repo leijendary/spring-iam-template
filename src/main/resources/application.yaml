@@ -19,7 +19,7 @@ auth:
   issuer:
   keyId: spring-iam-template
   accessToken:
-    expiry: 5m
+    expiry: 7D
     privateKey:
     publicKey:
   refreshToken:
