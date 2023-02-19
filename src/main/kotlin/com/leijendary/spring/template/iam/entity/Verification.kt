@@ -9,10 +9,10 @@ import java.time.OffsetDateTime
 @Entity
 class Verification : IdentityEntity() {
     var code = ""
-    var expiry: OffsetDateTime? = null
     var deviceId = ""
     var field = ""
     var type = ""
+    var expiresAt: OffsetDateTime? = null
 
     @ManyToOne
     @JoinColumn

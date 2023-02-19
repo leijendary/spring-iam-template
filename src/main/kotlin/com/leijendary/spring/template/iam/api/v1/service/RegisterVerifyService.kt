@@ -19,11 +19,12 @@ class RegisterVerifyService(
             VerificationType.REGISTRATION,
             request.deviceId!!
         )
+        val field = verification.field
         val hasPassword = verification
             .user!!
             .credentials
             .any {
-                it.type == verification.field
+                it.type == field
             }
 
         if (hasPassword) {

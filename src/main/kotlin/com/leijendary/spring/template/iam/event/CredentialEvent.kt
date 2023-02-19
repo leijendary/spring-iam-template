@@ -9,16 +9,17 @@ import com.leijendary.spring.template.iam.generator.HtmlGenerator
 import com.leijendary.spring.template.iam.util.VerificationType
 import io.awspring.cloud.sns.sms.SnsSmsTemplate
 import org.springframework.context.MessageSource
-import org.springframework.mail.MailSender
-import org.springframework.mail.SimpleMailMessage
+import org.springframework.mail.javamail.JavaMailSender
+import org.springframework.mail.javamail.MimeMessageHelper
 import org.springframework.retry.annotation.Retryable
 import org.springframework.stereotype.Component
+import org.springframework.web.util.UriTemplate
 
 @Component
 class CredentialEvent(
     private val htmlGenerator: HtmlGenerator,
     private val infoProperties: InfoProperties,
-    private val mailSender: MailSender,
+    private val javaMailSender: JavaMailSender,
     private val messageSource: MessageSource,
     private val snsSmsTemplate: SnsSmsTemplate,
     private val verificationProperties: VerificationProperties
@@ -39,28 +40,38 @@ class CredentialEvent(
 
     private fun email(type: String, fullName: String, code: String, to: String) {
         val (template, config) = when (type) {
-            VerificationType.VERIFICATION -> "register.verify" to verificationProperties.register
+            VerificationType.VERIFICATION,
+            VerificationType.REGISTRATION -> "register.verify" to verificationProperties.register
+
             VerificationType.RESET_PASSWORD -> "reset-password.verify" to verificationProperties.resetPassword
             else -> return
         }
+        val variables = mapOf("code" to code)
+        val url = UriTemplate(config.url.toString())
+            .expand(variables)
+            .toURL()
         val params = mapOf(
             "name" to fullName,
-            "url" to config.url!!.replace("{code}", code)
+            "url" to url
         )
         val content = htmlGenerator.parse(template, params)
-        val message = SimpleMailMessage().apply {
+        val message = javaMailSender.createMimeMessage()
+
+        MimeMessageHelper(message, true).apply {
             setTo(to)
-            from = infoProperties.api.contact!!.email
-            subject = config.subject
-            text = content
+            setFrom(infoProperties.api.contact!!.email)
+            setSubject(config.subject!!)
+            setText(content, true)
         }
 
-        mailSender.send(message)
+        javaMailSender.send(message)
     }
 
     private fun phone(type: String, code: String, to: String) {
         val key = when (type) {
-            VerificationType.VERIFICATION -> "notification.verification.sms"
+            VerificationType.VERIFICATION,
+            VerificationType.REGISTRATION -> "notification.verification.sms"
+
             VerificationType.RESET_PASSWORD -> "notification.resetPassword.sms"
             else -> return
         }

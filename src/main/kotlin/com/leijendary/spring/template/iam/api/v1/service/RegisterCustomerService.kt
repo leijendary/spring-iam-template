@@ -8,7 +8,6 @@ import com.leijendary.spring.template.iam.api.v1.model.RegisterCustomerMobileReq
 import com.leijendary.spring.template.iam.core.config.properties.VerificationProperties
 import com.leijendary.spring.template.iam.core.exception.ResourceNotFoundException
 import com.leijendary.spring.template.iam.core.extension.transactional
-import com.leijendary.spring.template.iam.core.util.RequestContext.now
 import com.leijendary.spring.template.iam.entity.Account
 import com.leijendary.spring.template.iam.entity.Role
 import com.leijendary.spring.template.iam.entity.UserCredential
@@ -59,7 +58,7 @@ class RegisterCustomerService(
             this.field = UserCredential.Type.PHONE.value
             deviceId = request.deviceId!!
             type = VerificationType.REGISTRATION
-            expiry = now.plus(verificationProperties.expiry)
+            expiresAt = verificationProperties.computeExpiration()
         }
 
         transactional {
@@ -94,7 +93,7 @@ class RegisterCustomerService(
             this.field = UserCredential.Type.EMAIL.value
             deviceId = request.deviceId!!
             type = VerificationType.REGISTRATION
-            expiry = now.plus(verificationProperties.expiry)
+            expiresAt = verificationProperties.computeExpiration()
         }
 
         transactional {
@@ -144,7 +143,7 @@ class RegisterCustomerService(
             this.field = field
             deviceId = request.deviceId!!
             type = VerificationType.REGISTRATION
-            expiry = now.plus(verificationProperties.expiry)
+            expiresAt = verificationProperties.computeExpiration()
         }
 
         transactional {

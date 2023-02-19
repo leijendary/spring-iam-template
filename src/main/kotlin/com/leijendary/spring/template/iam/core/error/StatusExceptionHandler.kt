@@ -13,9 +13,9 @@ import org.springframework.web.bind.annotation.RestControllerAdvice
 @Order(3)
 class StatusExceptionHandler(private val messageSource: MessageSource) {
     @ExceptionHandler(StatusException::class)
-    fun catchStatusException(exception: StatusException): ResponseEntity<List<ErrorModel>> {
+    fun catchStatus(exception: StatusException): ResponseEntity<List<ErrorModel>> {
         val source = exception.source
-        val code = "validation.alreadyExists"
+        val code = exception.code
         val arguments = exception.arguments
         val message = messageSource.getMessage(code, arguments, locale)
         val status = exception.status

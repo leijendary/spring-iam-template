@@ -8,7 +8,6 @@ import com.leijendary.spring.template.iam.core.config.properties.VerificationPro
 import com.leijendary.spring.template.iam.core.exception.ResourceNotFoundException
 import com.leijendary.spring.template.iam.core.extension.transactional
 import com.leijendary.spring.template.iam.core.model.QueryRequest
-import com.leijendary.spring.template.iam.core.util.RequestContext.now
 import com.leijendary.spring.template.iam.entity.Account
 import com.leijendary.spring.template.iam.entity.User
 import com.leijendary.spring.template.iam.entity.UserCredential
@@ -27,7 +26,6 @@ import org.springframework.cache.annotation.CachePut
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
-import org.springframework.data.jpa.domain.AbstractPersistable_.id
 import org.springframework.stereotype.Service
 import java.util.*
 
@@ -66,7 +64,7 @@ class UserService(
             request.role!!.id!!.let {
                 roleRepository
                     .findById(it)
-                    .orElseThrow { ResourceNotFoundException(ROLE_SOURCE, id) }
+                    .orElseThrow { ResourceNotFoundException(ROLE_SOURCE, it) }
             }
         }
         val account = Account().apply {
@@ -96,8 +94,8 @@ class UserService(
             this.user = user
             this.code = code
             this.field = field
-            type = VerificationType.VERIFICATION
-            expiry = now.plus(verificationProperties.expiry)
+            type = VerificationType.REGISTRATION
+            expiresAt = verificationProperties.computeExpiration()
         }
 
         transactional {
@@ -129,7 +127,7 @@ class UserService(
             val role = request.role!!.id!!.let {
                 roleRepository
                     .findById(it)
-                    .orElseThrow { ResourceNotFoundException(ROLE_SOURCE, id) }
+                    .orElseThrow { ResourceNotFoundException(ROLE_SOURCE, it) }
             }
             user = userRepository
                 .findById(id)

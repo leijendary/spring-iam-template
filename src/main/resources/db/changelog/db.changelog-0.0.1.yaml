@@ -306,7 +306,7 @@ databaseChangeLog:
                     nullable: false
                     unique: true
               - column:
-                  name: expiry
+                  name: expires_at
                   type: timestamp with time zone
               - column:
                   name: device_id
@@ -328,6 +328,115 @@ databaseChangeLog:
                     nullable: false
                   defaultValueDate: current_timestamp
             tableName: verification
+  - changeSet:
+      id: create-auth-table
+      author: Leijendekker
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  name: id
+                  type: bigserial
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+                    unique: true
+              - column:
+                  name: user_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: username
+                  type: text
+                  constraints:
+                    nullable: false
+              - column:
+                  name: audience
+                  type: text
+                  constraints:
+                    nullable: false
+              - column:
+                  name: type
+                  type: VARCHAR(12)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: device_id
+                  type: text
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamp with time zone
+                  constraints:
+                    nullable: false
+                  defaultValueDate: current_timestamp
+            tableName: auth
+  - changeSet:
+      id: create-auth-access-table
+      author: Leijendekker
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+                    unique: true
+              - column:
+                  name: auth_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  constraints:
+                    nullable: false
+                  name: token
+                  type: text
+              - column:
+                  name: expires_at
+                  type: timestamp with time zone
+                  constraints:
+                    nullable: false
+            tableName: auth_access
+  - changeSet:
+      id: create-auth-refresh-table
+      author: Leijendekker
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+                    unique: true
+              - column:
+                  name: auth_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+              - column:
+                  name: access_token_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: token
+                  type: text
+                  constraints:
+                    nullable: false
+              - column:
+                  name: expires_at
+                  type: timestamp with time zone
+                  constraints:
+                    nullable: false
+            tableName: auth_refresh
   - changeSet:
       id: create-user-account-id-foreign-key
       author: Leijendekker
@@ -555,3 +664,48 @@ databaseChangeLog:
                   descending: true
             indexName: role_created_at_row_id_idx
             tableName: role
+  - changeSet:
+      id: add-auth-user-id-foreign-key
+      author: Leijendekker
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: user_id
+            baseTableName: auth
+            constraintName: auth_user_id_fkey
+            deferrable: false
+            initiallyDeferred: false
+            onDelete: NO ACTION
+            onUpdate: NO ACTION
+            referencedColumnNames: id
+            referencedTableName: user
+            validate: true
+  - changeSet:
+      id: add-auth-access-auth-id-foreign-key
+      author: Leijendekker
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: auth_id
+            baseTableName: auth_access
+            constraintName: auth_access_auth_id_fkey
+            deferrable: false
+            initiallyDeferred: false
+            onDelete: NO ACTION
+            onUpdate: NO ACTION
+            referencedColumnNames: id
+            referencedTableName: auth
+            validate: true
+  - changeSet:
+      id: add-auth-refresh-auth-id-foreign-key
+      author: Leijendekker
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: auth_id
+            baseTableName: auth_refresh
+            constraintName: auth_refresh_auth_id_fkey
+            deferrable: false
+            initiallyDeferred: false
+            onDelete: NO ACTION
+            onUpdate: NO ACTION
+            referencedColumnNames: id
+            referencedTableName: auth
+            validate: true

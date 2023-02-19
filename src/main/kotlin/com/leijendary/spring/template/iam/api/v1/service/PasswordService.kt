@@ -5,8 +5,8 @@ import com.leijendary.spring.template.iam.api.v1.model.PasswordNominateRequest
 import com.leijendary.spring.template.iam.api.v1.model.PasswordResetRequest
 import com.leijendary.spring.template.iam.api.v1.model.PasswordResetVerifyRequest
 import com.leijendary.spring.template.iam.core.config.properties.VerificationProperties
+import com.leijendary.spring.template.iam.core.exception.InvalidCredentialException
 import com.leijendary.spring.template.iam.core.extension.transactional
-import com.leijendary.spring.template.iam.core.util.RequestContext.now
 import com.leijendary.spring.template.iam.entity.UserCredential
 import com.leijendary.spring.template.iam.entity.Verification
 import com.leijendary.spring.template.iam.event.CredentialEvent
@@ -31,7 +31,9 @@ class PasswordService(
     private val verificationValidator: VerificationValidator
 ) {
     fun reset(request: PasswordResetRequest): NextCode {
-        val credential = userCredentialRepository.findFirstByUsername(request.username!!)
+        val credential = userCredentialRepository
+            .findFirstByUsernameAndUserDeletedAtIsNull(request.username!!)
+            .orElseThrow { InvalidCredentialException() }
         val field = credential.type
         val user = credential.user!!
         val generator = CodeGenerationStrategy.fromField(credential.type)
@@ -43,7 +45,7 @@ class PasswordService(
                 this.field = field
                 deviceId = request.deviceId!!
                 type = VerificationType.RESET_PASSWORD
-                expiry = now.plus(verificationProperties.expiry)
+                expiresAt = verificationProperties.computeExpiration()
             }
             .let {
                 transactional {
@@ -110,7 +112,10 @@ class PasswordService(
             credentials.add(credential)
         }
 
-        user.status = if (user.isIncomplete) Status.INCOMPLETE else Status.ACTIVE
+        user.apply {
+            status = if (user.isIncomplete) Status.INCOMPLETE else Status.ACTIVE
+            setVerified(field)
+        }
 
         transactional {
             userCredentialRepository.saveAll(credentials)

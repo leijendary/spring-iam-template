@@ -1,17 +1,21 @@
 package com.leijendary.spring.template.iam.core.config.properties
 
+import com.leijendary.spring.template.iam.core.util.RequestContext.now
 import org.springframework.boot.context.properties.ConfigurationProperties
+import java.net.URL
 import java.time.Duration
+import java.time.OffsetDateTime
 
 @ConfigurationProperties(prefix = "verification")
 class VerificationProperties {
-    // In minutes
-    var expiry: Duration = Duration.ofMinutes(5)
+    var expiry: Duration = Duration.ofHours(2)
     var register = Config()
     var resetPassword = Config()
 
-    class Config {
+    inner class Config {
         var subject: String? = null
-        var url: String? = null
+        var url: URL? = null
     }
+
+    fun computeExpiration(): OffsetDateTime = now.plus(expiry)
 }

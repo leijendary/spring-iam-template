@@ -3,6 +3,7 @@ package com.leijendary.spring.template.iam.entity
 import com.leijendary.spring.template.iam.core.entity.AuditingUUIDEntity
 import com.leijendary.spring.template.iam.core.entity.SoftDeleteEntity
 import com.leijendary.spring.template.iam.core.extension.reflectGet
+import com.leijendary.spring.template.iam.core.extension.reflectSet
 import com.leijendary.spring.template.iam.util.Status
 import jakarta.persistence.*
 import jakarta.persistence.CascadeType.ALL
@@ -44,4 +45,6 @@ class User : AuditingUUIDEntity(), SoftDeleteEntity {
         get() = firstName.isNullOrBlank() or firstName.isNullOrBlank()
 
     fun getUsername(field: String) = this.reflectGet(field) as String
+
+    fun setVerified(field: String) = this.reflectSet("${field}Verified", true)
 }

@@ -1,5 +1,6 @@
 package com.leijendary.spring.template.iam.validator
 
+import com.leijendary.spring.template.iam.core.exception.ResourceNotFoundException
 import com.leijendary.spring.template.iam.core.exception.StatusException
 import com.leijendary.spring.template.iam.core.extension.transactional
 import com.leijendary.spring.template.iam.core.util.RequestContext.now
@@ -12,14 +13,20 @@ import org.springframework.stereotype.Component
 
 @Component
 class VerificationValidator(private val verificationRepository: VerificationRepository) {
+    companion object {
+        private val SOURCE = listOf("data", "Verification", "code")
+    }
+
     fun validate(code: String, type: String, deviceId: String): Verification {
         val verification = transactional(readOnly = true) {
-            verificationRepository.findFirstByCodeAndType(code, type)
+            verificationRepository
+                .findFirstByCodeAndType(code, type)
+                .orElseThrow { ResourceNotFoundException(SOURCE, code) }
         }
-        val expiry = verification.expiry!!
+        val expiresAt = verification.expiresAt!!
 
         // Verification is already expired
-        if (expiry.isBefore(now)) {
+        if (expiresAt.isBefore(now)) {
             // Remove the verification since it is no longer valid
             verificationRepository.delete(verification)
 

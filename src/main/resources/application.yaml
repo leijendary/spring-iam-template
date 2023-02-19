@@ -16,8 +16,16 @@ info:
       url: https://leijendary.com
 
 auth:
-  audience: https://localhost:8443
-  realm: IAM Template API v1
+  issuer: https://localhost
+  keyId: spring-iam-template
+  accessToken:
+    expiry: 5m
+    privateKey:
+    publicKey:
+  refreshToken:
+    expiry: 200D
+    privateKey:
+    publicKey:
   system:
     principal: System
 
@@ -26,8 +34,7 @@ encrypt:
   salt:
 
 verification:
-  # 15 minutes
-  expiry: 15
+  expiry: 2h
   register:
     subject: Welcome!
     url: http://localhost:3000/register/verify/{code}

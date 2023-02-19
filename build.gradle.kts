@@ -51,6 +51,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-cache")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-data-redis")
+    implementation("org.springframework.boot:spring-boot-starter-mail")
     implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-web")
@@ -91,6 +92,9 @@ dependencies {
 
     // Crypto
     implementation("org.bouncycastle:bcprov-jdk18on:1.72")
+
+    // JWT
+    implementation("com.nimbusds:nimbus-jose-jwt:9.30.2")
 
     // Devtools
     developmentOnly("org.springframework.boot:spring-boot-devtools")
