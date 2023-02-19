@@ -19,7 +19,7 @@ class UserListSpecification(
         root: Root<User>,
         criteriaQuery: CriteriaQuery<*>,
         criteriaBuilder: CriteriaBuilder
-    ): Predicate? {
+    ): Predicate {
         val predicates = mutableListOf<Predicate>()
 
         if (!query.isNullOrBlank()) {
@@ -47,10 +47,6 @@ class UserListSpecification(
             val nullAccount = root.join<Account, User>("account", LEFT).isNull
 
             predicates.add(nullAccount)
-        }
-
-        if (predicates.isEmpty()) {
-            return null
         }
 
         return criteriaBuilder.and(*predicates.toTypedArray())
