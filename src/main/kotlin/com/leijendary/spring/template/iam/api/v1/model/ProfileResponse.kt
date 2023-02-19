@@ -11,5 +11,6 @@ data class ProfileResponse(
     val countryCode: String?,
     val phone: String?,
     val phoneVerified: Boolean = false,
+    val image: String?,
     val isIncomplete: Boolean = false
 ) : Serializable

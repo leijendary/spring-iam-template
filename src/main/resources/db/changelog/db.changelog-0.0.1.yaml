@@ -158,6 +158,9 @@ databaseChangeLog:
                   name: phone_verified
                   type: boolean
               - column:
+                  name: image
+                  type: text
+              - column:
                   name: status
                   type: varchar(20)
                   defaultValue: active

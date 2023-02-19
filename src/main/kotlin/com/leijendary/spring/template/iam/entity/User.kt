@@ -22,6 +22,7 @@ class User : AuditingUUIDEntity(), SoftDeleteEntity {
     var countryCode: String? = null
     var phone: String? = null
     var phoneVerified: Boolean = false
+    var image: String? = null
     var status = Status.ACTIVE
 
     @ManyToOne(cascade = [ALL])
