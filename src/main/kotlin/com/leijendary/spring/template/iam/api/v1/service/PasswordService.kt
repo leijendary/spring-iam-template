@@ -31,9 +31,11 @@ class PasswordService(
     private val verificationValidator: VerificationValidator
 ) {
     fun reset(request: PasswordResetRequest): NextCode {
-        val credential = userCredentialRepository
-            .findFirstByUsernameAndUserDeletedAtIsNull(request.username!!)
-            .orElseThrow { InvalidCredentialException() }
+        val credential = transactional(readOnly = true) {
+            userCredentialRepository
+                .findFirstByUsernameAndUserDeletedAtIsNull(request.username!!)
+                ?: throw InvalidCredentialException()
+        }!!
         val field = credential.type
         val user = credential.user!!
         val generator = CodeGenerationStrategy.fromField(credential.type)
@@ -52,7 +54,7 @@ class PasswordService(
                     // Remove old verifications
                     verificationRepository.deleteAllByUserIdAndType(it.user!!.id!!, it.type)
                     verificationRepository.save(it)
-                }
+                }!!
             }
 
         credentialEvent.verify(verification)

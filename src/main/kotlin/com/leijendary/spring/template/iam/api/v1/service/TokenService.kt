@@ -1,6 +1,7 @@
 package com.leijendary.spring.template.iam.api.v1.service
 
 import com.leijendary.spring.template.iam.api.v1.mapper.TokenMapper
+import com.leijendary.spring.template.iam.api.v1.mapper.UserDeviceMapper
 import com.leijendary.spring.template.iam.api.v1.model.TokenRefreshRequest
 import com.leijendary.spring.template.iam.api.v1.model.TokenRequest
 import com.leijendary.spring.template.iam.api.v1.model.TokenResponse
@@ -10,7 +11,10 @@ import com.leijendary.spring.template.iam.core.extension.transactional
 import com.leijendary.spring.template.iam.core.security.JwtTools
 import com.leijendary.spring.template.iam.core.util.RequestContext.now
 import com.leijendary.spring.template.iam.entity.*
-import com.leijendary.spring.template.iam.repository.*
+import com.leijendary.spring.template.iam.repository.AuthRepository
+import com.leijendary.spring.template.iam.repository.RolePermissionRepository
+import com.leijendary.spring.template.iam.repository.UserCredentialRepository
+import com.leijendary.spring.template.iam.repository.UserDeviceRepository
 import com.leijendary.spring.template.iam.util.Status
 import com.nimbusds.jose.JOSEException
 import org.springframework.security.crypto.password.PasswordEncoder
@@ -26,9 +30,11 @@ class TokenService(
     private val passwordEncoder: PasswordEncoder,
     private val rolePermissionRepository: RolePermissionRepository,
     private val userCredentialRepository: UserCredentialRepository,
+    private val userDeviceRepository: UserDeviceRepository
 ) {
     companion object {
-        private val MAPPER = TokenMapper.INSTANCE
+        private val TOKEN_MAPPER = TokenMapper.INSTANCE
+        private val USER_DEVICE_MAPPER = UserDeviceMapper.INSTANCE
         private val ACCOUNT_SOURCE = listOf("data", "Account", "status")
         private val USER_SOURCE = listOf("data", "User", "status")
         private val ACCESS_SOURCE = listOf("body", "accessToken")
@@ -41,8 +47,8 @@ class TokenService(
         val credential = transactional(readOnly = true) {
             userCredentialRepository
                 .findFirstByUsernameAndUserDeletedAtIsNull(username)
-                .orElseThrow { InvalidCredentialException() }
-        }
+                ?: throw InvalidCredentialException()
+        }!!
 
         if (!passwordEncoder.matches(password, credential.password)) {
             throw InvalidCredentialException()
@@ -67,7 +73,9 @@ class TokenService(
                 authorize(it, user, audience)
             }
 
-        return MAPPER.toResponse(auth)
+        saveDevice(request, user)
+
+        return TOKEN_MAPPER.toResponse(auth)
     }
 
     fun refresh(request: TokenRefreshRequest): TokenResponse {
@@ -95,12 +103,12 @@ class TokenService(
         val refreshTokenId = UUID.fromString(jwt.id)
         val auth = authRepository
             .findFirstByRefreshId(refreshTokenId)
-            .orElseThrow { ResourceNotFoundException(REFRESH_SOURCE, refreshTokenId) }
-            .let {
+            ?.let {
                 authorize(it, it.user!!, it.audience)
             }
+            ?: throw ResourceNotFoundException(REFRESH_SOURCE, refreshTokenId)
 
-        return MAPPER.toResponse(auth)
+        return TOKEN_MAPPER.toResponse(auth)
     }
 
     fun revoke(request: TokenRevokeRequest) {
@@ -133,7 +141,7 @@ class TokenService(
     private fun scopes(role: Role): Set<String> {
         val permissions = transactional(readOnly = true) {
             rolePermissionRepository.findAllByRoleId(role.id!!)
-        }
+        }!!
 
         return permissions
             .map { it.permission!!.permission }
@@ -167,18 +175,50 @@ class TokenService(
             this.refresh = authRefresh
         }
 
-        return transactional {
-            authRepository.save(auth)
-        }
+        return transactional { authRepository.save(auth) }!!
     }
 
     private fun removeByAccessId(accessTokenId: String) {
         val accessId = UUID.fromString(accessTokenId)
 
-        authRepository
-            .findFirstByAccessId(accessId)
-            .ifPresent {
-                authRepository.delete(it)
+        val auth = transactional(readOnly = true) {
+            authRepository.findFirstByAccessId(accessId)
+        } ?: return
+
+        authRepository.delete(auth)
+
+        // Also remove the device from the user's possession
+        removeDevice(auth.deviceId, auth.user!!.id!!)
+    }
+
+    private fun saveDevice(request: TokenRequest, user: User) {
+        val token = request.deviceId!!
+        var device = transactional(readOnly = true) {
+            userDeviceRepository.findFirstByToken(token)
+        }
+
+        // Device exists AND the user IDs are the same. Skip the process.
+        if (device?.user?.id == user.id) {
+            return
+        }
+
+        // Device exists and the user ID does not match the current user ID.
+        // Delete the old user's device
+        if (device != null && device.user!!.id != user.id) {
+            userDeviceRepository.delete(device)
+        }
+
+        // Device does not exist. Then create a device for that user
+        device = USER_DEVICE_MAPPER
+            .from(request)
+            .apply {
+                this.user = user
             }
+
+        userDeviceRepository.save(device)
+    }
+
+    private fun removeDevice(token: String, userId: UUID) = transactional {
+        userDeviceRepository.deleteByTokenAndUserId(token, userId)
     }
 }

@@ -10,6 +10,7 @@ import com.leijendary.spring.template.iam.repository.PermissionRepository
 import com.leijendary.spring.template.iam.repository.RolePermissionRepository
 import com.leijendary.spring.template.iam.repository.RoleRepository
 import org.springframework.data.jpa.domain.AbstractPersistable_.id
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.util.*
@@ -30,7 +31,7 @@ class RolePermissionService(
             rolePermissionRepository
                 .findAllByRoleId(roleId)
                 .map { it.permission }
-        }
+        }!!
 
         return permissions.map { MAPPER.toResponse(it!!) }
     }
@@ -38,9 +39,9 @@ class RolePermissionService(
     fun add(roleId: UUID, request: RolePermissionRequest): List<PermissionResponse> {
         val role = transactional(readOnly = true) {
             roleRepository
-                .findById(roleId)
-                .orElseThrow { ResourceNotFoundException(SOURCE, id) }
-        }
+                .findByIdOrNull(roleId)
+                ?: throw ResourceNotFoundException(SOURCE, id)
+        }!!
         val permissionIds = request.permissions.map { it.id }
         val permissions = permissionRepository.findAllById(permissionIds)
         val rolePermissions = permissions

@@ -12,6 +12,7 @@ import org.springframework.cache.annotation.CachePut
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import java.util.*
 
@@ -31,7 +32,7 @@ class RoleService(private val roleRepository: RoleRepository) {
             } else {
                 roleRepository.findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(query, query, pageable)
             }
-        }
+        }!!
 
         return page.map { MAPPER.toResponse(it) }
     }
@@ -41,10 +42,8 @@ class RoleService(private val roleRepository: RoleRepository) {
         val sampleTable = transactional {
             MAPPER
                 .toEntity(request)
-                .let {
-                    roleRepository.save(it)
-                }
-        }
+                .let { roleRepository.save(it) }
+        }!!
 
         return MAPPER.toResponse(sampleTable)
     }
@@ -53,9 +52,9 @@ class RoleService(private val roleRepository: RoleRepository) {
     fun get(id: UUID): RoleResponse {
         val role = transactional(readOnly = true) {
             roleRepository
-                .findById(id)
-                .orElseThrow { ResourceNotFoundException(SOURCE, id) }
-        }
+                .findByIdOrNull(id)
+                ?: throw ResourceNotFoundException(SOURCE, id)
+        }!!
 
         return MAPPER.toResponse(role)
     }
@@ -64,14 +63,14 @@ class RoleService(private val roleRepository: RoleRepository) {
     fun update(id: UUID, request: RoleRequest): RoleResponse {
         val role = transactional {
             roleRepository
-                .findById(id)
-                .orElseThrow { ResourceNotFoundException(SOURCE, id) }
-                .let {
+                .findByIdOrNull(id)
+                ?.let {
                     MAPPER.update(request, it)
 
                     roleRepository.save(it)
                 }
-        }
+                ?: throw ResourceNotFoundException(SOURCE, id)
+        }!!
 
         return MAPPER.toResponse(role)
     }
@@ -80,13 +79,13 @@ class RoleService(private val roleRepository: RoleRepository) {
     fun delete(id: UUID) {
         transactional {
             roleRepository
-                .findById(id)
-                .orElseThrow { ResourceNotFoundException(SOURCE, id) }
-                .let {
+                .findByIdOrNull(id)
+                ?.let {
                     roleRepository.delete(it)
 
                     it
                 }
+                ?: throw ResourceNotFoundException(SOURCE, id)
         }
     }
 }

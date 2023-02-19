@@ -7,6 +7,7 @@ import com.leijendary.spring.template.iam.core.exception.ResourceNotFoundExcepti
 import com.leijendary.spring.template.iam.core.extension.transactional
 import com.leijendary.spring.template.iam.repository.UserRepository
 import org.springframework.cache.annotation.CachePut
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import java.util.*
 
@@ -23,9 +24,9 @@ class ProfileService(private val userRepository: UserRepository) {
         val id = UUID.fromString(userId)
         val user = transactional(readOnly = true) {
             userRepository
-                .findById(id)
-                .orElseThrow { ResourceNotFoundException(SOURCE, id) }
-        }
+                .findByIdOrNull(id)
+                ?: throw ResourceNotFoundException(SOURCE, id)
+        }!!
 
         return MAPPER.toResponse(user)
     }
@@ -35,14 +36,14 @@ class ProfileService(private val userRepository: UserRepository) {
         val id = UUID.fromString(userId)
         val user = transactional {
             userRepository
-                .findById(id)
-                .orElseThrow { ResourceNotFoundException(SOURCE, id) }
-                .let {
+                .findByIdOrNull(id)
+                ?.let {
                     MAPPER.update(request, it)
 
                     userRepository.save(it)
                 }
-        }
+                ?: throw ResourceNotFoundException(SOURCE, id)
+        }!!
 
         return MAPPER.toResponse(user)
     }

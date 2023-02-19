@@ -13,6 +13,7 @@ import org.springframework.cache.annotation.CachePut
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 
 @Service
@@ -34,7 +35,7 @@ class PermissionService(
             } else {
                 permissionRepository.findAllByPermissionContainingIgnoreCase(query, pageable)
             }
-        }
+        }!!
 
         return page.map { MAPPER.toResponse(it) }
     }
@@ -54,9 +55,9 @@ class PermissionService(
     fun get(id: Long): PermissionResponse {
         val permission = transactional(readOnly = true) {
             permissionRepository
-                .findById(id)
-                .orElseThrow { ResourceNotFoundException(SOURCE, id) }
-        }
+                .findByIdOrNull(id)
+                ?: throw ResourceNotFoundException(SOURCE, id)
+        }!!
 
         return MAPPER.toResponse(permission)
     }
@@ -65,12 +66,10 @@ class PermissionService(
     fun update(id: Long, request: PermissionRequest): PermissionResponse {
         val permission = transactional {
             permissionRepository
-                .findById(id)
-                .orElseThrow { ResourceNotFoundException(SOURCE, id) }
-                .let {
-                    MAPPER.update(request, it)
-                }
-        }
+                .findByIdOrNull(id)
+                ?.let { MAPPER.update(request, it) }
+                ?: throw ResourceNotFoundException(SOURCE, id)
+        }!!
 
         return MAPPER.toResponse(permission)
     }
@@ -78,13 +77,13 @@ class PermissionService(
     @CacheEvict(value = [CACHE_NAME], key = "#id")
     fun delete(id: Long) = transactional {
         permissionRepository
-            .findById(id)
-            .orElseThrow { ResourceNotFoundException(SOURCE, id) }
-            .let {
+            .findByIdOrNull(id)
+            ?.let {
                 // Delete all role_permission first since they are connected to the role
                 rolePermissionRepository.deleteAllByPermissionId(id)
 
                 permissionRepository.delete(it)
             }
+            ?: throw ResourceNotFoundException(SOURCE, id)
     }
 }

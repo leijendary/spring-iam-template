@@ -26,6 +26,7 @@ import org.springframework.cache.annotation.CachePut
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import java.util.*
 
@@ -53,7 +54,7 @@ class UserService(
         val specification = UserListSpecification(queryRequest.query, userExclusionQueryRequest)
         val page = transactional(readOnly = true) {
             userRepository.findAll(specification, pageable)
-        }
+        }!!
 
         return page.map { MAPPER.toResponse(it) }
     }
@@ -63,8 +64,8 @@ class UserService(
         val role = transactional(readOnly = true) {
             request.role!!.id!!.let {
                 roleRepository
-                    .findById(it)
-                    .orElseThrow { ResourceNotFoundException(ROLE_SOURCE, it) }
+                    .findByIdOrNull(it)
+                    ?: throw ResourceNotFoundException(ROLE_SOURCE, it)
             }
         }
         val account = Account().apply {
@@ -112,9 +113,9 @@ class UserService(
     fun get(id: UUID): UserResponse {
         val user = transactional(readOnly = true) {
             userRepository
-                .findById(id)
-                .orElseThrow { ResourceNotFoundException(USER_SOURCE, id) }
-        }
+                .findByIdOrNull(id)
+                ?: throw ResourceNotFoundException(USER_SOURCE, id)
+        }!!
 
         return MAPPER.toResponse(user)
     }
@@ -126,17 +127,17 @@ class UserService(
         transactional(readOnly = true) {
             val role = request.role!!.id!!.let {
                 roleRepository
-                    .findById(it)
-                    .orElseThrow { ResourceNotFoundException(ROLE_SOURCE, it) }
+                    .findByIdOrNull(it)
+                    ?: throw ResourceNotFoundException(ROLE_SOURCE, it)
             }
             user = userRepository
-                .findById(id)
-                .orElseThrow { ResourceNotFoundException(USER_SOURCE, id) }
-                .let {
+                .findByIdOrNull(id)
+                ?.let {
                     it.role = role
 
                     it
                 }
+                ?: throw ResourceNotFoundException(USER_SOURCE, id)
         }
 
         MAPPER.update(request, user)
@@ -166,15 +167,15 @@ class UserService(
     fun delete(id: UUID) {
         transactional {
             userRepository
-                .findById(id)
-                .orElseThrow { ResourceNotFoundException(USER_SOURCE, id) }
-                .let { user ->
+                .findByIdOrNull(id)
+                ?.let { user ->
                     user.account?.let { account ->
                         accountRepository.softDelete(account)
                     }
 
                     userRepository.softDelete(user)
                 }
+                ?: throw ResourceNotFoundException(USER_SOURCE, id)
         }
     }
 }

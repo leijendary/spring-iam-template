@@ -35,6 +35,9 @@ class User : AuditingUUIDEntity(), SoftDeleteEntity {
     @OneToMany(mappedBy = "user", cascade = [ALL], fetch = EAGER)
     val credentials: MutableSet<UserCredential> = HashSet()
 
+    @OneToMany(mappedBy = "user", cascade = [ALL])
+    val devices: MutableSet<UserDevice> = HashSet()
+
     override var deletedAt: OffsetDateTime? = null
     override var deletedBy: String? = null
 

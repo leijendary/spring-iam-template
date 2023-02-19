@@ -5,7 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository
 import java.util.*
 
 interface AuthRepository : JpaRepository<Auth, Long> {
-    fun findFirstByAccessId(accessId: UUID): Optional<Auth>
+    fun findFirstByAccessId(accessId: UUID): Auth?
 
-    fun findFirstByRefreshId(refreshId: UUID): Optional<Auth>
+    fun findFirstByRefreshId(refreshId: UUID): Auth?
 }

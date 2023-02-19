@@ -7,5 +7,5 @@ import java.util.*
 interface VerificationRepository : JpaRepository<Verification, Long> {
     fun deleteAllByUserIdAndType(userId: UUID, type: String)
 
-    fun findFirstByCodeAndType(code: String, type: String): Optional<Verification>
+    fun findFirstByCodeAndType(code: String, type: String): Verification?
 }

@@ -21,8 +21,8 @@ class VerificationValidator(private val verificationRepository: VerificationRepo
         val verification = transactional(readOnly = true) {
             verificationRepository
                 .findFirstByCodeAndType(code, type)
-                .orElseThrow { ResourceNotFoundException(SOURCE, code) }
-        }
+                ?: throw ResourceNotFoundException(SOURCE, code)
+        }!!
         val expiresAt = verification.expiresAt!!
 
         // Verification is already expired
