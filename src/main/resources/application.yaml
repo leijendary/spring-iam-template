@@ -98,7 +98,7 @@ spring:
           sharedCache:
             mode: UNSPECIFIED
   messages:
-    basename: messages.error, messages.notification, messages.validation
+    basename: messages.access, messages.error, messages.notification, messages.validation
   mvc:
     throwExceptionIfNoHandlerFound: true
   web:

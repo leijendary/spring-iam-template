@@ -370,6 +370,7 @@ databaseChangeLog:
                   type: text
                   constraints:
                     nullable: false
+                    unique: true
               - column:
                   name: created_at
                   type: timestamp with time zone
@@ -395,6 +396,7 @@ databaseChangeLog:
                   type: bigint
                   constraints:
                     nullable: false
+                    unique: true
               - column:
                   name: token
                   type: text
@@ -424,6 +426,7 @@ databaseChangeLog:
                   type: bigint
                   constraints:
                     nullable: false
+                    unique: true
               - column:
                   name: access_token_id
                   type: uuid

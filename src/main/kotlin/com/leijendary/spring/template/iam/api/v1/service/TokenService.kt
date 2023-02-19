@@ -61,6 +61,10 @@ class TokenService(
         val user = credential.user!!
         val audience = request.audience!!
         val deviceId = request.deviceId!!
+
+        // Remove previous access token based on the device ID
+        transactional { authRepository.deleteByDeviceId(deviceId) }
+
         val auth = Auth()
             .apply {
                 this.user = user
@@ -69,9 +73,7 @@ class TokenService(
                 this.type = credential.type
                 this.deviceId = deviceId
             }
-            .let {
-                authorize(it, user, audience)
-            }
+            .let { authorize(it, user, audience) }
 
         saveDevice(request, user)
 
@@ -103,9 +105,7 @@ class TokenService(
         val refreshTokenId = UUID.fromString(jwt.id)
         val auth = authRepository
             .findFirstByRefreshId(refreshTokenId)
-            ?.let {
-                authorize(it, it.user!!, it.audience)
-            }
+            ?.let { authorize(it, it.user!!, it.audience) }
             ?: throw ResourceNotFoundException(REFRESH_SOURCE, refreshTokenId)
 
         return TOKEN_MAPPER.toResponse(auth)

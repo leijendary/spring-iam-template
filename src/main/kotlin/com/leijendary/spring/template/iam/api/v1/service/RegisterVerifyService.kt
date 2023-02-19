@@ -3,13 +3,16 @@ package com.leijendary.spring.template.iam.api.v1.service
 import com.leijendary.spring.template.iam.api.v1.model.NextCode
 import com.leijendary.spring.template.iam.api.v1.model.VerifyRequest
 import com.leijendary.spring.template.iam.generator.CodeGenerationStrategy
+import com.leijendary.spring.template.iam.repository.UserRepository
 import com.leijendary.spring.template.iam.repository.VerificationRepository
+import com.leijendary.spring.template.iam.util.Status
 import com.leijendary.spring.template.iam.util.VerificationType
 import com.leijendary.spring.template.iam.validator.VerificationValidator
 import org.springframework.stereotype.Service
 
 @Service
 class RegisterVerifyService(
+    private val userRepository: UserRepository,
     private val verificationRepository: VerificationRepository,
     private val verificationValidator: VerificationValidator
 ) {
@@ -19,15 +22,20 @@ class RegisterVerifyService(
             VerificationType.REGISTRATION,
             request.deviceId!!
         )
+        val user = verification.user!!
         val field = verification.field
-        val hasPassword = verification
-            .user!!
+        val hasPassword = user
             .credentials
-            .any {
-                it.type == field
-            }
+            .any { it.type == field }
 
         if (hasPassword) {
+            user.apply {
+                status = if (user.isIncomplete) Status.INCOMPLETE else Status.ACTIVE
+                setVerified(field)
+            }
+
+            userRepository.save(user)
+
             return NextCode(VerificationType.AUTHENTICATE, null)
         }
 

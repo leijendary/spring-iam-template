@@ -8,4 +8,6 @@ interface AuthRepository : JpaRepository<Auth, Long> {
     fun findFirstByAccessId(accessId: UUID): Auth?
 
     fun findFirstByRefreshId(refreshId: UUID): Auth?
+
+    fun deleteByDeviceId(deviceId: String)
 }
