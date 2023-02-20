@@ -656,14 +656,10 @@ databaseChangeLog:
         - createIndex:
             columns:
               - column:
-                  name: user_id
-              - column:
                   name: code
               - column:
-                  name: field
-              - column:
                   name: type
-            indexName: verification_user_id_code_field_type_idx
+            indexName: verification_code_type_idx
             tableName: verification
   - changeSet:
       id: add-user-created-at-row-id-index
