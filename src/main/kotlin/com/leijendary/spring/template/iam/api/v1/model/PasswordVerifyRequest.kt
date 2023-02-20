@@ -2,7 +2,7 @@ package com.leijendary.spring.template.iam.api.v1.model
 
 import jakarta.validation.constraints.NotBlank
 
-open class PasswordResetVerifyRequest(
+open class PasswordVerifyRequest(
     @field:NotBlank(message = "validation.required")
     val deviceId: String? = null,
 

@@ -38,9 +38,13 @@ verification:
   register:
     subject: Welcome!
     url:
-  resetPassword:
-    subject: Password Reset
-    url:
+  password:
+    change:
+      subject: Password Change
+      url:
+    reset:
+      subject: Password Reset
+      url:
 
 spring:
   application:

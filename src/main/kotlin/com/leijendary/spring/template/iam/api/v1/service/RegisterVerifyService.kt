@@ -36,7 +36,7 @@ class RegisterVerifyService(
 
             userRepository.save(user)
 
-            return NextCode(VerificationType.AUTHENTICATE, null)
+            return NextCode(VerificationType.AUTHENTICATE)
         }
 
         val code = CodeGenerationStrategy.UUID_STRATEGY.generate()
@@ -44,12 +44,12 @@ class RegisterVerifyService(
         // Reuse object but change other values and reset ID.
         verification.apply {
             id = 0
-            type = VerificationType.NOMINATE_PASSWORD
+            type = VerificationType.PASSWORD_NOMINATE
             this.code = code
         }
 
         verificationRepository.save(verification)
 
-        return NextCode(VerificationType.NOMINATE_PASSWORD, code)
+        return NextCode(VerificationType.PASSWORD_NOMINATE, code)
     }
 }

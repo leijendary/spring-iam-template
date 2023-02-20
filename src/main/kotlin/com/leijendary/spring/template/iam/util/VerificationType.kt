@@ -6,7 +6,9 @@ package com.leijendary.spring.template.iam.util
 object VerificationType {
     const val REGISTRATION = "registration"
     const val VERIFICATION = "verification"
-    const val NOMINATE_PASSWORD = "nominatePassword"
     const val AUTHENTICATE = "authenticate"
-    const val RESET_PASSWORD = "resetPassword"
+    const val PASSWORD_NOMINATE = "passwordNominate"
+    const val PASSWORD_RESET = "passwordReset"
+    const val PASSWORD_CHANGE_VERIFY = "passwordChangeVerify"
+    const val PASSWORD_CHANGE = "passwordChange"
 }

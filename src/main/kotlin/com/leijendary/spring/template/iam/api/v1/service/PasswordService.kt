@@ -1,12 +1,10 @@
 package com.leijendary.spring.template.iam.api.v1.service
 
-import com.leijendary.spring.template.iam.api.v1.model.NextCode
-import com.leijendary.spring.template.iam.api.v1.model.PasswordNominateRequest
-import com.leijendary.spring.template.iam.api.v1.model.PasswordResetRequest
-import com.leijendary.spring.template.iam.api.v1.model.PasswordResetVerifyRequest
+import com.leijendary.spring.template.iam.api.v1.model.*
 import com.leijendary.spring.template.iam.core.config.properties.VerificationProperties
 import com.leijendary.spring.template.iam.core.exception.InvalidCredentialException
 import com.leijendary.spring.template.iam.core.extension.transactional
+import com.leijendary.spring.template.iam.core.util.RequestContext.userId
 import com.leijendary.spring.template.iam.entity.UserCredential
 import com.leijendary.spring.template.iam.entity.Verification
 import com.leijendary.spring.template.iam.event.CredentialEvent
@@ -19,6 +17,8 @@ import com.leijendary.spring.template.iam.util.VerificationType
 import com.leijendary.spring.template.iam.validator.VerificationValidator
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
+import java.util.*
 
 @Service
 class PasswordService(
@@ -40,13 +40,14 @@ class PasswordService(
         val user = credential.user!!
         val generator = CodeGenerationStrategy.fromField(credential.type)
         val code = generator.generate()
+        val deviceId = request.deviceId!!
         val verification = Verification()
             .apply {
                 this.user = user
                 this.code = code
                 this.field = field
-                deviceId = request.deviceId!!
-                type = VerificationType.RESET_PASSWORD
+                this.deviceId = deviceId
+                type = VerificationType.PASSWORD_RESET
                 expiresAt = verificationProperties.computeExpiration()
             }
             .let {
@@ -59,32 +60,32 @@ class PasswordService(
 
         credentialEvent.verify(verification)
 
-        return NextCode(VerificationType.VERIFICATION, null)
+        return NextCode(VerificationType.VERIFICATION)
     }
 
-    fun resetVerify(request: PasswordResetVerifyRequest): NextCode {
+    fun resetVerify(request: PasswordVerifyRequest): NextCode {
         val verification = verificationValidator.validate(
             request.code!!,
-            VerificationType.RESET_PASSWORD,
+            VerificationType.PASSWORD_RESET,
             request.deviceId!!
         )
 
         // Reuse object but change other values and reset ID.
         verification.apply {
             id = 0
-            type = VerificationType.NOMINATE_PASSWORD
+            type = VerificationType.PASSWORD_NOMINATE
             code = CodeGenerationStrategy.UUID_STRATEGY.generate()
         }
 
         verificationRepository.save(verification)
 
-        return NextCode(VerificationType.NOMINATE_PASSWORD, verification.code)
+        return NextCode(VerificationType.PASSWORD_NOMINATE, verification.code)
     }
 
     fun nominate(request: PasswordNominateRequest): NextCode {
         val verification = verificationValidator.validate(
             request.code!!,
-            VerificationType.NOMINATE_PASSWORD,
+            VerificationType.PASSWORD_NOMINATE,
             request.deviceId!!
         )
         val user = verification.user!!
@@ -124,6 +125,85 @@ class PasswordService(
             userRepository.save(user)
         }
 
-        return NextCode(VerificationType.AUTHENTICATE, null)
+        return NextCode(VerificationType.AUTHENTICATE)
+    }
+
+    fun changeInitiate(request: PasswordChangeInitiateRequest): NextCode {
+        val id = UUID.fromString(userId)
+        val user = transactional(readOnly = true) {
+            userRepository.findByIdOrThrow(id)
+        }!!
+        val field = request.preferredUsername!!
+        val generator = CodeGenerationStrategy.fromField(field)
+        val code = generator.generate()
+        val deviceId = request.deviceId!!
+        val verification = Verification()
+            .apply {
+                this.user = user
+                this.code = code
+                this.field = field
+                this.deviceId = deviceId
+                type = VerificationType.PASSWORD_CHANGE_VERIFY
+                expiresAt = verificationProperties.computeExpiration()
+            }
+            .let {
+                transactional {
+                    // Remove old verifications
+                    verificationRepository.deleteAllByUserIdAndType(user.id!!, it.type)
+                    verificationRepository.save(it)
+                }!!
+            }
+
+        credentialEvent.verify(verification)
+
+        return NextCode(VerificationType.PASSWORD_CHANGE_VERIFY)
+    }
+
+    fun changeVerify(request: PasswordVerifyRequest): NextCode {
+        val verification = verificationValidator.validate(
+            request.code!!,
+            VerificationType.PASSWORD_CHANGE_VERIFY,
+            request.deviceId!!
+        )
+
+        // Reuse object but change other values and reset ID.
+        verification.apply {
+            id = 0
+            type = VerificationType.PASSWORD_CHANGE
+            code = CodeGenerationStrategy.UUID_STRATEGY.generate()
+        }
+
+        verificationRepository.save(verification)
+
+        return NextCode(VerificationType.PASSWORD_CHANGE, verification.code)
+    }
+
+    @Transactional
+    fun change(request: PasswordChangeRequest): NextCode {
+        val verification = verificationValidator.validate(
+            request.code!!,
+            VerificationType.PASSWORD_CHANGE,
+            request.deviceId!!
+        )
+        val field = verification.field
+        val currentPassword = request.currentPassword!!
+        val password = request.password!!
+        val user = verification.user!!
+        val username = user.getUsername(field)
+        val credential = user
+            .credentials
+            .firstOrNull { it.username == username }
+            ?: throw InvalidCredentialException()
+
+        // Validate if the current password matches.
+        if (!passwordEncoder.matches(currentPassword, credential.password)) {
+            throw InvalidCredentialException()
+        }
+
+        credential.password = passwordEncoder.encode(password)
+
+        userCredentialRepository.save(credential)
+
+        return NextCode(VerificationType.AUTHENTICATE)
     }
 }

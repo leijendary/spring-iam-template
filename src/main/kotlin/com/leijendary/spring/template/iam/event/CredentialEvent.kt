@@ -43,7 +43,11 @@ class CredentialEvent(
             VerificationType.VERIFICATION,
             VerificationType.REGISTRATION -> "register.verify" to verificationProperties.register
 
-            VerificationType.RESET_PASSWORD -> "reset-password.verify" to verificationProperties.resetPassword
+            VerificationType.PASSWORD_CHANGE_VERIFY -> {
+                "password-change.verify" to verificationProperties.password.change
+            }
+
+            VerificationType.PASSWORD_RESET -> "password-reset.verify" to verificationProperties.password.reset
             else -> return
         }
         val variables = mapOf("code" to code)
@@ -72,7 +76,8 @@ class CredentialEvent(
             VerificationType.VERIFICATION,
             VerificationType.REGISTRATION -> "notification.verification.sms"
 
-            VerificationType.RESET_PASSWORD -> "notification.resetPassword.sms"
+            VerificationType.PASSWORD_CHANGE_VERIFY -> "notification.password.change.sms"
+            VerificationType.PASSWORD_RESET -> "notification.password.reset.sms"
             else -> return
         }
         val message = messageSource.getMessage(key, arrayOf(code), locale)

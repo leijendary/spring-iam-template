@@ -6,7 +6,6 @@ import com.leijendary.spring.template.iam.api.v1.model.RegisterCustomerEmailRequ
 import com.leijendary.spring.template.iam.api.v1.model.RegisterCustomerFullRequest
 import com.leijendary.spring.template.iam.api.v1.model.RegisterCustomerMobileRequest
 import com.leijendary.spring.template.iam.core.config.properties.VerificationProperties
-import com.leijendary.spring.template.iam.core.exception.ResourceNotFoundException
 import com.leijendary.spring.template.iam.core.extension.transactional
 import com.leijendary.spring.template.iam.entity.Account
 import com.leijendary.spring.template.iam.entity.Role
@@ -33,7 +32,6 @@ class RegisterCustomerService(
 ) {
     companion object {
         private val MAPPER = UserMapper.INSTANCE
-        private val SOURCE_ROLE = listOf("data", "Role", "name")
     }
 
     fun mobile(request: RegisterCustomerMobileRequest): NextCode {
@@ -42,9 +40,9 @@ class RegisterCustomerService(
             status = Status.ACTIVE
         }
         val roleName = Role.Defaults.CUSTOMER.value
-        val role = roleRepository
-            .findFirstByName(roleName)
-            ?: throw ResourceNotFoundException(SOURCE_ROLE, roleName)
+        val role = transactional(readOnly = true) {
+            roleRepository.findFirstByNameOrThrow(roleName)
+        }!!
         val user = MAPPER.from(request).apply {
             this.account = account
             this.role = role
@@ -68,7 +66,7 @@ class RegisterCustomerService(
 
         credentialEvent.verify(verification)
 
-        return NextCode(VerificationType.VERIFICATION, null)
+        return NextCode(VerificationType.VERIFICATION)
     }
 
     fun email(request: RegisterCustomerEmailRequest): NextCode {
@@ -77,9 +75,9 @@ class RegisterCustomerService(
             status = Status.ACTIVE
         }
         val roleName = Role.Defaults.CUSTOMER.value
-        val role = roleRepository
-            .findFirstByName(roleName)
-            ?: throw ResourceNotFoundException(SOURCE_ROLE, roleName)
+        val role = transactional(readOnly = true) {
+            roleRepository.findFirstByNameOrThrow(roleName)
+        }!!
         val user = MAPPER.from(request).apply {
             this.account = account
             this.role = role
@@ -103,7 +101,7 @@ class RegisterCustomerService(
 
         credentialEvent.verify(verification)
 
-        return NextCode(VerificationType.VERIFICATION, null)
+        return NextCode(VerificationType.VERIFICATION)
     }
 
     fun full(request: RegisterCustomerFullRequest): NextCode {
@@ -112,9 +110,9 @@ class RegisterCustomerService(
             status = Status.ACTIVE
         }
         val roleName = Role.Defaults.CUSTOMER.value
-        val role = roleRepository
-            .findFirstByName(roleName)
-            ?: throw ResourceNotFoundException(SOURCE_ROLE, roleName)
+        val role = transactional(readOnly = true) {
+            roleRepository.findFirstByNameOrThrow(roleName)
+        }!!
         val user = MAPPER.from(request).apply {
             this.account = account
             this.role = role
@@ -153,6 +151,6 @@ class RegisterCustomerService(
 
         credentialEvent.verify(verification)
 
-        return NextCode(VerificationType.VERIFICATION, null)
+        return NextCode(VerificationType.VERIFICATION)
     }
 }

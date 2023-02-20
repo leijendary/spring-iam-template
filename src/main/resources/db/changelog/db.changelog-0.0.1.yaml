@@ -321,7 +321,7 @@ databaseChangeLog:
                   type: varchar(12)
               - column:
                   name: type
-                  type: varchar(16)
+                  type: varchar(20)
                   constraints:
                     nullable: false
               - column:

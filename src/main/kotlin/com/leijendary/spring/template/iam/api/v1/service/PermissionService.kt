@@ -3,7 +3,6 @@ package com.leijendary.spring.template.iam.api.v1.service
 import com.leijendary.spring.template.iam.api.v1.mapper.PermissionMapper
 import com.leijendary.spring.template.iam.api.v1.model.PermissionRequest
 import com.leijendary.spring.template.iam.api.v1.model.PermissionResponse
-import com.leijendary.spring.template.iam.core.exception.ResourceNotFoundException
 import com.leijendary.spring.template.iam.core.extension.transactional
 import com.leijendary.spring.template.iam.core.model.QueryRequest
 import com.leijendary.spring.template.iam.repository.PermissionRepository
@@ -13,7 +12,6 @@ import org.springframework.cache.annotation.CachePut
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
-import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 
 @Service
@@ -24,7 +22,6 @@ class PermissionService(
     companion object {
         private const val CACHE_NAME = "permission:v1"
         private val MAPPER = PermissionMapper.INSTANCE
-        private val SOURCE = listOf("data", "Permission", "id")
     }
 
     fun list(request: QueryRequest, pageable: Pageable): Page<PermissionResponse> {
@@ -54,9 +51,7 @@ class PermissionService(
     @Cacheable(value = [CACHE_NAME], key = "#id")
     fun get(id: Long): PermissionResponse {
         val permission = transactional(readOnly = true) {
-            permissionRepository
-                .findByIdOrNull(id)
-                ?: throw ResourceNotFoundException(SOURCE, id)
+            permissionRepository.findByIdOrThrow(id)
         }!!
 
         return MAPPER.toResponse(permission)
@@ -66,9 +61,8 @@ class PermissionService(
     fun update(id: Long, request: PermissionRequest): PermissionResponse {
         val permission = transactional {
             permissionRepository
-                .findByIdOrNull(id)
-                ?.let { MAPPER.update(request, it) }
-                ?: throw ResourceNotFoundException(SOURCE, id)
+                .findByIdOrThrow(id)
+                .let { MAPPER.update(request, it) }
         }!!
 
         return MAPPER.toResponse(permission)
@@ -77,13 +71,12 @@ class PermissionService(
     @CacheEvict(value = [CACHE_NAME], key = "#id")
     fun delete(id: Long) = transactional {
         permissionRepository
-            .findByIdOrNull(id)
-            ?.let {
+            .findByIdOrThrow(id)
+            .let {
                 // Delete all role_permission first since they are connected to the role
                 rolePermissionRepository.deleteAllByPermissionId(id)
 
                 permissionRepository.delete(it)
             }
-            ?: throw ResourceNotFoundException(SOURCE, id)
     }
 }
