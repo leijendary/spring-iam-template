@@ -604,11 +604,11 @@ databaseChangeLog:
             indexName: user_credential_user_id_username_idx
             tableName: user_credential
   - changeSet:
-      id: add-permission-permission-case-insensitive-unique-constraint
+      id: add-permission-value-case-insensitive-unique-constraint
       author: Leijendekker
       changes:
         - sql:
-            sql: create unique index permission_permission_key on permission (lower(permission));
+            sql: create unique index permission_value_key on permission (lower(value));
   - changeSet:
       id: add-role-permission-permission-id-foreign-key
       author: Leijendekker
