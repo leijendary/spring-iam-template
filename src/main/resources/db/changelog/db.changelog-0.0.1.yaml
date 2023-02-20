@@ -256,7 +256,7 @@ databaseChangeLog:
                     nullable: false
                     primaryKey: true
               - column:
-                  name: permission
+                  name: value
                   type: text
                   constraints:
                     nullable: false

@@ -4,5 +4,5 @@ import jakarta.validation.constraints.NotBlank
 
 data class PermissionRequest(
     @field:NotBlank(message = "validation.required")
-    val permission: String? = null,
+    val value: String? = null,
 )

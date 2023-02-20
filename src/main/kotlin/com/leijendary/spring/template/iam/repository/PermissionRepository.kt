@@ -6,5 +6,5 @@ import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.JpaRepository
 
 interface PermissionRepository : JpaRepository<Permission, Long> {
-    fun findAllByPermissionContainingIgnoreCase(permission: String, pageable: Pageable): Page<Permission>
+    fun findAllByValueContainingIgnoreCase(value: String, pageable: Pageable): Page<Permission>
 }

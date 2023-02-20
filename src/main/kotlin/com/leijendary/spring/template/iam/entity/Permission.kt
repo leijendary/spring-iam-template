@@ -5,5 +5,5 @@ import jakarta.persistence.Entity
 
 @Entity
 class Permission : IdentityEntity() {
-    var permission = ""
+    var value = ""
 }

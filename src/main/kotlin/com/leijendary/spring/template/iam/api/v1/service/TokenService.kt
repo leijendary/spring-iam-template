@@ -144,7 +144,7 @@ class TokenService(
         }!!
 
         return permissions
-            .map { it.permission!!.permission }
+            .map { it.permission!!.value }
             .toSet()
     }
 

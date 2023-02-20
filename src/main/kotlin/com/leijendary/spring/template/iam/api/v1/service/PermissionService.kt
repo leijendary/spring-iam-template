@@ -33,7 +33,7 @@ class PermissionService(
             if (query.isNullOrBlank()) {
                 permissionRepository.findAll(pageable)
             } else {
-                permissionRepository.findAllByPermissionContainingIgnoreCase(query, pageable)
+                permissionRepository.findAllByValueContainingIgnoreCase(query, pageable)
             }
         }!!
 
