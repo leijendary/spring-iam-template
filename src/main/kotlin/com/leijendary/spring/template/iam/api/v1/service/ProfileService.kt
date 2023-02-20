@@ -5,6 +5,7 @@ import com.leijendary.spring.template.iam.api.v1.model.ProfileRequest
 import com.leijendary.spring.template.iam.api.v1.model.ProfileResponse
 import com.leijendary.spring.template.iam.core.exception.ResourceNotFoundException
 import com.leijendary.spring.template.iam.core.extension.transactional
+import com.leijendary.spring.template.iam.core.storage.S3Storage
 import com.leijendary.spring.template.iam.repository.UserRepository
 import org.springframework.cache.annotation.CachePut
 import org.springframework.data.repository.findByIdOrNull
@@ -12,7 +13,7 @@ import org.springframework.stereotype.Service
 import java.util.*
 
 @Service
-class ProfileService(private val userRepository: UserRepository) {
+class ProfileService(private val s3Storage: S3Storage, private val userRepository: UserRepository) {
     companion object {
         private const val CACHE_NAME = "profile:v1"
         private val MAPPER = ProfileMapper.INSTANCE
@@ -28,7 +29,7 @@ class ProfileService(private val userRepository: UserRepository) {
                 ?: throw ResourceNotFoundException(SOURCE, id)
         }!!
 
-        return MAPPER.toResponse(user)
+        return MAPPER.toResponse(user, s3Storage)
     }
 
     @CachePut(value = [CACHE_NAME], key = "#userId")
@@ -45,6 +46,6 @@ class ProfileService(private val userRepository: UserRepository) {
                 ?: throw ResourceNotFoundException(SOURCE, id)
         }!!
 
-        return MAPPER.toResponse(user)
+        return MAPPER.toResponse(user, s3Storage)
     }
 }
