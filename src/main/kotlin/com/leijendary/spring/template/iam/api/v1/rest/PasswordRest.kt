@@ -25,7 +25,7 @@ class PasswordRest(private val passwordService: PasswordService) {
             verification code for the nominate password process.
         """
     )
-    fun resetVerify(@Valid @RequestBody request: PasswordVerifyRequest) = passwordService.resetVerify(request)
+    fun resetVerify(@Valid @RequestBody request: VerifyRequest) = passwordService.resetVerify(request)
 
     @PostMapping("nominate")
     @Operation(summary = "Create a password using the verification code sent.")
@@ -39,7 +39,7 @@ class PasswordRest(private val passwordService: PasswordService) {
 
     @PostMapping("change/verify")
     @Operation(summary = "Verify the process of changing the user's password.")
-    fun changeVerify(@Valid @RequestBody request: PasswordVerifyRequest) = passwordService.changeVerify(request)
+    fun changeVerify(@Valid @RequestBody request: VerifyRequest) = passwordService.changeVerify(request)
 
     @PutMapping("change")
     @Operation(summary = "The actual update of the user's password.")

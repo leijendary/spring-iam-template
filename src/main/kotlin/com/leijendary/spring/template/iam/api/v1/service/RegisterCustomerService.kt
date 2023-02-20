@@ -4,7 +4,7 @@ import com.leijendary.spring.template.iam.api.v1.mapper.UserMapper
 import com.leijendary.spring.template.iam.api.v1.model.NextCode
 import com.leijendary.spring.template.iam.api.v1.model.RegisterCustomerEmailRequest
 import com.leijendary.spring.template.iam.api.v1.model.RegisterCustomerFullRequest
-import com.leijendary.spring.template.iam.api.v1.model.RegisterCustomerMobileRequest
+import com.leijendary.spring.template.iam.api.v1.model.RegisterCustomerPhoneRequest
 import com.leijendary.spring.template.iam.core.config.properties.VerificationProperties
 import com.leijendary.spring.template.iam.core.extension.transactional
 import com.leijendary.spring.template.iam.entity.Account
@@ -34,7 +34,7 @@ class RegisterCustomerService(
         private val MAPPER = UserMapper.INSTANCE
     }
 
-    fun mobile(request: RegisterCustomerMobileRequest): NextCode {
+    fun phone(request: RegisterCustomerPhoneRequest): NextCode {
         val account = Account().apply {
             type = Account.Type.CUSTOMER.value
             status = Status.ACTIVE

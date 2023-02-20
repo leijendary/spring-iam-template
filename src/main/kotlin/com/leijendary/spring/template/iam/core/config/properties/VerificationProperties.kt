@@ -9,8 +9,9 @@ import java.time.OffsetDateTime
 @ConfigurationProperties(prefix = "verification")
 class VerificationProperties {
     var expiry: Duration = Duration.ofHours(2)
-    var register = Config()
+    var email = Config()
     var password = Password()
+    var register = Config()
 
     inner class Config {
         var subject: String? = null

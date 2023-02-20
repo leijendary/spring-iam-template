@@ -35,8 +35,8 @@ encrypt:
 
 verification:
   expiry: 2h
-  register:
-    subject: Welcome!
+  email:
+    subject: Email Verification
     url:
   password:
     change:
@@ -45,6 +45,9 @@ verification:
     reset:
       subject: Password Reset
       url:
+  register:
+    subject: Welcome!
+    url:
 
 spring:
   application:

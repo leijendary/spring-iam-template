@@ -13,9 +13,9 @@ interface UserMapper {
         val INSTANCE: UserMapper = getMapper(UserMapper::class.java)
     }
 
-    fun from(request: RegisterCustomerMobileRequest): User
-
     fun from(request: RegisterCustomerEmailRequest): User
+
+    fun from(request: RegisterCustomerPhoneRequest): User
 
     fun from(request: RegisterCustomerFullRequest): User
 

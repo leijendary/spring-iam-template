@@ -1,11 +1,13 @@
 package com.leijendary.spring.template.iam.api.v1.model
 
+import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.NotBlank
 
-open class PasswordVerifyRequest(
+data class EmailUpdateRequest(
     @field:NotBlank(message = "validation.required")
-    val deviceId: String? = null,
+    @field:Email(message = "validation.email.invalid")
+    val email: String? = null,
 
     @field:NotBlank(message = "validation.required")
-    val code: String? = null
+    val deviceId: String? = null,
 )

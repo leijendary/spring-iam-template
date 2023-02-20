@@ -48,7 +48,9 @@ class User : AuditingUUIDEntity(), SoftDeleteEntity {
     val isIncomplete: Boolean
         get() = firstName.isNullOrBlank() or firstName.isNullOrBlank()
 
+    fun setUsername(field: String, value: String) = this.reflectSet(field, value)
+
     fun getUsername(field: String) = this.reflectGet(field) as String
 
-    fun setVerified(field: String) = this.reflectSet("${field}Verified", true)
+    fun setVerified(field: String, value: Boolean = true) = this.reflectSet("${field}Verified", value)
 }

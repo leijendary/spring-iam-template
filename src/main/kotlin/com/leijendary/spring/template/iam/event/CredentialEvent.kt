@@ -40,6 +40,8 @@ class CredentialEvent(
 
     private fun email(type: String, fullName: String, code: String, to: String) {
         val (template, config) = when (type) {
+            VerificationType.EMAIL_VERIFY -> "email.verify" to verificationProperties.email
+
             VerificationType.VERIFICATION,
             VerificationType.REGISTRATION -> "register.verify" to verificationProperties.register
 
@@ -73,6 +75,7 @@ class CredentialEvent(
 
     private fun phone(type: String, code: String, to: String) {
         val key = when (type) {
+            VerificationType.PHONE_VERIFY,
             VerificationType.VERIFICATION,
             VerificationType.REGISTRATION -> "notification.verification.sms"
 

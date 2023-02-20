@@ -63,7 +63,7 @@ class PasswordService(
         return NextCode(VerificationType.VERIFICATION)
     }
 
-    fun resetVerify(request: PasswordVerifyRequest): NextCode {
+    fun resetVerify(request: VerifyRequest): NextCode {
         val verification = verificationValidator.validate(
             request.code!!,
             VerificationType.PASSWORD_RESET,
@@ -159,7 +159,7 @@ class PasswordService(
         return NextCode(VerificationType.PASSWORD_CHANGE_VERIFY)
     }
 
-    fun changeVerify(request: PasswordVerifyRequest): NextCode {
+    fun changeVerify(request: VerifyRequest): NextCode {
         val verification = verificationValidator.validate(
             request.code!!,
             VerificationType.PASSWORD_CHANGE_VERIFY,

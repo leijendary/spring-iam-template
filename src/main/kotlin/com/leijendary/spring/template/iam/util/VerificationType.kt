@@ -11,4 +11,6 @@ object VerificationType {
     const val PASSWORD_RESET = "passwordReset"
     const val PASSWORD_CHANGE_VERIFY = "passwordChangeVerify"
     const val PASSWORD_CHANGE = "passwordChange"
+    const val EMAIL_VERIFY = "emailVerify"
+    const val PHONE_VERIFY = "phoneVerify"
 }

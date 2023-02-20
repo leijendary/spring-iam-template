@@ -3,7 +3,7 @@ package com.leijendary.spring.template.iam.api.v1.rest
 import com.leijendary.spring.template.iam.api.v1.model.NextCode
 import com.leijendary.spring.template.iam.api.v1.model.RegisterCustomerEmailRequest
 import com.leijendary.spring.template.iam.api.v1.model.RegisterCustomerFullRequest
-import com.leijendary.spring.template.iam.api.v1.model.RegisterCustomerMobileRequest
+import com.leijendary.spring.template.iam.api.v1.model.RegisterCustomerPhoneRequest
 import com.leijendary.spring.template.iam.api.v1.service.RegisterCustomerService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
@@ -15,20 +15,6 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping("/api/v1/register/customer")
 @Tag(name = "Register Customer", description = "API for the registration flows of the customer.")
 class RegisterCustomerRest(private val registerCustomerService: RegisterCustomerService) {
-    @PostMapping("mobile")
-    @ResponseStatus(ACCEPTED)
-    @Operation(
-        summary = """
-            A customer account can register using this API. Although, this API only requires the
-            countryCode, phone, and deviceId. This is only for the phone number credential.
-            Once registered, this API will send an SMS verification to the phone number for 
-            verification.
-        """
-    )
-    fun mobile(@Valid @RequestBody request: RegisterCustomerMobileRequest): NextCode {
-        return registerCustomerService.mobile(request)
-    }
-
     @PostMapping("email")
     @ResponseStatus(ACCEPTED)
     @Operation(
@@ -40,6 +26,20 @@ class RegisterCustomerRest(private val registerCustomerService: RegisterCustomer
     )
     fun email(@Valid @RequestBody request: RegisterCustomerEmailRequest): NextCode {
         return registerCustomerService.email(request)
+    }
+
+    @PostMapping("phone")
+    @ResponseStatus(ACCEPTED)
+    @Operation(
+        summary = """
+            A customer account can register using this API. Although, this API only requires the
+            countryCode, phone, and deviceId. This is only for the phone number credential.
+            Once registered, this API will send an SMS verification to the phone number for 
+            verification.
+        """
+    )
+    fun phone(@Valid @RequestBody request: RegisterCustomerPhoneRequest): NextCode {
+        return registerCustomerService.phone(request)
     }
 
     @PostMapping("full")
