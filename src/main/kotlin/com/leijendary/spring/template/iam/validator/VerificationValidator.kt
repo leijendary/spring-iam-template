@@ -6,7 +6,6 @@ import com.leijendary.spring.template.iam.core.util.RequestContext.now
 import com.leijendary.spring.template.iam.core.util.RequestContext.userIdOrNull
 import com.leijendary.spring.template.iam.entity.Verification
 import com.leijendary.spring.template.iam.repository.VerificationRepository
-import org.springframework.http.HttpStatus.BAD_REQUEST
 import org.springframework.http.HttpStatus.GONE
 import org.springframework.stereotype.Component
 import java.util.*
@@ -18,10 +17,10 @@ class VerificationValidator(private val verificationRepository: VerificationRepo
         val verification = transactional(readOnly = true) {
             if (userId != null) {
                 verificationRepository
-                    .findFirstByCodeAndTypeAndUserIdOrThrow(code, type, userId)
+                    .findFirstByCodeAndTypeAndDeviceIdAndUserIdOrThrow(code, type, deviceId, userId)
             } else {
                 verificationRepository
-                    .findFirstByCodeAndTypeOrThrow(code, type)
+                    .findFirstByCodeAndTypeAndDeviceIdOrThrow(code, type, deviceId)
             }
         }!!
         val expiresAt = verification.expiresAt!!
@@ -34,13 +33,6 @@ class VerificationValidator(private val verificationRepository: VerificationRepo
             val source = listOf("data", "Verification", "expiry")
 
             throw StatusException(source, "validation.verification.expired", GONE)
-        }
-
-        // Device ID should match
-        if (deviceId != verification.deviceId) {
-            val source = listOf("data", "Verification", "deviceId")
-
-            throw StatusException(source, "validation.deviceId.notMatch", BAD_REQUEST)
         }
 
         // Record is already verified, and we don't need this anymore.

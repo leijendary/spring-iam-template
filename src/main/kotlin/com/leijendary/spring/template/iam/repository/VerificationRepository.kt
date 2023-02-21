@@ -10,17 +10,27 @@ private val sourceCode = listOf("data", "Verification", "code")
 interface VerificationRepository : JpaRepository<Verification, Long> {
     fun deleteAllByUserIdAndType(userId: UUID, type: String)
 
-    fun findFirstByCodeAndType(code: String, type: String): Verification?
+    fun findFirstByCodeAndTypeAndDeviceId(code: String, type: String, deviceId: String): Verification?
 
-    fun findFirstByCodeAndTypeAndUserId(code: String, type: String, userId: UUID): Verification?
+    fun findFirstByCodeAndTypeAndDeviceIdAndUserId(
+        code: String,
+        type: String,
+        deviceId: String,
+        userId: UUID
+    ): Verification?
 
-    fun findFirstByCodeAndTypeOrThrow(code: String, type: String): Verification {
-        return findFirstByCodeAndType(code, type)
+    fun findFirstByCodeAndTypeAndDeviceIdOrThrow(code: String, type: String, deviceId: String): Verification {
+        return findFirstByCodeAndTypeAndDeviceId(code, type, deviceId)
             ?: throw ResourceNotFoundException(sourceCode, code)
     }
 
-    fun findFirstByCodeAndTypeAndUserIdOrThrow(code: String, type: String, userId: UUID): Verification {
-        return findFirstByCodeAndTypeAndUserId(code, type, userId)
+    fun findFirstByCodeAndTypeAndDeviceIdAndUserIdOrThrow(
+        code: String,
+        type: String,
+        deviceId: String,
+        userId: UUID
+    ): Verification {
+        return findFirstByCodeAndTypeAndDeviceIdAndUserId(code, type, deviceId, userId)
             ?: throw ResourceNotFoundException(sourceCode, code)
     }
 }

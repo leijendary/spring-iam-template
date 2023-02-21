@@ -638,31 +638,19 @@ databaseChangeLog:
             tableName: role_permission
             unique: true
   - changeSet:
-      id: add-verification-user-id-type-index
+      id: add-verification-type-user-id-index
       author: Leijendekker
       changes:
         - createIndex:
             columns:
+              - column:
+                  name: type
               - column:
                   name: user_id
-              - column:
-                  name: type
-            indexName: verification_user_id_type_idx
+            indexName: verification_type_user_id_idx
             tableName: verification
   - changeSet:
-      id: add-verification-code-type-index
-      author: Leijendekker
-      changes:
-        - createIndex:
-            columns:
-              - column:
-                  name: code
-              - column:
-                  name: type
-            indexName: verification_code_type_idx
-            tableName: verification
-  - changeSet:
-      id: add-verification-code-type-user-id-index
+      id: add-verification-code-type-device-id-index
       author: Leijendekker
       changes:
         - createIndex:
@@ -672,8 +660,24 @@ databaseChangeLog:
               - column:
                   name: type
               - column:
+                  name: device_id
+            indexName: verification_code_type_device_id_idx
+            tableName: verification
+  - changeSet:
+      id: add-verification-code-type-device-id-user-id-index
+      author: Leijendekker
+      changes:
+        - createIndex:
+            columns:
+              - column:
+                  name: code
+              - column:
+                  name: type
+              - column:
+                  name: device_id
+              - column:
                   name: user_id
-            indexName: verification_code_type_user_id_idx
+            indexName: verification_code_type_device_id_user_id_idx
             tableName: verification
   - changeSet:
       id: add-user-created-at-row-id-index
