@@ -650,7 +650,7 @@ databaseChangeLog:
             indexName: verification_user_id_type_idx
             tableName: verification
   - changeSet:
-      id: add-verification-user-id-code-field-type-index
+      id: add-verification-code-type-index
       author: Leijendekker
       changes:
         - createIndex:
@@ -660,6 +660,20 @@ databaseChangeLog:
               - column:
                   name: type
             indexName: verification_code_type_idx
+            tableName: verification
+  - changeSet:
+      id: add-verification-code-type-user-id-index
+      author: Leijendekker
+      changes:
+        - createIndex:
+            columns:
+              - column:
+                  name: code
+              - column:
+                  name: type
+              - column:
+                  name: user_id
+            indexName: verification_code_type_user_id_idx
             tableName: verification
   - changeSet:
       id: add-user-created-at-row-id-index
