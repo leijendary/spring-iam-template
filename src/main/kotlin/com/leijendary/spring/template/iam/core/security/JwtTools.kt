@@ -43,11 +43,12 @@ class JwtTools(private val authProperties: AuthProperties) {
 
     fun create(subject: String, audience: String, scopes: Set<String>): JwtSet = runBlocking {
         val accessId = UUID.randomUUID()
-        val refreshId = UUID.randomUUID()
         val accessToken = async {
             create(accessId, ACCESS_TOKEN, subject, audience, scopes)
         }
         val refreshToken = async {
+            val refreshId = UUID.randomUUID()
+
             create(refreshId, REFRESH_TOKEN, subject, audience, scopes, accessId.toString())
         }
 
