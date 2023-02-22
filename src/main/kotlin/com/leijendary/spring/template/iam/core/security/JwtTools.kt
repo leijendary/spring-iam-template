@@ -5,6 +5,8 @@ import com.leijendary.spring.template.iam.core.mapper.DateMapper
 import com.leijendary.spring.template.iam.core.model.JwtSet
 import com.leijendary.spring.template.iam.core.model.ParsedJwt
 import com.leijendary.spring.template.iam.core.model.Token
+import com.leijendary.spring.template.iam.core.security.JwtTools.TokenType.ACCESS_TOKEN
+import com.leijendary.spring.template.iam.core.security.JwtTools.TokenType.REFRESH_TOKEN
 import com.leijendary.spring.template.iam.core.util.RequestContext.now
 import com.nimbusds.jose.JOSEObjectType
 import com.nimbusds.jose.JWSAlgorithm
@@ -13,6 +15,8 @@ import com.nimbusds.jose.crypto.RSASSASigner
 import com.nimbusds.jose.crypto.RSASSAVerifier
 import com.nimbusds.jwt.JWTClaimsSet
 import com.nimbusds.jwt.SignedJWT
+import kotlinx.coroutines.async
+import kotlinx.coroutines.runBlocking
 import org.springframework.stereotype.Component
 import java.security.KeyFactory
 import java.security.interfaces.RSAPrivateKey
@@ -37,18 +41,30 @@ class JwtTools(private val authProperties: AuthProperties) {
         REFRESH_TOKEN
     }
 
-    fun create(subject: String, audience: String, scopes: Set<String>): JwtSet {
-        val accessToken = create(TokenType.ACCESS_TOKEN, subject, audience, scopes)
-        val refreshToken = create(TokenType.REFRESH_TOKEN, subject, audience, scopes, accessToken.id.toString())
+    fun create(subject: String, audience: String, scopes: Set<String>): JwtSet = runBlocking {
+        val accessId = UUID.randomUUID()
+        val refreshId = UUID.randomUUID()
+        val accessToken = async {
+            create(accessId, ACCESS_TOKEN, subject, audience, scopes)
+        }
+        val refreshToken = async {
+            create(refreshId, REFRESH_TOKEN, subject, audience, scopes, accessId.toString())
+        }
 
-        return JwtSet(accessToken, refreshToken)
+        JwtSet(accessToken.await(), refreshToken.await())
     }
 
-    fun create(type: TokenType, subject: String, audience: String, scopes: Set<String>, ati: String? = null): Token {
-        val id = UUID.randomUUID()
+    fun create(
+        id: UUID,
+        type: TokenType,
+        subject: String,
+        audience: String,
+        scopes: Set<String>,
+        ati: String? = null
+    ): Token {
         val config = when (type) {
-            TokenType.ACCESS_TOKEN -> authProperties.accessToken
-            TokenType.REFRESH_TOKEN -> authProperties.refreshToken
+            ACCESS_TOKEN -> authProperties.accessToken
+            REFRESH_TOKEN -> authProperties.refreshToken
         }
         val header = JWSHeader.Builder(JWSAlgorithm.RS256)
             .type(JOSEObjectType.JWT)
