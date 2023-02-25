@@ -45,9 +45,7 @@ class TokenService(
         val username = request.username!!
         val password = request.password!!
         val credential = transactional(readOnly = true) {
-            userCredentialRepository
-                .findFirstByUsernameAndUserDeletedAtIsNull(username)
-                ?: throw InvalidCredentialException()
+            userCredentialRepository.findFirstByUsernameAndUserDeletedAtIsNull(username)
         }!!
 
         if (!passwordEncoder.matches(password, credential.password)) {
@@ -203,7 +201,7 @@ class TokenService(
 
         // Device exists and the user ID does not match the current user ID.
         // Delete the old user's device
-        if (device != null && device.user!!.id != user.id) {
+        if (device != null && device.user?.id != user.id) {
             userDeviceRepository.delete(device)
         }
 

@@ -32,9 +32,7 @@ class PasswordService(
 ) {
     fun reset(request: PasswordResetRequest): NextCode {
         val credential = transactional(readOnly = true) {
-            userCredentialRepository
-                .findFirstByUsernameAndUserDeletedAtIsNull(request.username!!)
-                ?: throw InvalidCredentialException()
+            userCredentialRepository.findFirstByUsernameAndUserDeletedAtIsNullOrThrow(request.username!!)
         }!!
         val field = credential.type
         val user = credential.user!!

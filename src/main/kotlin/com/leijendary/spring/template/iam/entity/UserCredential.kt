@@ -13,7 +13,7 @@ class UserCredential : IdentityEntity() {
     var user: User? = null
 
     var username = ""
-    var password = ""
+    var password: String? = null
     var type = ""
 
     @CreatedDate
