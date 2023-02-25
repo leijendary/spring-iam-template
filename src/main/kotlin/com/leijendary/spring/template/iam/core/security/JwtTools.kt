@@ -32,6 +32,16 @@ private val keyFactory = KeyFactory.getInstance("RSA")
 
 @Component
 class JwtTools(private val authProperties: AuthProperties) {
+    private val privateKey = mapOf(
+        ACCESS_TOKEN to rsaPrivateKey(authProperties.accessToken.privateKey),
+        REFRESH_TOKEN to rsaPrivateKey(authProperties.refreshToken.privateKey),
+    )
+
+    val publicKey = mapOf(
+        ACCESS_TOKEN to rsaPublicKey(authProperties.accessToken.publicKey),
+        REFRESH_TOKEN to rsaPublicKey(authProperties.refreshToken.publicKey),
+    )
+
     companion object {
         private val MAPPER = DateMapper.INSTANCE
     }
@@ -63,18 +73,16 @@ class JwtTools(private val authProperties: AuthProperties) {
         scopes: Set<String>,
         ati: String? = null
     ): Token {
-        val config = when (type) {
-            ACCESS_TOKEN -> authProperties.accessToken
-            REFRESH_TOKEN -> authProperties.refreshToken
+        val expiration = when (type) {
+            ACCESS_TOKEN -> authProperties.accessToken.computeExpiration()
+            REFRESH_TOKEN -> authProperties.refreshToken.computeExpiration()
         }
         val header = JWSHeader.Builder(JWSAlgorithm.RS256)
             .type(JOSEObjectType.JWT)
             .keyID(authProperties.keyId)
             .build()
-        val expiration = config.computeExpiration()
         val expirationMilli = MAPPER.toEpochMilli(expiration)
         val expirationTime = Date(expirationMilli)
-        val scope = scopes.joinToString(" ")
         val claims = JWTClaimsSet.Builder()
             .jwtID(id.toString())
             .issuer(authProperties.issuer)
@@ -82,13 +90,18 @@ class JwtTools(private val authProperties: AuthProperties) {
             .audience(audience)
             .expirationTime(expirationTime)
             .claim(CLAIM_ISSUE_TIME, now.toEpochSecond())
-            .claim(CLAIM_SCOPE, scope)
+
+        if (scopes.isNotEmpty()) {
+            val scope = scopes.joinToString(" ")
+
+            claims.claim(CLAIM_SCOPE, scope)
+        }
 
         ati?.let {
             claims.claim(CLAIM_ATI, it)
         }
 
-        val privateKey = rsaPrivateKey(config.privateKey)
+        val privateKey = privateKey[type]!!
         val signer = RSASSASigner(privateKey)
         val signed = SignedJWT(header, claims.build())
         signed.sign(signer)
@@ -116,12 +129,8 @@ class JwtTools(private val authProperties: AuthProperties) {
             .issueTime
             .let { MAPPER.toOffsetDateTime(it.time) }
         val accessTokenId = claimsSet.getStringClaim(CLAIM_ATI)
-        val config = if (accessTokenId == null) {
-            authProperties.accessToken
-        } else {
-            authProperties.refreshToken
-        }
-        val publicKey = rsaPublicKey(config.publicKey)
+        val type = if (accessTokenId == null) ACCESS_TOKEN else REFRESH_TOKEN
+        val publicKey = publicKey[type]!!
         val verifier = RSASSAVerifier(publicKey)
         val isVerified = signed.verify(verifier)
 
@@ -138,6 +147,8 @@ class JwtTools(private val authProperties: AuthProperties) {
         )
     }
 
+    fun getPublicKey(type: TokenType) = publicKey[type]!!
+
     private fun rsaPrivateKey(privateKey: String): RSAPrivateKey {
         return privateKey
             .replace("\\n", "")
@@ -149,7 +160,7 @@ class JwtTools(private val authProperties: AuthProperties) {
             }
     }
 
-    fun rsaPublicKey(publicKey: String): RSAPublicKey {
+    private fun rsaPublicKey(publicKey: String): RSAPublicKey {
         return publicKey
             .replace("\\n", "")
             .let {
