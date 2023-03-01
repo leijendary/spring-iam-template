@@ -3,35 +3,29 @@ on:
     tags:
       - '*'
 
-env:
-  REPOSITORY_URL: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ github.event.repository.name }}
-
 jobs:
   docker:
     name: Tag Image
     runs-on: ubuntu-latest
     environment: prod
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
-      - id: ecr
-        name: Login to AWS ECR
+          aws-region: ${{ vars.AWS_REGION }}
+      - id: login-ecr
+        name: Login to ECR
         uses: aws-actions/amazon-ecr-login@v1
-      - name: Pull Image
-        run: docker pull $REPOSITORY_URL:$GITHUB_SHA
-      - name: Build New Image
-        run: docker tag $REPOSITORY_URL:$GITHUB_SHA $REPOSITORY_URL:$GITHUB_REF_NAME
-      - name: Push Image
-        run: docker push $REPOSITORY_URL:$GITHUB_REF_NAME
-      - name: Log out of AWS ECR
-        if: always()
-        run: docker logout ${{ steps.ecr.outputs.registry }}
+      - name: Tag and push
+        env:
+          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          REPOSITORY: ${{ github.event.repository.name }}
+        run: |
+          docker pull --platform=linux/arm64 ${{ env.REGISTRY }}/${{ env.REPOSITORY }}:${{ github.sha }}
+          docker tag ${{ env.REGISTRY }}/${{ env.REPOSITORY }}:${{ github.sha }} ${{ env.REGISTRY }}/${{ env.REPOSITORY }}:${{ github.ref_name }}
+          docker push ${{ env.REGISTRY }}/${{ env.REPOSITORY }}:${{ github.ref_name }}
   deploy:
     name: Fargate
     uses: ./.github/workflows/deploy.yaml

@@ -26,9 +26,9 @@
 - Spring Validation
 - Spring Web
 - SpringDoc OpenAPI
+- AWS CDK
 - Docker
 - JUnit
-- Jackson
 - Kubernetes
 - Liquibase
 - MapStruct

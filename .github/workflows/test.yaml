@@ -1,15 +1,21 @@
-on: workflow_call
+on:
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
 
 jobs:
   test:
     runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      - name: Setup JDK 17
+      - name: Setup JDK 19
         uses: actions/setup-java@v3
         with:
-          java-version: 17
+          java-version: 19
           distribution: 'zulu'
           cache: 'gradle'
       - name: Execute Gradle Test
@@ -22,4 +28,4 @@ jobs:
           SPRING_CLOUD_AWS_CREDENTIALS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY_ID }}
           SPRING_CLOUD_AWS_CREDENTIALS_SECRET_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           SPRING_CLOUD_AWS_REGION_INSTANCE_PROFILE: false
-          SPRING_CLOUD_AWS_REGION_STATIC: ${{ secrets.AWS_REGION }}
+          SPRING_CLOUD_AWS_REGION_STATIC: ${{ vars.AWS_REGION }}
