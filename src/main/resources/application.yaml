@@ -89,8 +89,6 @@ spring:
   devtools:
     livereload:
       port: 35730
-  jmx:
-    enabled: true
   jpa:
     openInView: false
     properties:
