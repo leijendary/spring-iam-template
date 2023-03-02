@@ -22,6 +22,7 @@ type TaskDefinitionConstructProps = {
 };
 
 const environment = env.environment;
+const port = env.port;
 const imageTag = env.imageTag;
 const { id, name } = env.stack;
 const family = `${name}-${environment}`;
@@ -69,13 +70,13 @@ export class TaskDefinitionConstruct extends TaskDefinition {
       }),
       portMappings: [
         {
-          containerPort: 443,
-          hostPort: 443,
+          containerPort: port,
+          hostPort: port,
           protocol: Protocol.TCP,
         },
       ],
       healthCheck: {
-        command: ["CMD-SHELL", "wget -qO- --no-check-certificate https://localhost/actuator/health || exit 1"],
+        command: ["CMD-SHELL", "wget -qO- --no-check-certificate http://localhost/actuator/health || exit 1"],
       },
       environment: {
         SPRING_PROFILES_ACTIVE: environment,

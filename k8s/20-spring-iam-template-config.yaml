@@ -17,3 +17,12 @@ data:
   SPRING_DATA_REDIS_PORT: "6379"
   AWS_EC2_METADATA_DISABLED: "true"
   MANAGEMENT_ZIPKIN_TRACING_ENDPOINT: http://jaeger-service.monitoring.svc.cluster.local:9411/api/v2/spans
+  AUTH_ISSUER: http://localhost
+  AUTH_ACCESS_TOKEN_PRIVATE_KEY:
+  AUTH_ACCESS_TOKEN_PUBLIC_KEY:
+  AUTH_REFRESH_TOKEN_PRIVATE_KEY:
+  AUTH_REFRESH_TOKEN_PUBLIC_KEY:
+  VERIFICATION_EMAIL_URL: http://localhost:3000/email/verify/{code}
+  VERIFICATION_REGISTER_URL: http://localhost:3000/register/verify/{code}
+  VERIFICATION_PASSWORD_CHANGE_URL: http://localhost:3000/password/change/{code}
+  VERIFICATION_PASSWORD_RESET_URL: http://localhost:3000/password/reset/{code}

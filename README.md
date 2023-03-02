@@ -52,10 +52,6 @@
 
 `./gradlew build -x test`
 
-### To generate a certificate:
-
-`keytool -genkeypair -alias spring-boot -keyalg RSA -keysize 2048 -validity 3650 -keypass spring-boot -storetype PKCS12 -keystore keystore.p12`
-
 ### To Generate a public/private key pair
 
 Private Key (RSA):

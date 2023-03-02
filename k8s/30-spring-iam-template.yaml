@@ -9,6 +9,7 @@ spec:
   selector:
     matchLabels:
       app: spring-iam-template
+  revisionHistoryLimit: 1
   template:
     metadata:
       labels:
@@ -18,8 +19,7 @@ spec:
         - name: spring-iam-template
           image: jleijendekker/spring-iam-template:1.0.0
           ports:
-            - containerPort: 443
-            - containerPort: 1099
+            - containerPort: 80
           envFrom:
             - configMapRef:
                 name: spring-iam-template-config
@@ -27,17 +27,15 @@ spec:
                 name: spring-iam-template-secret
           readinessProbe:
             httpGet:
-              scheme: HTTPS
               path: /actuator/health
-              port: 443
+              port: 80
             initialDelaySeconds: 20
             timeoutSeconds: 15
             periodSeconds: 30
           livenessProbe:
             httpGet:
-              scheme: HTTPS
               path: /actuator/health
-              port: 443
+              port: 80
             initialDelaySeconds: 30
             timeoutSeconds: 15
             periodSeconds: 30
@@ -62,13 +60,8 @@ spec:
     app: spring-iam-template
   type: NodePort
   ports:
-    - name: https
+    - name: http
       protocol: TCP
-      port: 443
-      targetPort: 443
-      nodePort: 30444
-    - name: jmx
-      protocol: TCP
-      port: 1099
-      targetPort: 1099
-      nodePort: 30199
+      port: 80
+      targetPort: 80
+      nodePort: 30082
