@@ -86,9 +86,6 @@ spring:
     web:
       pageable:
         maxPageSize: 100
-  devtools:
-    livereload:
-      port: 35730
   jpa:
     openInView: false
     properties:
