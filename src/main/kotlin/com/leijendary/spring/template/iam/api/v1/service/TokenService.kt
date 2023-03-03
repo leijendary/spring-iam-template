@@ -47,9 +47,15 @@ class TokenService(
         val credential = transactional(readOnly = true) {
             userCredentialRepository.findFirstByUsernameAndUserDeletedAtIsNull(username)
         }!!
+        val encoded = credential.password
 
-        if (!passwordEncoder.matches(password, credential.password)) {
+        if (!passwordEncoder.matches(password, encoded)) {
             throw InvalidCredentialException()
+        }
+
+        // Try to check if the user's password encoding needs to be upgraded
+        if (passwordEncoder.upgradeEncoding(encoded)) {
+            credential.password = passwordEncoder.encode(password)
         }
 
         credential.lastUsedAt = now
