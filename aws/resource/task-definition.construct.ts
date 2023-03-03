@@ -1,4 +1,4 @@
-import { RemovalPolicy } from "aws-cdk-lib";
+import { Duration, RemovalPolicy } from "aws-cdk-lib";
 import { IRepository, Repository } from "aws-cdk-lib/aws-ecr";
 import {
   Compatibility,
@@ -76,7 +76,8 @@ export class TaskDefinitionConstruct extends TaskDefinition {
         },
       ],
       healthCheck: {
-        command: ["CMD-SHELL", "wget -qO- --no-check-certificate http://localhost/actuator/health || exit 1"],
+        command: ["CMD-SHELL", "wget -qO- http://localhost/actuator/health || exit 1"],
+        startPeriod: Duration.seconds(isProd() ? 20 : 300),
       },
       environment: {
         SPRING_PROFILES_ACTIVE: environment,
