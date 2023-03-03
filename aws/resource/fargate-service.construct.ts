@@ -1,10 +1,8 @@
-import { Duration } from "aws-cdk-lib";
 import { ISecurityGroup, IVpc, SecurityGroup, SubnetType, Vpc } from "aws-cdk-lib/aws-ec2";
 import { Cluster, FargateService, FargateServiceProps, TaskDefinition } from "aws-cdk-lib/aws-ecs";
 import { DnsRecordType, INamespace, PrivateDnsNamespace } from "aws-cdk-lib/aws-servicediscovery";
 import { Construct } from "constructs";
 import env from "../env";
-import { isProd } from "./../env";
 
 type FargateServiceConstructProps = {
   vpcId: string;
@@ -31,7 +29,6 @@ export class FargateServiceConstruct extends FargateService {
       serviceName: name,
       securityGroups: [securityGroup],
       taskDefinition,
-      healthCheckGracePeriod: isProd() ? Duration.minutes(5) : undefined,
       minHealthyPercent: 100,
       maxHealthyPercent: 200,
       desiredCount: 1,
