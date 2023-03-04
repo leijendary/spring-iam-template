@@ -1,4 +1,4 @@
-import { SecretValue } from "aws-cdk-lib";
+import { RemovalPolicy, SecretValue } from "aws-cdk-lib";
 import { Secret } from "aws-cdk-lib/aws-secretsmanager";
 import { Construct } from "constructs";
 import env from "../env";
@@ -19,6 +19,7 @@ export class SecretConstruct extends Secret {
         "encrypt.key": SecretValue.unsafePlainText(""),
         "encrypt.salt": SecretValue.unsafePlainText(""),
       },
+      removalPolicy: RemovalPolicy.RETAIN,
     });
   }
 }

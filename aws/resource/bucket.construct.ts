@@ -1,3 +1,4 @@
+import { RemovalPolicy } from "aws-cdk-lib";
 import { BlockPublicAccess, Bucket, BucketEncryption } from "aws-cdk-lib/aws-s3";
 import { Construct } from "constructs";
 import env, { isProd } from "../env";
@@ -12,6 +13,7 @@ export class BucketConstruct extends Bucket {
       bucketName: `${organization}-${name}-${environment}`,
       blockPublicAccess: BlockPublicAccess.BLOCK_ALL,
       encryption: BucketEncryption.KMS,
+      removalPolicy: RemovalPolicy.RETAIN,
       versioned: isProd(),
     });
   }
