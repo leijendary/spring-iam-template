@@ -1,6 +1,7 @@
 import { Duration, RemovalPolicy } from "aws-cdk-lib";
 import { IRepository, Repository } from "aws-cdk-lib/aws-ecr";
 import {
+  AppProtocol,
   Compatibility,
   ContainerImage,
   CpuArchitecture,
@@ -79,6 +80,7 @@ export class TaskDefinitionConstruct extends TaskDefinition {
           containerPort: port,
           hostPort: port,
           protocol: Protocol.TCP,
+          appProtocol: AppProtocol.http
         },
       ],
       healthCheck: {
