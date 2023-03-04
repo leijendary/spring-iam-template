@@ -77,10 +77,11 @@ export class TaskDefinitionConstruct extends TaskDefinition {
       }),
       portMappings: [
         {
+          name: "http",
           containerPort: port,
           hostPort: port,
           protocol: Protocol.TCP,
-          appProtocol: AppProtocol.http
+          appProtocol: AppProtocol.http,
         },
       ],
       healthCheck: {
