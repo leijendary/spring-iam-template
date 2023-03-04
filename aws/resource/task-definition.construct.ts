@@ -157,7 +157,6 @@ const getAuroraCredentials = (scope: Construct) => {
     `${id}AuroraSecret-${environment}`,
     `api-aurora-${environment}`
   );
-
   const username = Secret.fromSecretsManager(credential, "username");
   const password = Secret.fromSecretsManager(credential, "password");
 
