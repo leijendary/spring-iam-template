@@ -86,7 +86,7 @@ export class TaskDefinitionConstruct extends TaskDefinition {
       ],
       healthCheck: {
         command: ["CMD-SHELL", "wget -qO- http://localhost/actuator/health || exit 1"],
-        startPeriod: Duration.seconds(isProd() ? 20 : 300),
+        startPeriod: Duration.seconds(isProd() ? 0 : 100),
       },
       environment: {
         SPRING_PROFILES_ACTIVE: environment,
