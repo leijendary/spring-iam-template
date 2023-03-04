@@ -97,6 +97,8 @@ export class TaskDefinitionConstruct extends TaskDefinition {
         AUTH_ACCESS_TOKEN_PUBLIC_KEY: credentials.accessToken.publicKey,
         AUTH_REFRESH_TOKEN_PRIVATE_KEY: credentials.refreshToken.privateKey,
         AUTH_REFRESH_TOKEN_PUBLIC_KEY: credentials.refreshToken.publicKey,
+        ENCRYPT_KEY: credentials.encrypt.key,
+        ENCRYPT_SALT: credentials.encrypt.salt,
         SPRING_DATASOURCE_PRIMARY_USERNAME: username,
         SPRING_DATASOURCE_PRIMARY_PASSWORD: password,
         SPRING_DATASOURCE_READONLY_USERNAME: username,
