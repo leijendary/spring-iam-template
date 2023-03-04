@@ -45,7 +45,7 @@ class TokenService(
         val username = request.username!!
         val password = request.password!!
         val credential = transactional(readOnly = true) {
-            userCredentialRepository.findFirstByUsernameAndUserDeletedAtIsNull(username)
+            userCredentialRepository.findFirstByUsernameAndUserDeletedAtIsNullOrThrow(username)
         }!!
         val encoded = credential.password
 
