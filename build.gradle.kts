@@ -74,6 +74,7 @@ dependencies {
     testImplementation("org.springframework.kafka:spring-kafka-test")
 
     // AWS
+    implementation("io.awspring.cloud:spring-cloud-aws-starter")
     implementation("io.awspring.cloud:spring-cloud-aws-starter-s3")
     implementation("io.awspring.cloud:spring-cloud-aws-starter-ses")
     implementation("io.awspring.cloud:spring-cloud-aws-starter-sns")

@@ -112,10 +112,6 @@ spring:
       timeToLive: 5h
   cloud:
     aws:
-      credentials:
-        instanceProfile: true
-      region:
-        instanceProfile: true
       s3:
         bucketName: leijendary
         signatureDuration: 30m

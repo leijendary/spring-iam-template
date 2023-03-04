@@ -34,6 +34,7 @@ jobs:
           ENVIRONMENT: ${{ inputs.environment }}
           STACK_ID: ${{ vars.STACK_ID }}
           STACK_NAME: ${{ github.event.repository.name }}
+          ORGANIZATION: ${{ vars.ORGANIZATION }}
           VPC_ID: ${{ vars.VPC_ID }}
           IMAGE_TAG: ${{ inputs.image-tag }}
           NAMESPACE_ARN: ${{ vars.NAMESPACE_ARN }}

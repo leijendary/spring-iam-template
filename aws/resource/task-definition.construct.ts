@@ -14,11 +14,15 @@ import {
 import { PolicyDocument, PolicyStatement, Role, ServicePrincipal } from "aws-cdk-lib/aws-iam";
 import { LogGroup, RetentionDays } from "aws-cdk-lib/aws-logs";
 import { DatabaseSecret } from "aws-cdk-lib/aws-rds";
+import { Bucket } from "aws-cdk-lib/aws-s3";
+import { Secret as SecretManager } from "aws-cdk-lib/aws-secretsmanager";
 import { Construct } from "constructs";
 import env, { isProd } from "../env";
 
 type TaskDefinitionConstructProps = {
   repositoryArn: string;
+  bucket: Bucket;
+  secret: SecretManager;
 };
 
 const environment = env.environment;
@@ -31,7 +35,7 @@ const logPrefix = "/ecs/fargate";
 
 export class TaskDefinitionConstruct extends TaskDefinition {
   constructor(scope: Construct, props: TaskDefinitionConstructProps) {
-    const { repositoryArn } = props;
+    const { repositoryArn, bucket, secret } = props;
     const memoryMiB = isProd() ? "2 GB" : "0.5 GB";
     const cpu = isProd() ? "1 vCPU" : "0.25 vCPU";
     const repository = getRepository(scope, repositoryArn);
@@ -54,11 +58,13 @@ export class TaskDefinitionConstruct extends TaskDefinition {
 
     super(scope, `${id}TaskDefinition-${environment}`, config);
 
-    this.container(scope, image, logGroup);
+    this.container(scope, image, logGroup, secret);
     this.trustPolicy(taskRole, executionRole);
+    this.grantBucketAccess(taskRole, bucket);
   }
 
-  private container(scope: Construct, image: ContainerImage, logGroup: LogGroup) {
+  private container(scope: Construct, image: ContainerImage, logGroup: LogGroup, secret: SecretManager) {
+    const credentials = getCredentials(secret);
     const { username, password } = getAuroraCredentials(scope);
 
     this.addContainer(`${id}Container-${environment}`, {
@@ -81,8 +87,13 @@ export class TaskDefinitionConstruct extends TaskDefinition {
       },
       environment: {
         SPRING_PROFILES_ACTIVE: environment,
+        AWS_EC2_METADATA_DISABLED: "true",
       },
       secrets: {
+        AUTH_ACCESS_TOKEN_PRIVATE_KEY: credentials.accessToken.privateKey,
+        AUTH_ACCESS_TOKEN_PUBLIC_KEY: credentials.accessToken.publicKey,
+        AUTH_REFRESH_TOKEN_PRIVATE_KEY: credentials.refreshToken.privateKey,
+        AUTH_REFRESH_TOKEN_PUBLIC_KEY: credentials.refreshToken.publicKey,
         SPRING_DATASOURCE_PRIMARY_USERNAME: username,
         SPRING_DATASOURCE_PRIMARY_PASSWORD: password,
         SPRING_DATASOURCE_READONLY_USERNAME: username,
@@ -99,6 +110,12 @@ export class TaskDefinitionConstruct extends TaskDefinition {
 
     taskRole.addToPolicy(trustPolicy);
     executionRole.addToPolicy(trustPolicy);
+  }
+
+  private grantBucketAccess(role: Role, bucket: Bucket) {
+    bucket.grantReadWrite(role);
+    bucket.grantPut(role);
+    bucket.grantDelete(role);
   }
 }
 
@@ -149,6 +166,30 @@ const getRepository = (scope: Construct, repositoryArn: string) => {
 
 const getImage = (repository: IRepository) => {
   return ContainerImage.fromEcrRepository(repository, imageTag);
+};
+
+const getCredentials = (secret: SecretManager) => {
+  const accessTokenPrivateKey = Secret.fromSecretsManager(secret, "accessToken.privateKey");
+  const accessTokenPublicKey = Secret.fromSecretsManager(secret, "accessToken.publicKey");
+  const refreshTokenPrivateKey = Secret.fromSecretsManager(secret, "refreshToken.privateKey");
+  const refreshTokenPublicKey = Secret.fromSecretsManager(secret, "refreshToken.publicKey");
+  const encryptKey = Secret.fromSecretsManager(secret, "encrypt.key");
+  const encryptSalt = Secret.fromSecretsManager(secret, "encrypt.salt");
+
+  return {
+    accessToken: {
+      privateKey: accessTokenPrivateKey,
+      publicKey: accessTokenPublicKey,
+    },
+    refreshToken: {
+      privateKey: refreshTokenPrivateKey,
+      publicKey: refreshTokenPublicKey,
+    },
+    encrypt: {
+      key: encryptKey,
+      salt: encryptSalt,
+    },
+  };
 };
 
 const getAuroraCredentials = (scope: Construct) => {
