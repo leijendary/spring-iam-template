@@ -793,3 +793,24 @@ databaseChangeLog:
                   name: token
             indexName: user_device_user_id_token_idx
             tableName: user_device
+  - changeSet:
+      id: load-initial-roles
+      author: Leijendekker
+      changes:
+        - loadData:
+            columns:
+              - column:
+                  header: id
+                  name: id
+                  type: uuid
+              - column:
+                  name: name
+                  type: string
+              - column:
+                  name: created_by
+                  type: string
+              - column:
+                  name: last_modified_by
+                  type: string
+            file: db/data/role-0.0.1.csv
+            tableName: role
