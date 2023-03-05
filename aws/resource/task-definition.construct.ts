@@ -7,7 +7,6 @@ import {
   CpuArchitecture,
   LogDriver,
   OperatingSystemFamily,
-  Protocol,
   Secret,
   TaskDefinition,
   TaskDefinitionProps,
@@ -80,12 +79,12 @@ export class TaskDefinitionConstruct extends TaskDefinition {
           name,
           containerPort: port,
           hostPort: port,
-          appProtocol: AppProtocol.http,
+          appProtocol: AppProtocol.http2,
         },
       ],
       healthCheck: {
         command: ["CMD-SHELL", "wget -qO- http://localhost/actuator/health || exit 1"],
-        startPeriod: Duration.seconds(isProd() ? 0 : 100),
+        startPeriod: Duration.seconds(isProd() ? 0 : 200),
       },
       environment: {
         SPRING_PROFILES_ACTIVE: environment,

@@ -35,8 +35,12 @@ export class FargateServiceConstruct extends FargateService {
       circuitBreaker: {
         rollback: true,
       },
-      cloudMapOptions: {
-        name,
+      serviceConnectConfiguration: {
+        services: [
+          {
+            portMappingName: name,
+          },
+        ],
       },
       ...rest,
     };
