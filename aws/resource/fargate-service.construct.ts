@@ -2,7 +2,7 @@ import { ISecurityGroup, IVpc, SecurityGroup, SubnetType, Vpc } from "aws-cdk-li
 import { Cluster, FargateService, FargateServiceProps, TaskDefinition } from "aws-cdk-lib/aws-ecs";
 import { INamespace, PrivateDnsNamespace } from "aws-cdk-lib/aws-servicediscovery";
 import { Construct } from "constructs";
-import env from "../env";
+import env, { isProd } from "../env";
 
 type FargateServiceConstructProps = {
   vpcId: string;
@@ -47,7 +47,9 @@ export class FargateServiceConstruct extends FargateService {
 
     super(scope, `${id}Service-${environment}`, config);
 
-    this.setScaling();
+    if (isProd()) {
+      this.setScaling();
+    }
   }
 
   private setScaling() {
