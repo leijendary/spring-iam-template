@@ -1,14 +1,7 @@
 package com.leijendary.spring.template.iam.generator
 
-import java.util.*
+import org.apache.commons.lang3.RandomStringUtils
 
 class OtpCodeGenerationStrategy : CodeGenerationStrategy {
-    override fun generate(): String {
-        val digits = RandomGenerator.digits(6)
-        val builder = StringBuilder()
-
-        Arrays.stream(digits).forEach { i -> builder.append(i) }
-
-        return builder.toString()
-    }
+    override fun generate(): String = RandomStringUtils.randomNumeric(6)
 }

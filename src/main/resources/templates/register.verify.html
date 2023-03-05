@@ -14,12 +14,10 @@
 
     <div>Welcome to the app!</div>
 
-    <div>To continue your registration, kindly use the link below to verify your app</div>
+    <div>To continue your registration, use the code below</div>
 
     <div>
-      <a th:href="${url}" target="_blank">
-        <span th:text="${url}" th:remove="tag"></span>
-      </a>
+      <span th:text="${code}" th:remove="tag"></span>
     </div>
   </body>
 </html>

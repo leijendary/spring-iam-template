@@ -13,7 +13,6 @@ import org.springframework.mail.javamail.JavaMailSender
 import org.springframework.mail.javamail.MimeMessageHelper
 import org.springframework.retry.annotation.Retryable
 import org.springframework.stereotype.Component
-import org.springframework.web.util.UriTemplate
 
 @Component
 class CredentialEvent(
@@ -52,13 +51,9 @@ class CredentialEvent(
             VerificationType.PASSWORD_RESET -> "password-reset.verify" to verificationProperties.password.reset
             else -> return
         }
-        val variables = mapOf("code" to code)
-        val url = UriTemplate(config.url.toString())
-            .expand(variables)
-            .toURL()
         val params = mapOf(
             "name" to fullName,
-            "url" to url
+            "code" to code
         )
         val content = htmlGenerator.parse(template, params)
         val message = javaMailSender.createMimeMessage()

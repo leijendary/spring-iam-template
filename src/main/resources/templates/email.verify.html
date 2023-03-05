@@ -12,12 +12,10 @@
 <body>
 <h3>Hi, <span th:text="${name}" th:remove="tag">Legend</span></h3>
 
-<div>To verify your email, use the link below</div>
+<div>To verify your email, this the code below</div>
 
 <div>
-  <a th:href="${url}" target="_blank">
-    <span th:text="${url}" th:remove="tag"></span>
-  </a>
+  <span th:text="${code}" th:remove="tag"></span>
 </div>
 </body>
 </html>

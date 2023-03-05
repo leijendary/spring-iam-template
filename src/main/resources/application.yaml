@@ -37,17 +37,13 @@ verification:
   expiry: 2h
   email:
     subject: Email Verification
-    url:
   password:
     change:
       subject: Password Change
-      url:
     reset:
       subject: Password Reset
-      url:
   register:
     subject: Welcome!
-    url:
 
 spring:
   application:

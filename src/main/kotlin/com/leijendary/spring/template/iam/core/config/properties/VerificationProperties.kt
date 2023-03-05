@@ -2,7 +2,6 @@ package com.leijendary.spring.template.iam.core.config.properties
 
 import com.leijendary.spring.template.iam.core.util.RequestContext.now
 import org.springframework.boot.context.properties.ConfigurationProperties
-import java.net.URL
 import java.time.Duration
 import java.time.OffsetDateTime
 
@@ -15,7 +14,6 @@ class VerificationProperties {
 
     inner class Config {
         var subject: String? = null
-        var url: URL? = null
     }
 
     inner class Password {
