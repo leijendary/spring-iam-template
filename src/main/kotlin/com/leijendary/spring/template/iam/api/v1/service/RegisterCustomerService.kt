@@ -33,7 +33,7 @@ class RegisterCustomerService(
         return register(user, UserCredential.Type.EMAIL, request.deviceId!!)
     }
 
-    fun full(request: RegisterCustomerFullRequest): NextCode {
+    fun register(request: RegisterCustomerFullRequest): NextCode {
         val user = MAPPER.from(request)
         val field = request.preferredUsername!!
         val credentialType = UserCredential.Type.valueOf(field)

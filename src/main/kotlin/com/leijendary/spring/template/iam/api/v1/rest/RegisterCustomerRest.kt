@@ -42,7 +42,7 @@ class RegisterCustomerRest(private val registerCustomerService: RegisterCustomer
         return registerCustomerService.phone(request)
     }
 
-    @PostMapping("full")
+    @PostMapping
     @ResponseStatus(ACCEPTED)
     @Operation(
         summary = """
@@ -51,7 +51,7 @@ class RegisterCustomerRest(private val registerCustomerService: RegisterCustomer
             this API should send a verification to the preferredUsername
         """
     )
-    fun full(@Valid @RequestBody request: RegisterCustomerFullRequest): NextCode {
-        return registerCustomerService.full(request)
+    fun register(@Valid @RequestBody request: RegisterCustomerFullRequest): NextCode {
+        return registerCustomerService.register(request)
     }
 }
