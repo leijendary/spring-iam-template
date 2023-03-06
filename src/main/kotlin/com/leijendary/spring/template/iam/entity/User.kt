@@ -43,10 +43,7 @@ class User : AuditingUUIDEntity(), SoftDeleteEntity {
     override var deletedBy: String? = null
 
     val fullName: String
-        get() = if (isIncomplete) "" else "$firstName $lastName"
-
-    val isIncomplete: Boolean
-        get() = firstName.isNullOrBlank() or firstName.isNullOrBlank()
+        get() = "$firstName $lastName"
 
     fun setUsername(field: String, value: String) = this.reflectSet(field, value)
 

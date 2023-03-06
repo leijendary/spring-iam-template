@@ -33,8 +33,7 @@ class Account : UUIDEntity(), CreatedProjection, SoftDeleteEntity {
     override var deletedBy: String? = null
 
     enum class Type(val value: String) {
-        CUSTOMER("customer"),
-        PARTNER("partner");
+        CUSTOMER("customer");
 
         override fun toString() = value
     }

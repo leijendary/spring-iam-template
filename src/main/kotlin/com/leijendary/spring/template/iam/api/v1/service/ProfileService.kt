@@ -5,7 +5,7 @@ import com.leijendary.spring.template.iam.api.v1.model.*
 import com.leijendary.spring.template.iam.core.config.properties.VerificationProperties
 import com.leijendary.spring.template.iam.core.extension.transactional
 import com.leijendary.spring.template.iam.core.storage.S3Storage
-import com.leijendary.spring.template.iam.core.util.RequestContext.userId
+import com.leijendary.spring.template.iam.core.util.RequestContext.userIdOrSystem
 import com.leijendary.spring.template.iam.entity.UserCredential
 import com.leijendary.spring.template.iam.entity.Verification
 import com.leijendary.spring.template.iam.event.CredentialEvent
@@ -99,7 +99,7 @@ class ProfileService(
         username: String,
         countryCode: String? = null
     ): NextCode {
-        val id = UUID.fromString(userId)
+        val id = UUID.fromString(userIdOrSystem)
         val user = transactional(readOnly = true) {
             userRepository.findByIdOrThrow(id)
         }!!

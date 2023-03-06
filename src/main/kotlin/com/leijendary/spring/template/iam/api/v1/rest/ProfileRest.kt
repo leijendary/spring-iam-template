@@ -5,7 +5,7 @@ import com.leijendary.spring.template.iam.api.v1.model.PhoneUpdateRequest
 import com.leijendary.spring.template.iam.api.v1.model.ProfileRequest
 import com.leijendary.spring.template.iam.api.v1.model.VerifyRequest
 import com.leijendary.spring.template.iam.api.v1.service.ProfileService
-import com.leijendary.spring.template.iam.core.util.RequestContext.userId
+import com.leijendary.spring.template.iam.core.util.RequestContext.userIdOrSystem
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.*
 class ProfileRest(private val profileService: ProfileService) {
     @GetMapping
     @Operation(summary = "Gets the current user's profile details")
-    fun detail() = profileService.detail(userId)
+    fun detail() = profileService.detail(userIdOrSystem)
 
     @PutMapping
     @Operation(
@@ -29,7 +29,7 @@ class ProfileRest(private val profileService: ProfileService) {
             that needs verification like email and phone number.
         """
     )
-    fun update(@Valid @RequestBody request: ProfileRequest) = profileService.update(userId, request)
+    fun update(@Valid @RequestBody request: ProfileRequest) = profileService.update(userIdOrSystem, request)
 
     @PatchMapping("email")
     @Operation(summary = "Change the user's email. This will send a verification email.")

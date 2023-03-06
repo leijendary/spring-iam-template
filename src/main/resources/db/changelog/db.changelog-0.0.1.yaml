@@ -300,8 +300,6 @@ databaseChangeLog:
               - column:
                   name: user_id
                   type: uuid
-                  constraints:
-                    nullable: false
               - column:
                   name: code
                   type: varchar(36)
@@ -317,13 +315,16 @@ databaseChangeLog:
                   constraints:
                     nullable: false
               - column:
-                  name: field
-                  type: varchar(12)
-              - column:
                   name: type
                   type: varchar(20)
                   constraints:
                     nullable: false
+              - column:
+                  name: field
+                  type: varchar(12)
+              - column:
+                  name: value
+                  type: text
               - column:
                   name: created_at
                   type: timestamp with time zone
@@ -637,6 +638,7 @@ databaseChangeLog:
             indexName: role_permission_role_id_permission_id_key
             tableName: role_permission
             unique: true
+  # TODO: check if this is still needed
   - changeSet:
       id: add-verification-type-user-id-index
       author: Leijendekker
@@ -650,7 +652,39 @@ databaseChangeLog:
             indexName: verification_type_user_id_idx
             tableName: verification
   - changeSet:
-      id: add-verification-code-type-device-id-index
+      id: add-verification-field-value-type-index
+      author: Leijendekker
+      changes:
+        - createIndex:
+            columns:
+              - column:
+                  name: field
+              - column:
+                  name: value
+              - column:
+                  name: type
+            indexName: verification_field_value_type_idx
+            tableName: verification
+  - changeSet:
+      id: add-verification-field-value-code-device-id-type-index
+      author: Leijendekker
+      changes:
+        - createIndex:
+            columns:
+              - column:
+                  name: field
+              - column:
+                  name: value
+              - column:
+                  name: code
+              - column:
+                  name: device_id
+              - column:
+                  name: type
+            indexName: verification_field_value_code_device_id_type_idx
+            tableName: verification
+  - changeSet:
+      id: add-verification-code-type-index
       author: Leijendekker
       changes:
         - createIndex:
@@ -659,10 +693,9 @@ databaseChangeLog:
                   name: code
               - column:
                   name: type
-              - column:
-                  name: device_id
-            indexName: verification_code_type_device_id_idx
+            indexName: verification_code_type_idx
             tableName: verification
+  # TODO: check if this is still needed
   - changeSet:
       id: add-verification-code-type-device-id-user-id-index
       author: Leijendekker

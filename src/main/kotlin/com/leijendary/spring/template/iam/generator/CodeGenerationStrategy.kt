@@ -4,8 +4,8 @@ import com.leijendary.spring.template.iam.entity.UserCredential
 
 interface CodeGenerationStrategy {
     companion object {
-        val CHAR_STRATEGY = CharCodeGenerationStrategy()
         val OTP_STRATEGY = OtpCodeGenerationStrategy()
+        val CHAR_STRATEGY = CharCodeGenerationStrategy()
         val UUID_STRATEGY = UuidCodeGenerationStrategy()
 
         fun fromField(field: String) = when (field) {

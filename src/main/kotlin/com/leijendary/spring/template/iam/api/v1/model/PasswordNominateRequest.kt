@@ -4,5 +4,8 @@ import jakarta.validation.constraints.NotBlank
 
 data class PasswordNominateRequest(
     @field:NotBlank(message = "validation.required")
+    val verificationCode: String? = null,
+
+    @field:NotBlank(message = "validation.required")
     val password: String? = null
-) : VerifyRequest()
+)

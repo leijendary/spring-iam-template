@@ -6,7 +6,6 @@ import com.leijendary.spring.template.iam.core.util.RequestContext.locale
 import com.leijendary.spring.template.iam.entity.UserCredential
 import com.leijendary.spring.template.iam.entity.Verification
 import com.leijendary.spring.template.iam.generator.HtmlGenerator
-import com.leijendary.spring.template.iam.util.VerificationType
 import io.awspring.cloud.sns.sms.SnsSmsTemplate
 import org.springframework.context.MessageSource
 import org.springframework.mail.javamail.JavaMailSender
@@ -14,6 +13,7 @@ import org.springframework.mail.javamail.MimeMessageHelper
 import org.springframework.retry.annotation.Retryable
 import org.springframework.stereotype.Component
 
+// TODO: remove this.
 @Component
 class CredentialEvent(
     private val htmlGenerator: HtmlGenerator,
@@ -26,10 +26,10 @@ class CredentialEvent(
     @Retryable
     fun verify(verification: Verification) {
         val field = verification.field
-        val type = verification.type
+        val type = verification.type.let { Verification.Type.valueOf(it) }
         val code = verification.code
-        val user = verification.user!!
-        val to = user.getUsername(field)
+        val user = verification.user
+        val to = user.getUsername(field!!)
 
         when (field) {
             UserCredential.Type.EMAIL.value -> email(type, user.fullName, code, to)
@@ -37,18 +37,18 @@ class CredentialEvent(
         }
     }
 
-    private fun email(type: String, fullName: String, code: String, to: String) {
+    private fun email(type: Verification.Type, fullName: String, code: String, to: String) {
         val (template, config) = when (type) {
-            VerificationType.EMAIL_VERIFY -> "email.verify" to verificationProperties.email
+            Verification.Type.EMAIL_VERIFY -> "email.verify" to verificationProperties.email
 
-            VerificationType.VERIFICATION,
-            VerificationType.REGISTRATION -> "register.verify" to verificationProperties.register
+            Verification.Type.VERIFICATION,
+            Verification.Type.REGISTRATION -> "register.verify" to verificationProperties.register
 
-            VerificationType.PASSWORD_CHANGE_VERIFY -> {
+            Verification.Type.PASSWORD_CHANGE_VERIFY -> {
                 "password-change.verify" to verificationProperties.password.change
             }
 
-            VerificationType.PASSWORD_RESET -> "password-reset.verify" to verificationProperties.password.reset
+            Verification.Type.PASSWORD_RESET -> "password-reset.verify" to verificationProperties.password.reset
             else -> return
         }
         val params = mapOf(
@@ -68,14 +68,14 @@ class CredentialEvent(
         javaMailSender.send(message)
     }
 
-    private fun phone(type: String, code: String, to: String) {
+    private fun phone(type: Verification.Type, code: String, to: String) {
         val key = when (type) {
-            VerificationType.PHONE_VERIFY,
-            VerificationType.VERIFICATION,
-            VerificationType.REGISTRATION -> "notification.verification.sms"
+            Verification.Type.PHONE_VERIFY,
+            Verification.Type.VERIFICATION,
+            Verification.Type.REGISTRATION -> "notification.verification.sms"
 
-            VerificationType.PASSWORD_CHANGE_VERIFY -> "notification.password.change.sms"
-            VerificationType.PASSWORD_RESET -> "notification.password.reset.sms"
+            Verification.Type.PASSWORD_CHANGE_VERIFY -> "notification.password.change.sms"
+            Verification.Type.PASSWORD_RESET -> "notification.password.reset.sms"
             else -> return
         }
         val message = messageSource.getMessage(key, arrayOf(code), locale)

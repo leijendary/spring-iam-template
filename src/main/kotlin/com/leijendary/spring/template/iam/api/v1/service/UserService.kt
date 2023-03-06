@@ -11,7 +11,6 @@ import com.leijendary.spring.template.iam.entity.Account
 import com.leijendary.spring.template.iam.entity.User
 import com.leijendary.spring.template.iam.entity.UserCredential
 import com.leijendary.spring.template.iam.entity.Verification
-import com.leijendary.spring.template.iam.event.CredentialEvent
 import com.leijendary.spring.template.iam.generator.CodeGenerationStrategy
 import com.leijendary.spring.template.iam.repository.AccountRepository
 import com.leijendary.spring.template.iam.repository.RoleRepository
@@ -19,7 +18,6 @@ import com.leijendary.spring.template.iam.repository.UserRepository
 import com.leijendary.spring.template.iam.repository.VerificationRepository
 import com.leijendary.spring.template.iam.specification.UserListSpecification
 import com.leijendary.spring.template.iam.util.Status
-import com.leijendary.spring.template.iam.util.VerificationType
 import org.springframework.cache.annotation.CacheEvict
 import org.springframework.cache.annotation.CachePut
 import org.springframework.cache.annotation.Cacheable
@@ -31,7 +29,6 @@ import java.util.*
 @Service
 class UserService(
     private val accountRepository: AccountRepository,
-    private val credentialEvent: CredentialEvent,
     private val roleRepository: RoleRepository,
     private val userRepository: UserRepository,
     private val verificationProperties: VerificationProperties,
@@ -72,33 +69,27 @@ class UserService(
         }
         val field = request.preferredUsername!!
         val username = user.getUsername(field)
+        val credential = UserCredential().apply {
+            this.user = user
+            this.username = username
+            this.type = field
+        }
 
-        UserCredential()
-            .apply {
-                this.user = user
-                this.username = username
-                this.type = field
-            }
-            .run {
-                user.credentials.add(this)
-            }
+        user.credentials.add(credential)
 
-        val generator = CodeGenerationStrategy.fromField(field)
-        val code = generator.generate()
+        val generator = CodeGenerationStrategy.UUID_STRATEGY
         val verification = Verification().apply {
             this.user = user
-            this.code = code
+            this.code = generator.generate()
             this.field = field
-            type = VerificationType.REGISTRATION
-            expiresAt = verificationProperties.computeExpiration()
+            this.type = Verification.Type.PASSWORD_NOMINATE.value
+            this.expiresAt = verificationProperties.computeExpiration()
         }
 
         transactional {
             userRepository.save(user)
             verificationRepository.save(verification)
         }
-
-        credentialEvent.verify(verification)
 
         return MAPPER.toResponse(user)
     }

@@ -14,10 +14,9 @@ class Role : AuditingUUIDEntity() {
     @JoinTable(name = "role_permission")
     val permissions: MutableSet<Permission> = HashSet()
 
-    enum class Defaults(val value: String) {
+    enum class Default(val value: String) {
         CUSTOMER("Customer"),
-        ADMIN("Admin"),
-        PARTNER("Partner");
+        ADMIN("Admin");
 
         override fun toString() = value
     }

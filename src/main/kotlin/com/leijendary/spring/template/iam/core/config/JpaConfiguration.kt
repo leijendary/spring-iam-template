@@ -1,7 +1,7 @@
 package com.leijendary.spring.template.iam.core.config
 
 import com.leijendary.spring.template.iam.core.util.RequestContext.now
-import com.leijendary.spring.template.iam.core.util.RequestContext.userId
+import com.leijendary.spring.template.iam.core.util.RequestContext.userIdOrSystem
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.data.auditing.DateTimeProvider
@@ -16,7 +16,7 @@ import java.util.Optional.of
 class JpaConfiguration {
     @Bean
     fun auditorProvider(): AuditorAware<String> {
-        return AuditorAware { of(userId) }
+        return AuditorAware { of(userIdOrSystem) }
     }
 
     @Bean
