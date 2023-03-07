@@ -212,9 +212,7 @@ class TokenService(
         // Device does not exist. Then create a device for that user
         device = USER_DEVICE_MAPPER
             .from(request)
-            .apply {
-                this.user = user
-            }
+            .apply { this.user = user }
 
         userDeviceRepository.save(device)
     }
