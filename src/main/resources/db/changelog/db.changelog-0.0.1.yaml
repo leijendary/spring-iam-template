@@ -638,19 +638,6 @@ databaseChangeLog:
             indexName: role_permission_role_id_permission_id_key
             tableName: role_permission
             unique: true
-  # TODO: check if this is still needed
-  - changeSet:
-      id: add-verification-type-user-id-index
-      author: Leijendekker
-      changes:
-        - createIndex:
-            columns:
-              - column:
-                  name: type
-              - column:
-                  name: user_id
-            indexName: verification_type_user_id_idx
-            tableName: verification
   - changeSet:
       id: add-verification-field-value-type-index
       author: Leijendekker
@@ -694,23 +681,6 @@ databaseChangeLog:
               - column:
                   name: type
             indexName: verification_code_type_idx
-            tableName: verification
-  # TODO: check if this is still needed
-  - changeSet:
-      id: add-verification-code-type-device-id-user-id-index
-      author: Leijendekker
-      changes:
-        - createIndex:
-            columns:
-              - column:
-                  name: code
-              - column:
-                  name: type
-              - column:
-                  name: device_id
-              - column:
-                  name: user_id
-            indexName: verification_code_type_device_id_user_id_idx
             tableName: verification
   - changeSet:
       id: add-user-created-at-row-id-index
