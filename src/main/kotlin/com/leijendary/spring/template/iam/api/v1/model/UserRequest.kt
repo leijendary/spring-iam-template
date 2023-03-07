@@ -1,8 +1,6 @@
 package com.leijendary.spring.template.iam.api.v1.model
 
 import com.leijendary.spring.template.iam.core.projection.PhoneProjection
-import com.leijendary.spring.template.iam.core.validator.annotation.EnumField
-import com.leijendary.spring.template.iam.entity.UserCredential
 import com.leijendary.spring.template.iam.validator.annotation.Phone
 import jakarta.validation.Valid
 import jakarta.validation.constraints.Email
@@ -34,9 +32,5 @@ data class UserRequest(
 
     @field:NotBlank(message = "validation.required")
     @field:Phone
-    override val phone: String? = null,
-
-    @field:NotBlank(message = "validation.required")
-    @field:EnumField(enumClass = UserCredential.Type::class)
-    val preferredUsername: String? = null,
+    override val phone: String? = null
 ) : PhoneProjection

@@ -2,8 +2,10 @@ package com.leijendary.spring.template.iam.entity
 
 import com.leijendary.spring.template.iam.core.entity.AuditingUUIDEntity
 import com.leijendary.spring.template.iam.core.entity.SoftDeleteEntity
-import com.leijendary.spring.template.iam.core.extension.reflectGet
 import com.leijendary.spring.template.iam.core.extension.reflectSet
+import com.leijendary.spring.template.iam.core.projection.PhoneProjection
+import com.leijendary.spring.template.iam.entity.UserCredential.Type.EMAIL
+import com.leijendary.spring.template.iam.entity.UserCredential.Type.PHONE
 import com.leijendary.spring.template.iam.util.Status
 import jakarta.persistence.*
 import jakarta.persistence.CascadeType.ALL
@@ -13,14 +15,14 @@ import java.time.OffsetDateTime
 
 @Entity
 @Where(clause = "deleted_at is null")
-class User : AuditingUUIDEntity(), SoftDeleteEntity {
+class User : AuditingUUIDEntity(), PhoneProjection, SoftDeleteEntity {
     var firstName: String? = null
     var middleName: String? = null
     var lastName: String? = null
     var email: String? = null
     var emailVerified: Boolean = false
-    var countryCode: String? = null
-    var phone: String? = null
+    override var countryCode: String? = null
+    override var phone: String? = null
     var phoneVerified: Boolean = false
     var image: String? = null
     var status = Status.ACTIVE
@@ -42,12 +44,10 @@ class User : AuditingUUIDEntity(), SoftDeleteEntity {
     override var deletedAt: OffsetDateTime? = null
     override var deletedBy: String? = null
 
-    val fullName: String
-        get() = "$firstName $lastName"
-
-    fun setUsername(field: String, value: String) = this.reflectSet(field, value)
-
-    fun getUsername(field: String) = this.reflectGet(field) as String
+    fun getUsername(field: String) = when (UserCredential.Type.from(field)) {
+        EMAIL -> this.email!!
+        PHONE -> this.fullPhone
+    }
 
     fun setVerified(field: String, value: Boolean = true) = this.reflectSet("${field}Verified", value)
 }

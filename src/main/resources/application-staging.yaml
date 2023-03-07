@@ -1,0 +1,4 @@
+verification:
+  password:
+    nominate:
+      url: https://staging.leijendary.com/password/nominate

@@ -24,20 +24,14 @@ class Verification : IdentityEntity() {
 
     enum class Type(val value: String) {
         REGISTRATION("registration"),
-        PASSWORD_RESET("passwordReset"),
-
-        // TODO: logic implementation of the following:
-        PASSWORD_NOMINATE("passwordNominate"),
         EMAIL_CHANGE("emailChange"),
         PHONE_CHANGE("phoneChange"),
+        PASSWORD_RESET("passwordReset"),
+        PASSWORD_NOMINATE("passwordNominate");
 
-
-        // TODO: cleanup the following. Remove the unnecessary enums.
-        // this one is temp..
-        VERIFICATION("verification"),
-        PASSWORD_CHANGE_VERIFY("passwordChangeVerify"),
-        EMAIL_VERIFY("emailChange"),
-        PHONE_VERIFY("phoneVerify");
+        companion object {
+            fun from(value: String) = values().first { it.value == value }
+        }
 
         override fun toString() = value
     }

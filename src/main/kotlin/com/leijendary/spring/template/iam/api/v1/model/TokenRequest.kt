@@ -1,7 +1,8 @@
 package com.leijendary.spring.template.iam.api.v1.model
 
+import com.leijendary.spring.template.iam.core.validator.annotation.EnumField
+import com.leijendary.spring.template.iam.model.Platform
 import jakarta.validation.constraints.NotBlank
-import jakarta.validation.constraints.Size
 
 data class TokenRequest(
     @field:NotBlank(message = "validation.required")
@@ -17,6 +18,6 @@ data class TokenRequest(
     val deviceId: String? = null,
 
     @field:NotBlank(message = "validation.required")
-    @field:Size(max = 20, message = "validation.maxLength")
+    @field:EnumField(enumClass = Platform::class)
     val platform: String? = null,
 )

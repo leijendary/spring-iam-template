@@ -67,7 +67,7 @@ class UserService(
             this.account = account
             this.role = role
         }
-        val field = request.preferredUsername!!
+        val field = UserCredential.Type.EMAIL.value
         val username = user.getUsername(field)
         val credential = UserCredential().apply {
             this.user = user
@@ -82,6 +82,7 @@ class UserService(
             this.user = user
             this.code = generator.generate()
             this.field = field
+            this.value = username
             this.type = Verification.Type.PASSWORD_NOMINATE.value
             this.expiresAt = verificationProperties.computeExpiration()
         }
@@ -120,7 +121,7 @@ class UserService(
 
         MAPPER.update(request, user)
 
-        val field = request.preferredUsername!!
+        val field = UserCredential.Type.EMAIL.value
         val hasCredential = user.credentials.any { it.type == field }
 
         if (!hasCredential) {

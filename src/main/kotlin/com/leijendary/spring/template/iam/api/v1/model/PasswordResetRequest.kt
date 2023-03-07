@@ -4,11 +4,11 @@ import jakarta.validation.constraints.NotBlank
 
 data class PasswordResetRequest(
     @field:NotBlank(message = "validation.required")
+    val password: String? = null,
+
+    @field:NotBlank(message = "validation.required")
     val verificationCode: String? = null,
 
     @field:NotBlank(message = "validation.required")
     val deviceId: String? = null,
-
-    @field:NotBlank(message = "validation.required")
-    val password: String? = null
 ) : CredentialFieldRequest()

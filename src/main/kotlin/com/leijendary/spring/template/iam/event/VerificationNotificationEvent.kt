@@ -1,0 +1,24 @@
+package com.leijendary.spring.template.iam.event
+
+import com.leijendary.spring.template.iam.entity.UserCredential
+import com.leijendary.spring.template.iam.entity.Verification
+import com.leijendary.spring.template.iam.strategy.VerificationNotificationStrategy
+import org.springframework.retry.annotation.Retryable
+import org.springframework.stereotype.Component
+
+@Component
+class VerificationNotificationEvent(notificationStrategies: List<VerificationNotificationStrategy>) {
+    private val strategy = notificationStrategies.associateBy { it.field }
+
+    @Retryable
+    fun notify(verification: Verification) {
+        val field = verification.field?.let { UserCredential.Type.from(it) }
+        val value = verification.value
+
+        if (field == null || value.isNullOrBlank()) {
+            return
+        }
+
+        strategy[field]?.send(verification)
+    }
+}

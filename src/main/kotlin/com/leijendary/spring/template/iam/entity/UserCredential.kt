@@ -25,6 +25,10 @@ class UserCredential : IdentityEntity() {
         EMAIL("email"),
         PHONE("phone");
 
+        companion object {
+            fun from(value: String) = values().first { it.value == value }
+        }
+
         override fun toString() = value
     }
 }

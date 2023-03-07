@@ -15,13 +15,11 @@ import com.leijendary.spring.template.iam.repository.AuthRepository
 import com.leijendary.spring.template.iam.repository.RolePermissionRepository
 import com.leijendary.spring.template.iam.repository.UserCredentialRepository
 import com.leijendary.spring.template.iam.repository.UserDeviceRepository
-import com.leijendary.spring.template.iam.util.Status
+import com.leijendary.spring.template.iam.util.Status.ACTIVE
 import com.nimbusds.jose.JOSEException
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import java.util.*
-
-private val userActiveStatuses = listOf(Status.ACTIVE, Status.INCOMPLETE)
 
 @Service
 class TokenService(
@@ -132,12 +130,12 @@ class TokenService(
 
     private fun validateStatus(account: Account?, user: User) {
         account?.status?.let {
-            if (it != Status.ACTIVE) {
+            if (it != ACTIVE) {
                 throw NotActiveException(ACCOUNT_SOURCE, "access.account.inactive")
             }
         }
 
-        if (!userActiveStatuses.contains(user.status)) {
+        if (user.status != ACTIVE) {
             throw NotActiveException(USER_SOURCE, "access.user.inactive")
         }
     }

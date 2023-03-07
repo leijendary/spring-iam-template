@@ -35,15 +35,16 @@ encrypt:
 
 verification:
   expiry: 2h
-  email:
-    subject: Email Verification
-  password:
-    change:
-      subject: Password Change
-    reset:
-      subject: Password Reset
   register:
     subject: Welcome!
+  password:
+    nominate:
+      subject: Password Nominate
+      url:
+    reset:
+      subject: Password Reset
+  email:
+    subject: Email Change
 
 spring:
   application:

@@ -4,6 +4,7 @@ import com.leijendary.spring.template.iam.api.v1.model.VerificationCreateRequest
 import com.leijendary.spring.template.iam.api.v1.service.VerificationService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
+import jakarta.validation.Valid
 import org.springframework.web.bind.annotation.*
 import java.util.*
 
@@ -18,5 +19,5 @@ class VerificationRest(private val verificationService: VerificationService) {
             This will also send the verification code to the specific field provided
         """
     )
-    fun create(request: VerificationCreateRequest) = verificationService.create(request);
+    fun create(@Valid @RequestBody request: VerificationCreateRequest) = verificationService.create(request)
 }

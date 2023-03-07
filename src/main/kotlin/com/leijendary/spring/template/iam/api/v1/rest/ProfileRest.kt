@@ -1,11 +1,10 @@
 package com.leijendary.spring.template.iam.api.v1.rest
 
-import com.leijendary.spring.template.iam.api.v1.model.EmailUpdateRequest
-import com.leijendary.spring.template.iam.api.v1.model.PhoneUpdateRequest
 import com.leijendary.spring.template.iam.api.v1.model.ProfileRequest
-import com.leijendary.spring.template.iam.api.v1.model.VerifyRequest
+import com.leijendary.spring.template.iam.api.v1.model.UpdateEmailRequest
+import com.leijendary.spring.template.iam.api.v1.model.UpdatePhoneRequest
 import com.leijendary.spring.template.iam.api.v1.service.ProfileService
-import com.leijendary.spring.template.iam.core.util.RequestContext.userIdOrSystem
+import com.leijendary.spring.template.iam.core.util.RequestContext.userIdOrThrow
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
@@ -20,7 +19,7 @@ import org.springframework.web.bind.annotation.*
 class ProfileRest(private val profileService: ProfileService) {
     @GetMapping
     @Operation(summary = "Gets the current user's profile details")
-    fun detail() = profileService.detail(userIdOrSystem)
+    fun detail() = profileService.detail(userIdOrThrow)
 
     @PutMapping
     @Operation(
@@ -29,21 +28,14 @@ class ProfileRest(private val profileService: ProfileService) {
             that needs verification like email and phone number.
         """
     )
-    fun update(@Valid @RequestBody request: ProfileRequest) = profileService.update(userIdOrSystem, request)
+    fun update(@Valid @RequestBody request: ProfileRequest) = profileService.update(userIdOrThrow, request)
 
     @PatchMapping("email")
-    @Operation(summary = "Change the user's email. This will send a verification email.")
-    fun email(@Valid @RequestBody request: EmailUpdateRequest) = profileService.email(request)
+    @Operation(summary = "Change the user's email. This requires a verification.")
+    fun email(@Valid @RequestBody request: UpdateEmailRequest) = profileService.username(request)
 
-    @PostMapping("email/verify")
-    @Operation(summary = "Set the email as verified once the verification code is proved valid.")
-    fun emailVerify(@Valid @RequestBody request: VerifyRequest) = profileService.emailVerify(request)
 
     @PatchMapping("phone")
-    @Operation(summary = "Change the user's phone number. This will send a verification SMS.")
-    fun phone(@Valid @RequestBody request: PhoneUpdateRequest) = profileService.phone(request)
-
-    @PostMapping("phone/verify")
-    @Operation(summary = "Set the phone as verified once the verification code is proved valid.")
-    fun phoneVerify(@Valid @RequestBody request: VerifyRequest) = profileService.phoneVerify(request)
+    @Operation(summary = "Change the user's phone number. This requires a verification.")
+    fun phone(@Valid @RequestBody request: UpdatePhoneRequest) = profileService.username(request)
 }

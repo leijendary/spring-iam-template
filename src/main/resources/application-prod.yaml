@@ -1,3 +1,8 @@
+verification:
+  password:
+    nominate:
+      url: https://leijendary.com/password/nominate
+
 springdoc:
   apiDocs:
     enabled: false

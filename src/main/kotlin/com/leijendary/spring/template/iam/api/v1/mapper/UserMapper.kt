@@ -1,6 +1,7 @@
 package com.leijendary.spring.template.iam.api.v1.mapper
 
-import com.leijendary.spring.template.iam.api.v1.model.RegisterRequest
+import com.leijendary.spring.template.iam.api.v1.model.RegisterEmailRequest
+import com.leijendary.spring.template.iam.api.v1.model.RegisterPhoneRequest
 import com.leijendary.spring.template.iam.api.v1.model.UserRequest
 import com.leijendary.spring.template.iam.api.v1.model.UserResponse
 import com.leijendary.spring.template.iam.entity.User
@@ -15,7 +16,9 @@ interface UserMapper {
         val INSTANCE: UserMapper = getMapper(UserMapper::class.java)
     }
 
-    fun from(request: RegisterRequest): User
+    fun from(registerEmailRequest: RegisterEmailRequest): User
+
+    fun from(registerPhoneRequest: RegisterPhoneRequest): User
 
     fun toResponse(user: User): UserResponse
 

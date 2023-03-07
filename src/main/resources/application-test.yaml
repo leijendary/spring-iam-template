@@ -1,0 +1,4 @@
+verification:
+  password:
+    nominate:
+      url: https://test.leijendary.com/password/nominate
