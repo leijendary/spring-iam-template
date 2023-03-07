@@ -1,6 +1,7 @@
 package com.leijendary.spring.template.iam.generator
 
-import com.leijendary.spring.template.iam.entity.UserCredential
+import com.leijendary.spring.template.iam.entity.UserCredential.Type.EMAIL
+import com.leijendary.spring.template.iam.entity.UserCredential.Type.PHONE
 
 interface CodeGenerationStrategy {
     companion object {
@@ -9,8 +10,8 @@ interface CodeGenerationStrategy {
         val UUID_STRATEGY = UuidCodeGenerationStrategy()
 
         fun fromField(field: String) = when (field) {
-            UserCredential.Type.PHONE.value -> OTP_STRATEGY
-            UserCredential.Type.EMAIL.value -> CHAR_STRATEGY
+            PHONE.value -> OTP_STRATEGY
+            EMAIL.value -> CHAR_STRATEGY
             else -> UUID_STRATEGY
         }
     }
