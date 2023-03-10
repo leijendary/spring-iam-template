@@ -13,6 +13,7 @@ class AuthProperties {
     var accessToken = TokenConfig()
     var refreshToken = TokenConfig()
     var system = System()
+    var social = Social()
 
     inner class TokenConfig {
         var expiry: Duration = Duration.ofMinutes(5)
@@ -24,5 +25,17 @@ class AuthProperties {
 
     inner class System {
         var principal: String = ""
+    }
+
+    inner class Social {
+        var apple = SocialConfig()
+        var facebook = SocialConfig()
+        var google = SocialConfig()
+    }
+
+    inner class SocialConfig {
+        var clientId: String = ""
+        var issuer: String = ""
+        var jwkSetUri: String = ""
     }
 }

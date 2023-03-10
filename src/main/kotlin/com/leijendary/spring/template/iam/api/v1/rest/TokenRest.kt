@@ -1,5 +1,6 @@
 package com.leijendary.spring.template.iam.api.v1.rest
 
+import com.leijendary.spring.template.iam.api.v1.model.SocialRequest
 import com.leijendary.spring.template.iam.api.v1.model.TokenRefreshRequest
 import com.leijendary.spring.template.iam.api.v1.model.TokenRequest
 import com.leijendary.spring.template.iam.api.v1.model.TokenRevokeRequest
@@ -41,4 +42,8 @@ class TokenRest(private val tokenService: TokenService) {
     @ResponseStatus(NO_CONTENT)
     @Operation(summary = "Revokes the access token.")
     fun revoke(@Valid @RequestBody request: TokenRevokeRequest) = tokenService.revoke(request)
+
+    @PostMapping("social")
+    @Operation(summary = "Verify that the token provided here is a valid social login ID")
+    fun social(@Valid @RequestBody request: SocialRequest) = tokenService.social(request)
 }

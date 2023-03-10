@@ -26,6 +26,16 @@ auth:
     expiry: 200D
     privateKey:
     publicKey:
+  social:
+    apple:
+      issuer: https://appleid.apple.com
+      jwkSetUri: https://appleid.apple.com/auth/keys
+    facebook:
+      issuer: https://www.facebook.com
+      jwkSetUri: https://www.facebook.com/.well-known/oauth/openid/jwks
+    google:
+      issuer: https://accounts.google.com
+      jwkSetUri: https://www.googleapis.com/oauth2/v3/certs
   system:
     principal: System
 

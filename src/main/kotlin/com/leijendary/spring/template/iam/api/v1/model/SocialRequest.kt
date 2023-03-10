@@ -2,14 +2,16 @@ package com.leijendary.spring.template.iam.api.v1.model
 
 import com.leijendary.spring.template.iam.core.validator.annotation.EnumField
 import com.leijendary.spring.template.iam.model.DevicePlatform
+import com.leijendary.spring.template.iam.model.SocialProvider
 import jakarta.validation.constraints.NotBlank
 
-data class TokenRequest(
+data class SocialRequest(
     @field:NotBlank(message = "validation.required")
-    val username: String? = null,
+    val token: String? = null,
 
     @field:NotBlank(message = "validation.required")
-    val password: String? = null,
+    @field:EnumField(enumClass = SocialProvider::class)
+    val provider: String? = null,
 
     @field:NotBlank(message = "validation.required")
     val deviceId: String? = null,

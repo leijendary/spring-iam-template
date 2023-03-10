@@ -52,8 +52,8 @@ class RegisterService(
             roleRepository.findFirstByNameOrThrow(Role.Default.CUSTOMER.value)
         }!!
         val user = when (request) {
-            is RegisterEmailRequest -> MAPPER.from(request)
-            is RegisterPhoneRequest -> MAPPER.from(request)
+            is RegisterEmailRequest -> MAPPER.toEntity(request)
+            is RegisterPhoneRequest -> MAPPER.toEntity(request)
         }.apply {
             this.account = account
             this.role = role

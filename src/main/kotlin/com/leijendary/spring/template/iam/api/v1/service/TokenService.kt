@@ -2,19 +2,17 @@ package com.leijendary.spring.template.iam.api.v1.service
 
 import com.leijendary.spring.template.iam.api.v1.mapper.TokenMapper
 import com.leijendary.spring.template.iam.api.v1.mapper.UserDeviceMapper
-import com.leijendary.spring.template.iam.api.v1.model.TokenRefreshRequest
-import com.leijendary.spring.template.iam.api.v1.model.TokenRequest
-import com.leijendary.spring.template.iam.api.v1.model.TokenResponse
-import com.leijendary.spring.template.iam.api.v1.model.TokenRevokeRequest
+import com.leijendary.spring.template.iam.api.v1.mapper.UserMapper
+import com.leijendary.spring.template.iam.api.v1.model.*
+import com.leijendary.spring.template.iam.core.config.properties.AuthProperties
 import com.leijendary.spring.template.iam.core.exception.*
 import com.leijendary.spring.template.iam.core.extension.transactional
 import com.leijendary.spring.template.iam.core.security.JwtTools
 import com.leijendary.spring.template.iam.core.util.RequestContext.now
 import com.leijendary.spring.template.iam.entity.*
-import com.leijendary.spring.template.iam.repository.AuthRepository
-import com.leijendary.spring.template.iam.repository.RolePermissionRepository
-import com.leijendary.spring.template.iam.repository.UserCredentialRepository
-import com.leijendary.spring.template.iam.repository.UserDeviceRepository
+import com.leijendary.spring.template.iam.model.SocialProvider
+import com.leijendary.spring.template.iam.repository.*
+import com.leijendary.spring.template.iam.strategy.SocialVerificationStrategy
 import com.leijendary.spring.template.iam.util.Status.ACTIVE
 import com.nimbusds.jose.JOSEException
 import org.springframework.security.crypto.password.PasswordEncoder
@@ -23,16 +21,22 @@ import java.util.*
 
 @Service
 class TokenService(
+    private val authProperties: AuthProperties,
     private val authRepository: AuthRepository,
     private val jwtTools: JwtTools,
     private val passwordEncoder: PasswordEncoder,
     private val rolePermissionRepository: RolePermissionRepository,
+    socialVerificationStrategies: List<SocialVerificationStrategy>,
     private val userCredentialRepository: UserCredentialRepository,
-    private val userDeviceRepository: UserDeviceRepository
+    private val userDeviceRepository: UserDeviceRepository,
+    private val userRepository: UserRepository
 ) {
+    private val socialVerificationStrategy = socialVerificationStrategies.associateBy { it.provider }
+
     companion object {
         private val TOKEN_MAPPER = TokenMapper.INSTANCE
         private val USER_DEVICE_MAPPER = UserDeviceMapper.INSTANCE
+        private val USER_MAPPER = UserMapper.INSTANCE
         private val ACCOUNT_SOURCE = listOf("data", "Account", "status")
         private val USER_SOURCE = listOf("data", "User", "status")
         private val ACCESS_SOURCE = listOf("body", "accessToken")
@@ -61,23 +65,16 @@ class TokenService(
         userCredentialRepository.save(credential)
 
         val user = credential.user!!
-        val audience = request.audience!!
         val deviceId = request.deviceId!!
 
         // Remove previous access token based on the device ID
         transactional { authRepository.deleteByDeviceId(deviceId) }
 
-        val auth = Auth()
-            .apply {
-                this.user = user
-                this.username = username
-                this.audience = audience
-                this.type = credential.type
-                this.deviceId = deviceId
-            }
-            .let { authorize(it, user, audience) }
+        val auth = authorize(user, username, credential.type, deviceId)
+        val platform = request.platform!!
+        val userDeviceRequest = UserDeviceRequest(deviceId, platform)
 
-        saveDevice(request, user)
+        saveDevice(userDeviceRequest, user)
 
         return TOKEN_MAPPER.toResponse(auth)
     }
@@ -107,7 +104,7 @@ class TokenService(
         val refreshTokenId = UUID.fromString(jwt.id)
         val auth = authRepository
             .findFirstByRefreshId(refreshTokenId)
-            ?.let { authorize(it, it.user!!, it.audience) }
+            ?.let { authorize(it, it.user!!) }
             ?: throw ResourceNotFoundException(REFRESH_SOURCE, refreshTokenId)
 
         return TOKEN_MAPPER.toResponse(auth)
@@ -126,6 +123,40 @@ class TokenService(
         }
 
         removeByAccessId(jwt.id)
+    }
+
+    fun social(request: SocialRequest): TokenResponse {
+        val token = request.token!!
+        val provider = request.provider!!.let { SocialProvider.from(it) }
+        val result = socialVerificationStrategy[provider]!!.verify(token)
+        val email = result.email
+        var credential = transactional(readOnly = true) {
+            userCredentialRepository.findFirstByUsernameAndUserDeletedAtIsNull(email)
+        }
+
+        if (credential == null) {
+            credential = transactional {
+                val newUser = USER_MAPPER.toEntity(result)
+                val newCredential = UserCredential().apply {
+                    this.user = newUser
+                    this.username = email
+                    this.type = UserCredential.Type.EMAIL.value
+                }
+
+                userRepository.save(newUser)
+                userCredentialRepository.save(newCredential)
+            }!!
+        }
+
+        val user = credential.user!!
+        val deviceId = request.deviceId!!
+        val auth = authorize(user, email, credential.type, deviceId)
+        val platform = request.platform!!
+        val userDeviceRequest = UserDeviceRequest(deviceId, platform)
+
+        saveDevice(userDeviceRequest, user)
+
+        return TOKEN_MAPPER.toResponse(auth)
     }
 
     private fun validateStatus(account: Account?, user: User) {
@@ -150,11 +181,23 @@ class TokenService(
             .toSet()
     }
 
-    private fun authorize(auth: Auth, user: User, audience: String): Auth {
+    private fun authorize(user: User, username: String, type: String, deviceId: String): Auth {
+        val auth = Auth().apply {
+            this.user = user
+            this.username = username
+            this.type = type
+            this.deviceId = deviceId
+        }
+
+        return authorize(auth, user)
+    }
+
+    private fun authorize(auth: Auth, user: User): Auth {
         validateStatus(user.account, user)
 
         val role = user.role!!
         val scopes = scopes(role)
+        val audience = authProperties.issuer
         val jwtSet = jwtTools.create(user.id.toString(), audience, scopes)
         val accessToken = jwtSet.accessToken
         val refreshToken = jwtSet.refreshToken
@@ -173,6 +216,7 @@ class TokenService(
         }
 
         auth.apply {
+            this.audience = audience
             this.access = authAccess
             this.refresh = authRefresh
         }
@@ -192,8 +236,8 @@ class TokenService(
         removeDevice(auth.deviceId, auth.user!!.id!!)
     }
 
-    private fun saveDevice(request: TokenRequest, user: User) {
-        val token = request.deviceId!!
+    private fun saveDevice(request: UserDeviceRequest, user: User) {
+        val token = request.token
         var device = transactional(readOnly = true) {
             userDeviceRepository.findFirstByToken(token)
         }
@@ -211,7 +255,7 @@ class TokenService(
 
         // Device does not exist. Then create a device for that user
         device = USER_DEVICE_MAPPER
-            .from(request)
+            .toEntity(request)
             .apply { this.user = user }
 
         userDeviceRepository.save(device)

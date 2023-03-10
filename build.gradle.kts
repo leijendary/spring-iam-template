@@ -60,7 +60,8 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 
     // Spring Security
-    implementation("org.springframework.security:spring-security-crypto")
+    implementation("org.springframework.security:spring-security-web")
+    implementation("org.springframework.security:spring-security-oauth2-jose")
     testImplementation("org.springframework.security:spring-security-test")
 
     // Spring Retry
@@ -93,9 +94,6 @@ dependencies {
 
     // Crypto
     implementation("org.bouncycastle:bcprov-jdk18on:1.72")
-
-    // JWT
-    implementation("com.nimbusds:nimbus-jose-jwt:9.30.2")
 
     // Devtools
     developmentOnly("org.springframework.boot:spring-boot-devtools")

@@ -23,7 +23,7 @@ class VerificationService(
         val value = request.value!!
         val type = request.type!!
         val generator = CodeGenerationStrategy.fromField(field)
-        val verification = MAPPER.from(request).apply {
+        val verification = MAPPER.toEntity(request).apply {
             code = generator.generate()
             expiresAt = verificationProperties.computeExpiration()
         }

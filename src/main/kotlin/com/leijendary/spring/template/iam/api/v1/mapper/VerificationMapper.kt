@@ -11,5 +11,5 @@ interface VerificationMapper {
         val INSTANCE: VerificationMapper = getMapper(VerificationMapper::class.java)
     }
 
-    fun from(request: VerificationCreateRequest): Verification
+    fun toEntity(request: VerificationCreateRequest): Verification
 }
