@@ -9,7 +9,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator
 import org.springframework.security.oauth2.jwt.JwtDecoder
-import org.springframework.security.oauth2.jwt.JwtValidators
+import org.springframework.security.oauth2.jwt.JwtValidators.createDefaultWithIssuer
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder.withJwkSetUri
 
 @Configuration
@@ -41,11 +41,11 @@ class SecurityConfiguration(private val authProperties: AuthProperties) {
     }
 
     private fun createDecoder(config: SocialConfig): JwtDecoder {
+        val issuer = config.issuer
+        val defaultValidator = createDefaultWithIssuer(issuer)
         val clientId = config.clientId
         val audienceValidator = JwtAudienceValidator(clientId)
-        val issuer = config.issuer
-        val defaultValidator = JwtValidators.createDefaultWithIssuer(issuer)
-        val validator = DelegatingOAuth2TokenValidator(audienceValidator, defaultValidator)
+        val validator = DelegatingOAuth2TokenValidator(defaultValidator, audienceValidator)
         val jwkSetUri = config.jwkSetUri
 
         return withJwkSetUri(jwkSetUri)
