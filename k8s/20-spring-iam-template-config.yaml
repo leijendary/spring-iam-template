@@ -24,7 +24,4 @@ data:
   AUTH_ACCESS_TOKEN_PUBLIC_KEY:
   AUTH_REFRESH_TOKEN_PRIVATE_KEY:
   AUTH_REFRESH_TOKEN_PUBLIC_KEY:
-  VERIFICATION_EMAIL_URL: http://localhost:3000/email/verify/{code}
-  VERIFICATION_REGISTER_URL: http://localhost:3000/register/verify/{code}
-  VERIFICATION_PASSWORD_CHANGE_URL: http://localhost:3000/password/change/{code}
-  VERIFICATION_PASSWORD_RESET_URL: http://localhost:3000/password/reset/{code}
+  VERIFICATION_PASSWORD_NOMINATE_URL: http://localhost:3000/password/nominate
