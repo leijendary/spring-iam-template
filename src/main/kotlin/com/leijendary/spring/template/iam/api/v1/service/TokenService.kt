@@ -10,11 +10,14 @@ import com.leijendary.spring.template.iam.core.extension.transactional
 import com.leijendary.spring.template.iam.core.security.JwtTools
 import com.leijendary.spring.template.iam.core.util.RequestContext.now
 import com.leijendary.spring.template.iam.entity.*
+import com.leijendary.spring.template.iam.entity.UserCredential.Type.EMAIL
 import com.leijendary.spring.template.iam.model.SocialProvider
+import com.leijendary.spring.template.iam.model.SocialResult
 import com.leijendary.spring.template.iam.repository.*
 import com.leijendary.spring.template.iam.strategy.SocialVerificationStrategy
 import com.leijendary.spring.template.iam.util.Status.ACTIVE
 import com.nimbusds.jose.JOSEException
+import org.springframework.http.HttpStatus.BAD_REQUEST
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import java.util.*
@@ -29,7 +32,8 @@ class TokenService(
     socialVerificationStrategies: List<SocialVerificationStrategy>,
     private val userCredentialRepository: UserCredentialRepository,
     private val userDeviceRepository: UserDeviceRepository,
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val userSocialRepository: UserSocialRepository
 ) {
     private val socialVerificationStrategy = socialVerificationStrategies.associateBy { it.provider }
 
@@ -41,6 +45,7 @@ class TokenService(
         private val USER_SOURCE = listOf("data", "User", "status")
         private val ACCESS_SOURCE = listOf("body", "accessToken")
         private val REFRESH_SOURCE = listOf("body", "refreshToken")
+        private val SOCIAL_SOURCE = listOf("body", "provider")
     }
 
     fun create(request: TokenRequest): TokenResponse {
@@ -129,28 +134,14 @@ class TokenService(
         val token = request.token!!
         val provider = request.provider!!.let { SocialProvider.from(it) }
         val result = socialVerificationStrategy[provider]!!.verify(token)
-        val email = result.email
-        var credential = transactional(readOnly = true) {
-            userCredentialRepository.findFirstByUsernameAndUserDeletedAtIsNull(email)
-        }
-
-        if (credential == null) {
-            credential = transactional {
-                val newUser = USER_MAPPER.toEntity(result)
-                val newCredential = UserCredential().apply {
-                    this.user = newUser
-                    this.username = email
-                    this.type = UserCredential.Type.EMAIL.value
-                }
-
-                userRepository.save(newUser)
-                userCredentialRepository.save(newCredential)
-            }!!
-        }
-
-        val user = credential.user!!
+        val id = result.id
+        val userSocial = transactional(readOnly = true) {
+            userSocialRepository.findFirstByIdAndUserDeletedAtIsNull(id)
+        } ?: createSocial(result, provider)
+        val user = userSocial.user!!
         val deviceId = request.deviceId!!
-        val auth = authorize(user, email, credential.type, deviceId)
+        val email = result.email
+        val auth = authorize(user, email, EMAIL.value, deviceId)
         val platform = request.platform!!
         val userDeviceRequest = UserDeviceRequest(deviceId, platform)
 
@@ -159,26 +150,40 @@ class TokenService(
         return TOKEN_MAPPER.toResponse(auth)
     }
 
-    private fun validateStatus(account: Account?, user: User) {
-        account?.status?.let {
-            if (it != ACTIVE) {
-                throw NotActiveException(ACCOUNT_SOURCE, "access.account.inactive")
+    private fun createSocial(socialResult: SocialResult, provider: SocialProvider): UserSocial {
+        val email = socialResult.email
+        val credential = transactional(readOnly = true) {
+            userCredentialRepository.findFirstByUsernameAndUserDeletedAtIsNull(email)
+        }
+        val user = credential?.user ?: transactional {
+            val newUser = USER_MAPPER.toEntity(socialResult)
+            val newCredential = UserCredential().apply {
+                this.user = newUser
+                this.username = email
+                this.type = UserCredential.Type.EMAIL.value
             }
-        }
 
-        if (user.status != ACTIVE) {
-            throw NotActiveException(USER_SOURCE, "access.user.inactive")
-        }
-    }
+            newUser.credentials.add(newCredential)
 
-    private fun scopes(role: Role): Set<String> {
-        val permissions = transactional(readOnly = true) {
-            rolePermissionRepository.findAllByRoleId(role.id!!)
+            userCredentialRepository.save(newCredential)
+            userRepository.save(newUser)
         }!!
+        val hasProvider = user.socials.any { it.provider == provider.value }
 
-        return permissions
-            .map { it.permission!!.value }
-            .toSet()
+        // The user already has the same social provider attached to his/her account.
+        if (hasProvider) {
+            throw StatusException(SOCIAL_SOURCE, "access.user.social.exists", BAD_REQUEST, arrayOf(provider.value))
+        }
+
+        val social = UserSocial().apply {
+            this.id = socialResult.id
+            this.user = user
+            this.provider = provider.value
+        }
+
+        user.socials.add(social)
+
+        return userSocialRepository.save(social)
     }
 
     private fun authorize(user: User, username: String, type: String, deviceId: String): Auth {
@@ -222,6 +227,28 @@ class TokenService(
         }
 
         return transactional { authRepository.save(auth) }!!
+    }
+
+    private fun validateStatus(account: Account?, user: User) {
+        account?.status?.let {
+            if (it != ACTIVE) {
+                throw NotActiveException(ACCOUNT_SOURCE, "access.account.inactive")
+            }
+        }
+
+        if (user.status != ACTIVE) {
+            throw NotActiveException(USER_SOURCE, "access.user.inactive")
+        }
+    }
+
+    private fun scopes(role: Role): Set<String> {
+        val permissions = transactional(readOnly = true) {
+            rolePermissionRepository.findAllByRoleId(role.id!!)
+        }!!
+
+        return permissions
+            .map { it.permission!!.value }
+            .toSet()
     }
 
     private fun removeByAccessId(accessTokenId: String) {

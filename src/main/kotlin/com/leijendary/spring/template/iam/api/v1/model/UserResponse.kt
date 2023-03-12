@@ -17,6 +17,7 @@ data class UserResponse(
     val countryCode: String? = null,
     val phone: String? = null,
     val phoneVerified: Boolean = false,
+    var image: String? = null,
     val status: String,
     val createdAt: OffsetDateTime,
     val createdBy: String,

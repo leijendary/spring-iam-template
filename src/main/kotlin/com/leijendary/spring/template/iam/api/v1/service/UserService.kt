@@ -7,6 +7,7 @@ import com.leijendary.spring.template.iam.api.v1.model.UserResponse
 import com.leijendary.spring.template.iam.core.config.properties.VerificationProperties
 import com.leijendary.spring.template.iam.core.extension.transactional
 import com.leijendary.spring.template.iam.core.model.QueryRequest
+import com.leijendary.spring.template.iam.core.storage.S3Storage
 import com.leijendary.spring.template.iam.entity.Account
 import com.leijendary.spring.template.iam.entity.User
 import com.leijendary.spring.template.iam.entity.UserCredential
@@ -30,6 +31,7 @@ import java.util.*
 class UserService(
     private val accountRepository: AccountRepository,
     private val roleRepository: RoleRepository,
+    private val s3Storage: S3Storage,
     private val userRepository: UserRepository,
     private val verificationProperties: VerificationProperties,
     private val verificationRepository: VerificationRepository
@@ -49,7 +51,7 @@ class UserService(
             userRepository.findAll(specification, pageable)
         }!!
 
-        return page.map { MAPPER.toResponse(it) }
+        return page.map { MAPPER.toResponse(it, s3Storage) }
     }
 
     @CachePut(value = [CACHE_NAME], key = "#result.id")
@@ -92,7 +94,7 @@ class UserService(
             verificationRepository.save(verification)
         }
 
-        return MAPPER.toResponse(user)
+        return MAPPER.toResponse(user, s3Storage)
     }
 
     @Cacheable(value = [CACHE_NAME], key = "#id")
@@ -101,7 +103,7 @@ class UserService(
             userRepository.findByIdOrThrow(id)
         }!!
 
-        return MAPPER.toResponse(user)
+        return MAPPER.toResponse(user, s3Storage)
     }
 
     @CachePut(value = [CACHE_NAME], key = "#result.id")
@@ -139,7 +141,7 @@ class UserService(
             userRepository.save(user)
         }
 
-        return MAPPER.toResponse(user)
+        return MAPPER.toResponse(user, s3Storage)
     }
 
     @CacheEvict(value = [CACHE_NAME], key = "#id")

@@ -481,6 +481,35 @@ databaseChangeLog:
                   defaultValueDate: current_timestamp
             tableName: user_device
   - changeSet:
+      id: create-user-social-table
+      author: Leijendekker
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  name: id
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: user_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: provider
+                  type: varchar(8)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamp with time zone
+                  constraints:
+                    nullable: false
+                  defaultValueDate: current_timestamp
+            tableName: user_social
+  - changeSet:
       id: create-user-account-id-foreign-key
       author: Leijendekker
       changes:
@@ -816,3 +845,18 @@ databaseChangeLog:
                   type: string
             file: db/data/role-0.0.1.csv
             tableName: role
+  - changeSet:
+      id: create-user-social-user-id-foreign-key
+      author: Leijendekker
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: user_id
+            baseTableName: user_social
+            constraintName: user_social_user_id_fkey
+            deferrable: false
+            initiallyDeferred: false
+            onDelete: NO ACTION
+            onUpdate: NO ACTION
+            referencedColumnNames: id
+            referencedTableName: user
+            validate: true

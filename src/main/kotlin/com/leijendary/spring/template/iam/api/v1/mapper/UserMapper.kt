@@ -4,11 +4,10 @@ import com.leijendary.spring.template.iam.api.v1.model.RegisterEmailRequest
 import com.leijendary.spring.template.iam.api.v1.model.RegisterPhoneRequest
 import com.leijendary.spring.template.iam.api.v1.model.UserRequest
 import com.leijendary.spring.template.iam.api.v1.model.UserResponse
+import com.leijendary.spring.template.iam.core.storage.S3Storage
 import com.leijendary.spring.template.iam.entity.User
 import com.leijendary.spring.template.iam.model.SocialResult
-import org.mapstruct.Mapper
-import org.mapstruct.Mapping
-import org.mapstruct.MappingTarget
+import org.mapstruct.*
 import org.mapstruct.factory.Mappers.getMapper
 
 @Mapper
@@ -17,12 +16,15 @@ interface UserMapper {
         val INSTANCE: UserMapper = getMapper(UserMapper::class.java)
     }
 
-    fun toResponse(user: User): UserResponse
+    @Mapping(target = "image", ignore = true)
+    fun toResponse(user: User, @Context s3Storage: S3Storage): UserResponse
 
     fun toEntity(registerEmailRequest: RegisterEmailRequest): User
 
     fun toEntity(registerPhoneRequest: RegisterPhoneRequest): User
 
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "image", source = "picture")
     fun toEntity(socialResult: SocialResult): User
 
     @Mapping(target = "account", ignore = true)
@@ -32,4 +34,13 @@ interface UserMapper {
     @Mapping(target = "account", ignore = true)
     @Mapping(target = "role", ignore = true)
     fun update(userRequest: UserRequest, @MappingTarget user: User)
+
+    @AfterMapping
+    fun toResponse(@MappingTarget userResponse: UserResponse, user: User, @Context s3Storage: S3Storage) {
+        val image = user.image
+
+        if (image != null && !image.startsWith("http")) {
+            userResponse.image = image.let { s3Storage.sign(it) }
+        }
+    }
 }
