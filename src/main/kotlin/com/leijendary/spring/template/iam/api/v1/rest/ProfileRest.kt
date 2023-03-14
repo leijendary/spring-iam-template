@@ -34,7 +34,6 @@ class ProfileRest(private val profileService: ProfileService) {
     @Operation(summary = "Change the user's email. This requires a verification.")
     fun email(@Valid @RequestBody request: UpdateEmailRequest) = profileService.username(request)
 
-
     @PatchMapping("phone")
     @Operation(summary = "Change the user's phone number. This requires a verification.")
     fun phone(@Valid @RequestBody request: UpdatePhoneRequest) = profileService.username(request)
