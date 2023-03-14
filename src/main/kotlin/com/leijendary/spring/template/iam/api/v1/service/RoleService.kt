@@ -36,13 +36,11 @@ class RoleService(private val roleRepository: RoleRepository) {
 
     @CachePut(value = [CACHE_NAME], key = "#result.id")
     fun create(request: RoleRequest): RoleResponse {
-        val sampleTable = transactional {
-            MAPPER
-                .toEntity(request)
-                .let { roleRepository.save(it) }
-        }!!
+        val role = MAPPER
+            .toEntity(request)
+            .let { roleRepository.save(it) }
 
-        return MAPPER.toResponse(sampleTable)
+        return MAPPER.toResponse(role)
     }
 
     @Cacheable(value = [CACHE_NAME], key = "#id")

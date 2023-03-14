@@ -44,6 +44,9 @@ class User : AuditingUUIDEntity(), PhoneProjection, SoftDeleteEntity {
     @OneToMany(mappedBy = "user", cascade = [ALL])
     val socials: MutableSet<UserSocial> = HashSet()
 
+    @OneToMany(mappedBy = "user", cascade = [ALL])
+    val addresses: MutableSet<UserAddress> = HashSet()
+
     override var deletedAt: OffsetDateTime? = null
     override var deletedBy: String? = null
 

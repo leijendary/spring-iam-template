@@ -9,7 +9,6 @@ import com.leijendary.spring.template.iam.core.extension.transactional
 import com.leijendary.spring.template.iam.core.model.QueryRequest
 import com.leijendary.spring.template.iam.core.storage.S3Storage
 import com.leijendary.spring.template.iam.entity.Account
-import com.leijendary.spring.template.iam.entity.User
 import com.leijendary.spring.template.iam.entity.UserCredential
 import com.leijendary.spring.template.iam.entity.Verification
 import com.leijendary.spring.template.iam.generator.CodeGenerationStrategy
@@ -108,18 +107,15 @@ class UserService(
 
     @CachePut(value = [CACHE_NAME], key = "#result.id")
     fun update(id: UUID, request: UserRequest): UserResponse {
-        lateinit var user: User
-
-        transactional(readOnly = true) {
+        val user = transactional(readOnly = true) {
             val role = request.role!!.id!!.let {
                 roleRepository.findByIdOrThrow(it)
             }
-            user = userRepository
+
+            userRepository
                 .findByIdOrThrow(id)
-                .apply {
-                    this.role = role
-                }
-        }
+                .apply { this.role = role }
+        }!!
 
         MAPPER.update(request, user)
 
