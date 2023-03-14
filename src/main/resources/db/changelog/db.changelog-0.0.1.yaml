@@ -370,7 +370,6 @@ databaseChangeLog:
                   type: text
                   constraints:
                     nullable: false
-                    unique: true
               - column:
                   name: created_at
                   type: timestamp with time zone
@@ -931,6 +930,18 @@ databaseChangeLog:
             referencedColumnNames: id
             referencedTableName: user
             validate: true
+  - changeSet:
+      id: add-user-social-user-id-provider-index
+      author: Leijendekker
+      changes:
+        - createIndex:
+            columns:
+              - column:
+                  name: user_id
+              - column:
+                  name: provider
+            indexName: user_social_user_id_provider_idx
+            tableName: user_social
   - changeSet:
       id: create-user-address-user-id-foreign-key
       author: Leijendekker

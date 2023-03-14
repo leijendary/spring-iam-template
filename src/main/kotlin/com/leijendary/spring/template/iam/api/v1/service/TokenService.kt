@@ -29,6 +29,7 @@ class TokenService(
     private val jwtTools: JwtTools,
     private val passwordEncoder: PasswordEncoder,
     private val rolePermissionRepository: RolePermissionRepository,
+    private val roleRepository: RoleRepository,
     socialVerificationStrategies: List<SocialVerificationStrategy>,
     private val userCredentialRepository: UserCredentialRepository,
     private val userDeviceRepository: UserDeviceRepository,
@@ -155,24 +156,39 @@ class TokenService(
         val credential = transactional(readOnly = true) {
             userCredentialRepository.findFirstByUsernameAndUserDeletedAtIsNull(email)
         }
-        val user = credential?.user ?: transactional {
-            val newUser = USER_MAPPER.toEntity(socialResult)
-            val newCredential = UserCredential().apply {
-                this.user = newUser
-                this.username = email
-                this.type = UserCredential.Type.EMAIL.value
+        var user = credential?.user
+
+        if (user != null) {
+            val hasProvider = userSocialRepository.existsByUserIdAndProvider(user.id!!, provider.value)
+
+            // The user already has the same social provider attached to his/her account.
+            if (hasProvider) {
+                throw StatusException(SOCIAL_SOURCE, "access.user.social.exists", BAD_REQUEST, arrayOf(provider.value))
             }
+        } else {
+            user = transactional {
+                val account = Account().apply {
+                    type = Account.Type.CUSTOMER.value
+                    status = ACTIVE
+                }
+                val role = roleRepository.findFirstByNameOrThrow(Role.Default.CUSTOMER.value)
+                val newUser = USER_MAPPER.toEntity(socialResult).apply {
+                    this.account = account
+                    this.role = role
+                }
+                val newCredential = UserCredential().apply {
+                    this.user = newUser
+                    this.username = email
+                    this.type = UserCredential.Type.EMAIL.value
+                }
 
-            newUser.credentials.add(newCredential)
+                newUser.credentials.add(newCredential)
 
-            userCredentialRepository.save(newCredential)
-            userRepository.save(newUser)
-        }!!
-        val hasProvider = user.socials.any { it.provider == provider.value }
+                userRepository.save(newUser)
+                userCredentialRepository.save(newCredential)
 
-        // The user already has the same social provider attached to his/her account.
-        if (hasProvider) {
-            throw StatusException(SOCIAL_SOURCE, "access.user.social.exists", BAD_REQUEST, arrayOf(provider.value))
+                newUser
+            }!!
         }
 
         val social = UserSocial().apply {
@@ -180,8 +196,6 @@ class TokenService(
             this.user = user
             this.provider = provider.value
         }
-
-        user.socials.add(social)
 
         return userSocialRepository.save(social)
     }

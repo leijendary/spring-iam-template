@@ -16,7 +16,6 @@ class GoogleSocialVerificationStrategy(private val googleJwtDecoder: JwtDecoder)
         get() = googleJwtDecoder
 
     override fun mapper(jwt: Jwt): SocialResult {
-        // TODO: use actual claim keys
         return SocialResult(
             id = jwt.subject,
             firstName = jwt.getClaimAsString("given_name"),
