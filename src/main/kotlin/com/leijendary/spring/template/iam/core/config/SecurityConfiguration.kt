@@ -27,13 +27,6 @@ class SecurityConfiguration(private val authProperties: AuthProperties) {
     }
 
     @Bean
-    fun facebookJwtDecoder(): JwtDecoder {
-        val config = authProperties.social.facebook
-
-        return createDecoder(config)
-    }
-
-    @Bean
     fun googleJwtDecoder(): JwtDecoder {
         val config = authProperties.social.google
 

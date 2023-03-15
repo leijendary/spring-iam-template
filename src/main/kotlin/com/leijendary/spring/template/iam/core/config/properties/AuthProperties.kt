@@ -29,7 +29,7 @@ class AuthProperties {
 
     inner class Social {
         var apple = SocialConfig()
-        var facebook = SocialConfig()
+        var facebook = FacebookConfig()
         var google = SocialConfig()
     }
 
@@ -37,5 +37,10 @@ class AuthProperties {
         var clientId: String = ""
         var issuer: String = ""
         var jwkSetUri: String = ""
+    }
+
+    inner class FacebookConfig {
+        var url: String = ""
+        var fields: Set<String> = emptySet()
     }
 }

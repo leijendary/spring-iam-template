@@ -13,11 +13,11 @@ abstract class SocialVerificationStrategy {
     private val log = logger()
 
     abstract val provider: SocialProvider
-    abstract val decoder: JwtDecoder
+    
+    open val decoder: JwtDecoder
+        get() = throw NotImplementedError()
 
-    abstract fun mapper(jwt: Jwt): SocialResult
-
-    fun verify(token: String): SocialResult {
+    open fun verify(token: String): SocialResult {
         val jwt = try {
             decoder.decode(token)
         } catch (exception: JwtException) {
@@ -33,6 +33,10 @@ abstract class SocialVerificationStrategy {
         }
 
         return mapper(jwt)
+    }
+
+    open fun mapper(jwt: Jwt): SocialResult {
+        throw NotImplementedError()
     }
 
     private fun statusException(code: String): StatusException {

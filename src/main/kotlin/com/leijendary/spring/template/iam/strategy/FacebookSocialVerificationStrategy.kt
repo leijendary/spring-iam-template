@@ -1,29 +1,31 @@
 package com.leijendary.spring.template.iam.strategy
 
+import com.leijendary.spring.template.iam.client.FacebookClient
+import com.leijendary.spring.template.iam.core.config.properties.AuthProperties
 import com.leijendary.spring.template.iam.model.SocialProvider
 import com.leijendary.spring.template.iam.model.SocialProvider.FACEBOOK
 import com.leijendary.spring.template.iam.model.SocialResult
-import org.springframework.security.oauth2.jwt.Jwt
-import org.springframework.security.oauth2.jwt.JwtDecoder
 import org.springframework.stereotype.Component
 
 @Component
-class FacebookSocialVerificationStrategy(private val facebookJwtDecoder: JwtDecoder) : SocialVerificationStrategy() {
+class FacebookSocialVerificationStrategy(
+    private val authProperties: AuthProperties,
+    private val facebookClient: FacebookClient
+) : SocialVerificationStrategy() {
     override val provider: SocialProvider
         get() = FACEBOOK
 
-    override val decoder: JwtDecoder
-        get() = facebookJwtDecoder
+    override fun verify(token: String): SocialResult {
+        val fields = authProperties.social.facebook.fields
+        val response = facebookClient.profile(fields, token)
 
-    override fun mapper(jwt: Jwt): SocialResult {
-        // TODO: use actual claim keys
         return SocialResult(
-            id = jwt.subject,
-            firstName = jwt.getClaimAsString("given_name"),
-            lastName = jwt.getClaimAsString("family_name"),
-            email = jwt.getClaimAsString("email"),
-            emailVerified = jwt.getClaimAsBoolean("email_verified"),
-            picture = jwt.getClaimAsString("picture")
+            id = response.id,
+            firstName = response.firstName,
+            lastName = response.lastName,
+            email = response.email,
+            emailVerified = true,
+            picture = response.getPicture()
         )
     }
 }

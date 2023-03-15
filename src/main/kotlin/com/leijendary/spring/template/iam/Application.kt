@@ -5,10 +5,12 @@ import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConfiguration
 import org.springframework.boot.runApplication
 import org.springframework.cache.annotation.EnableCaching
+import org.springframework.cloud.openfeign.EnableFeignClients
 import org.springframework.core.env.get
 import org.springframework.retry.annotation.EnableRetry
 
 @EnableCaching
+@EnableFeignClients
 @EnableRetry
 @SpringBootApplication(exclude = [ErrorMvcAutoConfiguration::class])
 class Application

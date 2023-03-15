@@ -31,8 +31,13 @@ auth:
       issuer: https://appleid.apple.com
       jwkSetUri: https://appleid.apple.com/auth/keys
     facebook:
-      issuer: https://www.facebook.com
-      jwkSetUri: https://www.facebook.com/.well-known/oauth/openid/jwks
+      url: https://graph.facebook.com/v16.0
+      fields:
+        - id
+        - first_name
+        - last_name
+        - email
+        - picture
     google:
       issuer: https://accounts.google.com
       jwkSetUri: https://www.googleapis.com/oauth2/v3/certs
@@ -171,3 +176,9 @@ logging:
         kafka: ERROR
   pattern:
     level: '%5p [\${spring.application.name:},%X{traceId:-},%X{spanId:-}]'
+
+feign:
+  client:
+    config:
+      default:
+        loggerLevel: basic

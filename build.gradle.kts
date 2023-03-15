@@ -67,6 +67,9 @@ dependencies {
     // Spring Retry
     implementation("org.springframework.retry:spring-retry")
 
+    // Spring Cloud Starter
+    implementation("org.springframework.cloud:spring-cloud-starter-openfeign")
+
     // Spring Cloud
     implementation("org.springframework.cloud:spring-cloud-context")
 
