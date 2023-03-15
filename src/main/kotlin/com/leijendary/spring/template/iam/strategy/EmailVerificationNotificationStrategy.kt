@@ -3,6 +3,7 @@ package com.leijendary.spring.template.iam.strategy
 import com.leijendary.spring.template.iam.client.MailClient
 import com.leijendary.spring.template.iam.core.config.properties.VerificationProperties
 import com.leijendary.spring.template.iam.entity.UserCredential
+import com.leijendary.spring.template.iam.entity.UserCredential.Type.EMAIL
 import com.leijendary.spring.template.iam.entity.Verification
 import com.leijendary.spring.template.iam.entity.Verification.Type.*
 import com.leijendary.spring.template.iam.model.NotificationTemplate
@@ -15,7 +16,7 @@ class EmailVerificationNotificationStrategy(
     private val verificationProperties: VerificationProperties
 ) : VerificationNotificationStrategy {
     override val field: UserCredential.Type
-        get() = UserCredential.Type.EMAIL
+        get() = EMAIL
 
     override fun template(code: String, type: Verification.Type) = when (type) {
         REGISTRATION -> NotificationTemplate(

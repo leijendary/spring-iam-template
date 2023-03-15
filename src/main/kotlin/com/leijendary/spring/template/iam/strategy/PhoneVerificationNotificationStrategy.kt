@@ -3,6 +3,7 @@ package com.leijendary.spring.template.iam.strategy
 import com.leijendary.spring.template.iam.client.SmsClient
 import com.leijendary.spring.template.iam.core.util.RequestContext.locale
 import com.leijendary.spring.template.iam.entity.UserCredential
+import com.leijendary.spring.template.iam.entity.UserCredential.Type.PHONE
 import com.leijendary.spring.template.iam.entity.Verification
 import com.leijendary.spring.template.iam.entity.Verification.Type.*
 import com.leijendary.spring.template.iam.model.NotificationTemplate
@@ -15,7 +16,7 @@ class PhoneVerificationNotificationStrategy(
     private val smsClient: SmsClient
 ) : VerificationNotificationStrategy {
     override val field: UserCredential.Type
-        get() = UserCredential.Type.PHONE
+        get() = PHONE
 
     override fun template(code: String, type: Verification.Type): NotificationTemplate? {
         val parameters = mapOf("code" to code)
@@ -23,8 +24,8 @@ class PhoneVerificationNotificationStrategy(
             REGISTRATION -> "notification.sms.registration"
             PHONE_CHANGE -> "notification.sms.verification"
             PASSWORD_RESET -> "notification.sms.password.reset"
-            else -> null
-        } ?: return null
+            else -> return null
+        }
 
         return NotificationTemplate(name, parameters)
     }
