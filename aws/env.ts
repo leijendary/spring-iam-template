@@ -15,7 +15,6 @@ export default {
   vpcId: process.env.VPC_ID!!,
   imageTag: process.env.IMAGE_TAG!!,
   namespace: {
-    arn: process.env.NAMESPACE_ARN!!,
     id: process.env.NAMESPACE_ID!!,
     name: process.env.NAMESPACE_NAME!!,
   },

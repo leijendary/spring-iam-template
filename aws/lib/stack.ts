@@ -11,6 +11,7 @@ const { id, name } = env.stack;
 const vpcId = env.vpcId;
 const account = env.account;
 const region = env.region;
+const { id: namespaceId } = env.namespace;
 
 export class ApplicationStack extends Stack {
   constructor(scope: Construct, props: StackProps) {
@@ -18,6 +19,7 @@ export class ApplicationStack extends Stack {
 
     const repositoryArn = `arn:aws:ecr:${region}:${account}:repository/${name}`;
     const clusterArn = `arn:aws:ecs:${region}:${account}:cluster/api-cluster-${environment}`;
+    const namespaceArn = `arn:aws:servicediscovery:${region}:${account}:namespace/${namespaceId}`;
     const bucket = new BucketConstruct(this);
     const secret = new SecretConstruct(this);
     const taskDefinition = new TaskDefinitionConstruct(this, {
@@ -31,6 +33,7 @@ export class ApplicationStack extends Stack {
       ...props,
       vpcId,
       clusterArn,
+      namespaceArn,
       taskDefinition,
     });
   }
