@@ -32,12 +32,7 @@ auth:
       jwkSetUri: https://appleid.apple.com/auth/keys
     facebook:
       url: https://graph.facebook.com/v16.0
-      fields:
-        - id
-        - first_name
-        - last_name
-        - email
-        - picture
+      profilePath: /me?fields=id,first_name,last_name,email,picture
     google:
       issuer: https://accounts.google.com
       jwkSetUri: https://www.googleapis.com/oauth2/v3/certs

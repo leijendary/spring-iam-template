@@ -41,6 +41,6 @@ class AuthProperties {
 
     inner class FacebookConfig {
         var url: String = ""
-        var fields: Set<String> = emptySet()
+        var profilePath: String = ""
     }
 }

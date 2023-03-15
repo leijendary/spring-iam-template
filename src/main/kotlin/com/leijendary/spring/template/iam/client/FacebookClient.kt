@@ -9,10 +9,7 @@ import org.springframework.web.bind.annotation.RequestParam
 
 @FeignClient(name = "facebook", url = "\${auth.social.facebook.url}")
 interface FacebookClient {
-    @GetMapping("me")
+    @GetMapping("\${auth.social.facebook.profilePath}")
     @CollectionFormat(CSV)
-    fun profile(
-        @RequestParam fields: Set<String>,
-        @RequestParam(name = "access_token") accessToken: String
-    ): FacebookProfileResponse
+    fun profile(@RequestParam(name = "access_token") accessToken: String): FacebookProfileResponse
 }
