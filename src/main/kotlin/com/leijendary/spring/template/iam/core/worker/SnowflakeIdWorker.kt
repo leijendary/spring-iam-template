@@ -94,18 +94,16 @@ class SnowflakeIdWorker {
     }
 
     private fun createNodeId(): Long {
-        var nodeId: Long = try {
+        var nodeId = try {
             val stringBuilder = StringBuilder()
             val networkInterfaces: Enumeration<NetworkInterface> = getNetworkInterfaces()
 
             while (networkInterfaces.hasMoreElements()) {
                 val networkInterface: NetworkInterface = networkInterfaces.nextElement()
-                val mac = networkInterface.hardwareAddress
+                val mac = networkInterface.hardwareAddress ?: continue
 
-                if (mac != null) {
-                    for (b in mac) {
-                        stringBuilder.append(String.format("%02X", b))
-                    }
+                for (b in mac) {
+                    stringBuilder.append(String.format("%02X", b))
                 }
             }
 

@@ -88,7 +88,7 @@ dependencies {
     implementation("org.liquibase:liquibase-core")
 
     // OpenAPI
-    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2")
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.3")
 
     // MapStruct
     implementation("org.mapstruct:mapstruct:1.5.3.Final")
@@ -103,7 +103,7 @@ dependencies {
     kapt("org.springframework.boot:spring-boot-configuration-processor")
 
     // Tracing
-    implementation("com.github.loki4j:loki-logback-appender:1.4.0-m1")
+    implementation("com.github.loki4j:loki-logback-appender:1.4.0")
     implementation("io.github.openfeign:feign-micrometer")
     implementation("io.micrometer:micrometer-observation")
     implementation("io.micrometer:micrometer-tracing-bridge-otel")
@@ -112,7 +112,7 @@ dependencies {
     implementation("net.ttddyy.observation:datasource-micrometer-spring-boot:1.0.1")
 
     // Test
-    testImplementation("com.ninja-squad:springmockk:4.0.0")
+    testImplementation("com.ninja-squad:springmockk:4.0.2")
 
     // Test Containers
     testImplementation("org.testcontainers:junit-jupiter")

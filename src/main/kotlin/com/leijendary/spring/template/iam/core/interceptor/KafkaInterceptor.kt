@@ -43,13 +43,21 @@ class KafkaInterceptor : ProducerInterceptor<String, Any>, ConsumerInterceptor<S
         return records
     }
 
-    override fun configure(configs: MutableMap<String, *>) {}
+    override fun configure(configs: MutableMap<String, *>) {
+        // No configuration needed for this
+    }
 
-    override fun onAcknowledgement(metadata: RecordMetadata, exception: Exception?) {}
+    override fun onAcknowledgement(metadata: RecordMetadata, exception: Exception?) {
+        // No configuration needed for this
+    }
 
-    override fun onCommit(offsets: MutableMap<TopicPartition, OffsetAndMetadata>) {}
+    override fun onCommit(offsets: MutableMap<TopicPartition, OffsetAndMetadata>) {
+        // No configuration needed for this
+    }
 
-    override fun close() {}
+    override fun close() {
+        // No configuration needed for this
+    }
 
     private fun traceHeader(headers: Headers) = headers.lastHeader(HEADER_TRACE_PARENT).value().let { String(it) }
 }

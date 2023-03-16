@@ -16,7 +16,6 @@ class AppleSocialVerificationStrategy(private val appleJwtDecoder: JwtDecoder) :
         get() = appleJwtDecoder
 
     override fun mapper(jwt: Jwt): SocialResult {
-        // TODO: check if names and picture are in the claims
         return SocialResult(
             id = jwt.subject,
             email = jwt.getClaimAsString("email"),
