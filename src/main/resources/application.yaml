@@ -16,7 +16,7 @@ info:
       url: https://leijendary.com
 
 auth:
-  issuer:
+  issuer: https://leijendary.com
   keyId: spring-iam-template
   accessToken:
     expiry: 7D
@@ -90,6 +90,9 @@ spring:
         enabled: false
       host:
       port:
+      ssl: true
+      username:
+      password:
     web:
       pageable:
         maxPageSize: 100
@@ -129,10 +132,26 @@ spring:
           firebase:
             arn:
   kafka:
+    admin:
+      clientId: \${info.app.name}
     bootstrapServers:
     consumer:
       groupId: \${info.app.name}
+    jaas:
+      enabled: true
+      loginModule: org.apache.kafka.common.security.scram.ScramLoginModule
+      options:
+        username:
+        password:
+    properties:
+      sasl.mechanism: SCRAM-SHA-256
+    security:
+      protocol: SASL_SSL
     topic:
+      sample:
+        create: \${info.app.organization}.sample.create
+        update: \${info.app.organization}.sample.update
+        delete: \${info.app.organization}.sample.delete
 
 server:
   error:
@@ -171,9 +190,3 @@ logging:
         kafka: ERROR
   pattern:
     level: '%5p [\${spring.application.name:},%X{traceId:-},%X{spanId:-}]'
-
-feign:
-  client:
-    config:
-      default:
-        loggerLevel: basic
