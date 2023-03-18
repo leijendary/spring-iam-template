@@ -62,10 +62,10 @@ export class TaskDefinitionConstruct extends TaskDefinition {
   }
 
   private container(scope: Construct, image: ContainerImage, logGroup: LogGroup) {
+    const securityCredentials = getSecurityCredentials(scope);
     const auroraCredentials = getAuroraCredentials(scope);
     const dataSourceCredentials = getDataSourceCredentials(scope);
     const integrationCredentials = getIntegrationCredentials(scope);
-    const securityCredentials = getSecurityCredentials(scope);
 
     this.addContainer(`${id}Container-${environment}`, {
       containerName: name,
@@ -98,6 +98,8 @@ export class TaskDefinitionConstruct extends TaskDefinition {
         AUTH_SOCIAL_APPLE_CLIENT_ID: integrationCredentials.apple.clientId,
         AUTH_SOCIAL_FACEBOOK_CLIENT_ID: integrationCredentials.facebook.clientId,
         AUTH_SOCIAL_GOOGLE_CLIENT_ID: integrationCredentials.google.clientId,
+        ENCRYPT_KEY: securityCredentials.encrypt.key,
+        ENCRYPT_SALT: securityCredentials.encrypt.salt,
         SPRING_DATASOURCE_PRIMARY_USERNAME: auroraCredentials.username,
         SPRING_DATASOURCE_PRIMARY_PASSWORD: auroraCredentials.password,
         SPRING_DATASOURCE_READONLY_USERNAME: auroraCredentials.username,
@@ -108,8 +110,6 @@ export class TaskDefinitionConstruct extends TaskDefinition {
         SPRING_ELASTICSEARCH_PASSWORD: dataSourceCredentials.elasticsearch.password,
         SPRING_KAFKA_JAAS_OPTIONS_USERNAME: integrationCredentials.kafka.username,
         SPRING_KAFKA_JAAS_OPTIONS_PASSWORD: integrationCredentials.kafka.password,
-        ENCRYPT_KEY: securityCredentials.encrypt.key,
-        ENCRYPT_SALT: securityCredentials.encrypt.salt,
       },
     });
   }
@@ -180,6 +180,29 @@ const getImage = (repository: IRepository) => {
   return ContainerImage.fromEcrRepository(repository, imageTag);
 };
 
+const getSecurityCredentials = (scope: Construct) => {
+  const credential = DatabaseSecret.fromSecretNameV2(
+    scope,
+    `${id}SecuritySecret-${environment}`,
+    `security-${environment}`
+  );
+
+  return {
+    accessToken: {
+      privateKey: Secret.fromSecretsManager(credential, "accessToken.privateKey"),
+      publicKey: Secret.fromSecretsManager(credential, "accessToken.publicKey"),
+    },
+    refreshToken: {
+      privateKey: Secret.fromSecretsManager(credential, "refreshToken.privateKey"),
+      publicKey: Secret.fromSecretsManager(credential, "refreshToken.publicKey"),
+    },
+    encrypt: {
+      key: Secret.fromSecretsManager(credential, "encrypt.key"),
+      salt: Secret.fromSecretsManager(credential, "encrypt.salt"),
+    },
+  };
+};
+
 const getAuroraCredentials = (scope: Construct) => {
   const credential = DatabaseSecret.fromSecretNameV2(
     scope,
@@ -232,29 +255,6 @@ const getIntegrationCredentials = (scope: Construct) => {
     kafka: {
       username: Secret.fromSecretsManager(credential, "kafka.username"),
       password: Secret.fromSecretsManager(credential, "kafka.password"),
-    },
-  };
-};
-
-const getSecurityCredentials = (scope: Construct) => {
-  const credential = DatabaseSecret.fromSecretNameV2(
-    scope,
-    `${id}SecuritySecret-${environment}`,
-    `security-${environment}`
-  );
-
-  return {
-    accessToken: {
-      privateKey: Secret.fromSecretsManager(credential, "accessToken.privateKey"),
-      publicKey: Secret.fromSecretsManager(credential, "accessToken.publicKey"),
-    },
-    refreshToken: {
-      privateKey: Secret.fromSecretsManager(credential, "refreshToken.privateKey"),
-      publicKey: Secret.fromSecretsManager(credential, "refreshToken.publicKey"),
-    },
-    encrypt: {
-      key: Secret.fromSecretsManager(credential, "encrypt.key"),
-      salt: Secret.fromSecretsManager(credential, "encrypt.salt"),
     },
   };
 };
