@@ -15,6 +15,7 @@ import { PolicyDocument, PolicyStatement, Role, ServicePrincipal } from "aws-cdk
 import { LogGroup, RetentionDays } from "aws-cdk-lib/aws-logs";
 import { DatabaseSecret } from "aws-cdk-lib/aws-rds";
 import { Bucket } from "aws-cdk-lib/aws-s3";
+import { Secret as SecretManager } from "aws-cdk-lib/aws-secretsmanager";
 import { Construct } from "constructs";
 import env, { isProd } from "../env";
 
@@ -181,7 +182,7 @@ const getImage = (repository: IRepository) => {
 };
 
 const getSecurityCredentials = (scope: Construct) => {
-  const credential = DatabaseSecret.fromSecretNameV2(
+  const credential = SecretManager.fromSecretNameV2(
     scope,
     `${id}SecuritySecret-${environment}`,
     `security-${environment}`
@@ -217,7 +218,7 @@ const getAuroraCredentials = (scope: Construct) => {
 };
 
 const getDataSourceCredentials = (scope: Construct) => {
-  const credential = DatabaseSecret.fromSecretNameV2(
+  const credential = SecretManager.fromSecretNameV2(
     scope,
     `${id}DataStorageSecret-${environment}`,
     `data-storage-${environment}`
@@ -236,7 +237,7 @@ const getDataSourceCredentials = (scope: Construct) => {
 };
 
 const getIntegrationCredentials = (scope: Construct) => {
-  const credential = DatabaseSecret.fromSecretNameV2(
+  const credential = SecretManager.fromSecretNameV2(
     scope,
     `${id}IntegrationSecret-${environment}`,
     `integration-${environment}`
