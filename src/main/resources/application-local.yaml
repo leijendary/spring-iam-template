@@ -1,3 +1,6 @@
+auth:
+  issuer: http://localhost
+
 verification:
   password:
     nominate:
