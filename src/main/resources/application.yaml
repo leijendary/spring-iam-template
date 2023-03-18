@@ -144,7 +144,8 @@ spring:
         username:
         password:
     properties:
-      sasl.mechanism: SCRAM-SHA-256
+      sasl:
+        mechanism: SCRAM-SHA-256
     security:
       protocol: SASL_SSL
     topic:

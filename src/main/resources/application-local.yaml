@@ -19,6 +19,7 @@ spring:
     jaas:
       enabled: false
     properties:
-      sasl.mechanism: PLAIN
+      sasl:
+        mechanism: PLAIN
     security:
       protocol: PLAINTEXT
