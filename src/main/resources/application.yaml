@@ -125,12 +125,6 @@ spring:
       s3:
         bucketName: leijendary
         signatureDuration: 30m
-      sns:
-        platform:
-          apple:
-            arn:
-          firebase:
-            arn:
   kafka:
     bootstrapServers:
     clientId: \${info.app.name}

@@ -8,7 +8,6 @@ import org.springframework.context.annotation.Configuration
 @EnableConfigurationProperties(
     AuthProperties::class,
     AwsS3Properties::class,
-    AwsSnsProperties::class,
     DataSourcePrimaryProperties::class,
     DataSourceReadonlyProperties::class,
     InfoProperties::class,
