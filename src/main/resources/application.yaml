@@ -149,9 +149,9 @@ spring:
       protocol: SASL_SSL
     topic:
       sample:
-        create: \${info.app.organization}.sample.create
-        update: \${info.app.organization}.sample.update
-        delete: \${info.app.organization}.sample.delete
+        created: \${info.app.organization}.sample.created
+        updated: \${info.app.organization}.sample.updated
+        deleted: \${info.app.organization}.sample.deleted
 
 server:
   error:
