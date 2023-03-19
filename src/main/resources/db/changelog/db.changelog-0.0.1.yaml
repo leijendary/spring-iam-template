@@ -470,9 +470,6 @@ databaseChangeLog:
                   name: platform
                   type: varchar(20)
               - column:
-                  name: endpoint
-                  type: varchar(250)
-              - column:
                   name: created_at
                   type: timestamp with time zone
                   constraints:

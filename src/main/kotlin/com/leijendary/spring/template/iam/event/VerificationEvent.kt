@@ -7,7 +7,7 @@ import org.springframework.retry.annotation.Retryable
 import org.springframework.stereotype.Component
 
 @Component
-class VerificationNotificationEvent(notificationStrategies: List<VerificationNotificationStrategy>) {
+class VerificationEvent(notificationStrategies: List<VerificationNotificationStrategy>) {
     private val strategy = notificationStrategies.associateBy { it.field }
 
     @Retryable

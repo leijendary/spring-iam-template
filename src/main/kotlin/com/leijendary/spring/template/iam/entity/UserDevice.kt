@@ -17,7 +17,6 @@ class UserDevice : IdentityEntity() {
 
     var token: String = ""
     var platform: String = ""
-    var endpoint: String? = null
 
     @CreatedDate
     var createdAt: OffsetDateTime = now

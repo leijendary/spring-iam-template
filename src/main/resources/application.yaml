@@ -148,10 +148,10 @@ spring:
     security:
       protocol: SASL_SSL
     topic:
-      sample:
-        created: \${info.app.organization}.sample.created
-        updated: \${info.app.organization}.sample.updated
-        deleted: \${info.app.organization}.sample.deleted
+      user:
+        device:
+          created: \${info.app.organization}.user.device.created
+          deleted: \${info.app.organization}.user.device.deleted
 
 server:
   error:

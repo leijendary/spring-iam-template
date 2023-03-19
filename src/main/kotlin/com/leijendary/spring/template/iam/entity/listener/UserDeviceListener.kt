@@ -1,26 +1,21 @@
 package com.leijendary.spring.template.iam.entity.listener
 
-import com.leijendary.spring.template.iam.client.PushNotificationClient
 import com.leijendary.spring.template.iam.core.util.SpringContext.Companion.getBean
 import com.leijendary.spring.template.iam.entity.UserDevice
-import jakarta.persistence.PrePersist
-import jakarta.persistence.PreRemove
+import com.leijendary.spring.template.iam.event.UserDeviceEvent
+import jakarta.persistence.PostPersist
+import jakarta.persistence.PostRemove
 
-private val pushNotificationClient = getBean(PushNotificationClient::class)
+private val userDeviceEvent = getBean(UserDeviceEvent::class)
 
 class UserDeviceListener {
-    @PrePersist
-    fun beforeCreate(userDevice: UserDevice) {
-        val platform = userDevice.platform
-        val token = userDevice.token
-
-        userDevice.endpoint = pushNotificationClient.createEndpoint(platform, token)
+    @PostPersist
+    fun onCreate(userDevice: UserDevice) {
+        userDeviceEvent.created(userDevice)
     }
 
-    @PreRemove
-    fun beforeRemove(userDevice: UserDevice) {
-        userDevice.endpoint?.let {
-            pushNotificationClient.deleteEndpoint(it)
-        }
+    @PostRemove
+    fun onRemove(userDevice: UserDevice) {
+        userDeviceEvent.deleted(userDevice)
     }
 }
