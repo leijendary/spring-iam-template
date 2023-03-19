@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component
 import org.thymeleaf.context.Context
 import org.thymeleaf.spring6.SpringTemplateEngine
 
+// TODO: use the notification microservice to send emails
 @Component
 class MailClient(
     private val infoProperties: InfoProperties,
