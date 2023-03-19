@@ -148,6 +148,9 @@ databaseChangeLog:
               - column:
                   name: email_verified
                   type: boolean
+                  constraints:
+                    nullable: false
+                  defaultValueBoolean: false
               - column:
                   name: country_code
                   type: varchar(4)
@@ -157,6 +160,9 @@ databaseChangeLog:
               - column:
                   name: phone_verified
                   type: boolean
+                  constraints:
+                    nullable: false
+                  defaultValueBoolean: false
               - column:
                   name: image
                   type: text
