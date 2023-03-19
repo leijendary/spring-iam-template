@@ -68,15 +68,13 @@ class RoleService(private val roleRepository: RoleRepository) {
     }
 
     @CacheEvict(value = [CACHE_NAME], key = "#id")
-    fun delete(id: UUID) {
-        transactional {
-            roleRepository
-                .findByIdOrThrow(id)
-                .let {
-                    roleRepository.delete(it)
+    fun delete(id: UUID) = transactional {
+        roleRepository
+            .findByIdOrThrow(id)
+            .let {
+                roleRepository.delete(it)
 
-                    it
-                }
-        }
+                it
+            }
     }
 }

@@ -133,25 +133,21 @@ class UserService(
             user.credentials.add(credential)
         }
 
-        transactional {
-            userRepository.save(user)
-        }
+        transactional { userRepository.save(user) }
 
         return MAPPER.toResponse(user, s3Storage)
     }
 
     @CacheEvict(value = [CACHE_NAME], key = "#id")
-    fun delete(id: UUID) {
-        transactional {
-            userRepository
-                .findByIdOrThrow(id)
-                .let { user ->
-                    user.account?.let { account ->
-                        accountRepository.softDelete(account)
-                    }
-
-                    userRepository.softDelete(user)
+    fun delete(id: UUID) = transactional {
+        userRepository
+            .findByIdOrThrow(id)
+            .let { user ->
+                user.account?.let { account ->
+                    accountRepository.softDelete(account)
                 }
-        }
+
+                userRepository.softDelete(user)
+            }
     }
 }

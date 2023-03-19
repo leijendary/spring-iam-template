@@ -64,21 +64,17 @@ class AddressService(
 
         MAPPER.update(request, address)
 
-        transactional {
-            userAddressRepository.save(address)
-        }
+        transactional { userAddressRepository.save(address) }
 
         return MAPPER.toResponse(address)
     }
 
     @CacheEvict(value = [CACHE_NAME], key = "(#userId + ':' + #id)")
-    fun delete(userId: UUID, id: UUID) {
-        transactional {
-            userAddressRepository
-                .findFirstByIdAndUserIdOrThrow(id, userId)
-                .let {
-                    userAddressRepository.delete(it)
-                }
-        }
+    fun delete(userId: UUID, id: UUID) = transactional {
+        userAddressRepository
+            .findFirstByIdAndUserIdOrThrow(id, userId)
+            .let {
+                userAddressRepository.delete(it)
+            }
     }
 }
