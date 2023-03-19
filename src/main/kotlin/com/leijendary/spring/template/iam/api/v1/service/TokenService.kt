@@ -289,12 +289,12 @@ class TokenService(
         }
 
         // Device exists and the user ID does not match the current user ID.
-        // Delete the old user's device
+        // Delete the old user's device.
         if (device != null && device.user?.id != user.id) {
             userDeviceRepository.delete(device)
         }
 
-        // Device does not exist. Then create a device for that user
+        // Device does not exist. Then create a device for that user.
         device = USER_DEVICE_MAPPER
             .toEntity(request)
             .apply { this.user = user }
