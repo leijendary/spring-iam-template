@@ -1,9 +1,9 @@
 package com.leijendary.spring.template.iam
 
-import com.leijendary.spring.template.container.JaegerContainerTest
-import com.leijendary.spring.template.container.KafkaContainerTest
-import com.leijendary.spring.template.container.PostgresContainerTest
-import com.leijendary.spring.template.container.RedisContainerTest
+import com.leijendary.spring.template.iam.container.JaegerContainerTest
+import com.leijendary.spring.template.iam.container.KafkaContainerTest
+import com.leijendary.spring.template.iam.container.PostgresContainerTest
+import com.leijendary.spring.template.iam.container.RedisContainerTest
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
