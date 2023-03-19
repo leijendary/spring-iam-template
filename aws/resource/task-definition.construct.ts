@@ -97,7 +97,6 @@ export class TaskDefinitionConstruct extends TaskDefinition {
         AUTH_REFRESH_TOKEN_PRIVATE_KEY: securityCredentials.refreshToken.privateKey,
         AUTH_REFRESH_TOKEN_PUBLIC_KEY: securityCredentials.refreshToken.publicKey,
         AUTH_SOCIAL_APPLE_CLIENT_ID: integrationCredentials.apple.clientId,
-        AUTH_SOCIAL_FACEBOOK_CLIENT_ID: integrationCredentials.facebook.clientId,
         AUTH_SOCIAL_GOOGLE_CLIENT_ID: integrationCredentials.google.clientId,
         ENCRYPT_KEY: securityCredentials.encrypt.key,
         ENCRYPT_SALT: securityCredentials.encrypt.salt,
@@ -246,9 +245,6 @@ const getIntegrationCredentials = (scope: Construct) => {
   return {
     apple: {
       clientId: Secret.fromSecretsManager(credential, "apple.clientId"),
-    },
-    facebook: {
-      clientId: Secret.fromSecretsManager(credential, "facebook.clientId"),
     },
     google: {
       clientId: Secret.fromSecretsManager(credential, "google.clientId"),
