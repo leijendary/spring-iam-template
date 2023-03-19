@@ -132,9 +132,8 @@ spring:
           firebase:
             arn:
   kafka:
-    admin:
-      clientId: \${info.app.name}
     bootstrapServers:
+    clientId: \${info.app.name}
     consumer:
       groupId: \${info.app.name}
     jaas:

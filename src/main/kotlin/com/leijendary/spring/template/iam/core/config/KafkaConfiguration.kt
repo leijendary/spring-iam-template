@@ -69,6 +69,8 @@ class KafkaConfiguration(
             ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG to StringSerializer::class.java.name,
             ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG to StringSerializer::class.java.name,
             ProducerConfig.INTERCEPTOR_CLASSES_CONFIG to KafkaInterceptor::class.java.name,
+            ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG to true,
+            ProducerConfig.ACKS_CONFIG to "all",
         )
         config.putAll(kafkaProperties.properties)
 
