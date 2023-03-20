@@ -88,7 +88,7 @@ dependencies {
     implementation("org.liquibase:liquibase-core")
 
     // OpenAPI
-    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.3")
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.4")
 
     // MapStruct
     implementation("org.mapstruct:mapstruct:1.5.3.Final")
