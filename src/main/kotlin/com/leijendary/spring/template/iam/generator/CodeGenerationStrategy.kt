@@ -7,7 +7,7 @@ interface CodeGenerationStrategy {
     companion object {
         val OTP_STRATEGY = OtpCodeGenerationStrategy()
         val CHAR_STRATEGY = CharCodeGenerationStrategy()
-        val UUID_STRATEGY = UuidCodeGenerationStrategy()
+        val UUID_STRATEGY = UUIDCodeGenerationStrategy()
 
         fun fromField(field: String) = when (field) {
             PHONE.value -> OTP_STRATEGY
