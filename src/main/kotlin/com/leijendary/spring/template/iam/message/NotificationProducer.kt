@@ -14,21 +14,23 @@ import org.springframework.stereotype.Component
 @Component
 class NotificationProducer(
     private val kafkaTemplate: KafkaTemplate<String, String>,
-    kafkaTopicProperties: KafkaTopicProperties
+    private val kafkaTopicProperties: KafkaTopicProperties
 ) {
-    private val email = kafkaTopicProperties[NOTIFICATION_EMAIL]!!
-    private val push = kafkaTopicProperties[NOTIFICATION_PUSH]!!
-    private val sms = kafkaTopicProperties[NOTIFICATION_SMS]!!
-
     fun email(emailMessage: EmailMessage) {
-        kafkaTemplate.send(email, emailMessage.toJson())
+        val topic = kafkaTopicProperties.nameOf(NOTIFICATION_EMAIL)
+
+        kafkaTemplate.send(topic, emailMessage.toJson())
     }
 
     fun push(pushMessage: PushMessage) {
-        kafkaTemplate.send(push, pushMessage.toJson())
+        val topic = kafkaTopicProperties.nameOf(NOTIFICATION_PUSH)
+
+        kafkaTemplate.send(topic, pushMessage.toJson())
     }
 
     fun sms(smsMessage: SmsMessage) {
-        kafkaTemplate.send(sms, smsMessage.toJson())
+        val topic = kafkaTopicProperties.nameOf(NOTIFICATION_SMS)
+
+        kafkaTemplate.send(topic, smsMessage.toJson())
     }
 }

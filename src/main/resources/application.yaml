@@ -136,16 +136,26 @@ spring:
       options:
         username:
         password:
+    listener:
+      concurrency: 30
     properties:
       sasl:
         mechanism: SCRAM-SHA-256
     security:
       protocol: SASL_SSL
     topic:
-      notification:
-        email: \${info.app.organization}.notification.email
-        push: \${info.app.organization}.notification.push
-        sms: \${info.app.organization}.notification.sms
+      notificationEmail:
+        name: \${info.app.organization}.notification.email
+        partitions: 5
+        replicas: 1
+      notificationPush:
+        name: \${info.app.organization}.notification.push
+        partitions: 20
+        replicas: 1
+      notificationSms:
+        name: \${info.app.organization}.notification.sms
+        partitions: 5
+        replicas: 1
 
 server:
   error:

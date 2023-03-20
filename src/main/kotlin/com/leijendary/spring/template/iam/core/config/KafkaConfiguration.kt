@@ -3,7 +3,9 @@ package com.leijendary.spring.template.iam.core.config
 import com.leijendary.spring.template.iam.core.config.properties.KafkaTopicProperties
 import com.leijendary.spring.template.iam.core.interceptor.KafkaInterceptor
 import org.apache.kafka.clients.consumer.ConsumerConfig
+import org.apache.kafka.clients.consumer.RoundRobinAssignor
 import org.apache.kafka.clients.producer.ProducerConfig
+import org.apache.kafka.clients.producer.RoundRobinPartitioner
 import org.apache.kafka.common.TopicPartition
 import org.apache.kafka.common.config.SaslConfigs.SASL_JAAS_CONFIG
 import org.apache.kafka.common.serialization.StringDeserializer
@@ -34,13 +36,18 @@ class KafkaConfiguration(
     @Bean
     fun topics(): NewTopics {
         val topics = kafkaTopicProperties.values.flatMap {
-            listOf(it, "$it$TOPIC_DEAD_LETTER_SUFFIX").map { topic ->
-                TopicBuilder
-                    .name(topic)
-                    .partitions(1)
-                    .replicas(1)
-                    .build()
-            }
+            val topic = TopicBuilder
+                .name(it.name)
+                .partitions(it.partitions)
+                .replicas(it.replicas)
+                .build()
+            val deadLetterTopic = TopicBuilder
+                .name("${it.name}$TOPIC_DEAD_LETTER_SUFFIX")
+                .partitions(1)
+                .replicas(1)
+                .build()
+
+            listOf(topic, deadLetterTopic)
         }
 
         return NewTopics(*topics.toTypedArray())
@@ -54,6 +61,7 @@ class KafkaConfiguration(
             ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG to StringDeserializer::class.java.name,
             ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG to StringDeserializer::class.java.name,
             ConsumerConfig.INTERCEPTOR_CLASSES_CONFIG to KafkaInterceptor::class.java.name,
+            ConsumerConfig.PARTITION_ASSIGNMENT_STRATEGY_CONFIG to RoundRobinAssignor::class.java.name,
         )
         config.putAll(kafkaProperties.properties)
 
@@ -71,6 +79,7 @@ class KafkaConfiguration(
             ProducerConfig.INTERCEPTOR_CLASSES_CONFIG to KafkaInterceptor::class.java.name,
             ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG to true,
             ProducerConfig.ACKS_CONFIG to "all",
+            ProducerConfig.PARTITIONER_CLASS_CONFIG to RoundRobinPartitioner::class.java.name
         )
         config.putAll(kafkaProperties.properties)
 
@@ -88,10 +97,12 @@ class KafkaConfiguration(
             TopicPartition(record.topic() + TOPIC_DEAD_LETTER_SUFFIX, record.partition())
         }
         val errorHandler = DefaultErrorHandler(recover)
+        val concurrency = kafkaProperties.listener.concurrency
         val factory = ConcurrentKafkaListenerContainerFactory<String, String>()
         factory.consumerFactory = consumerFactory
         factory.containerProperties.isObservationEnabled = true
         factory.setCommonErrorHandler(errorHandler)
+        factory.setConcurrency(concurrency)
 
         return factory
     }
