@@ -56,14 +56,12 @@ class ProfileService(
         val credentialType = request.credentialType.value
         val username = request.username
         val verificationCode = request.verificationCode!!
-        val deviceId = request.deviceId!!
         val verificationType = request.verificationType
         // Validate the verification code first
         val verification = verificationValidator.validateByField(
             credentialType,
             username,
             verificationCode,
-            deviceId,
             verificationType
         )
         val user = transactional(readOnly = true) {

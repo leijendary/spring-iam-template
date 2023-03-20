@@ -12,7 +12,6 @@ import java.time.OffsetDateTime
 @EntityListeners(VerificationListener::class)
 class Verification : IdentityEntity() {
     var code = ""
-    var deviceId = ""
     var type = ""
     var field: String? = null
     var value: String? = null

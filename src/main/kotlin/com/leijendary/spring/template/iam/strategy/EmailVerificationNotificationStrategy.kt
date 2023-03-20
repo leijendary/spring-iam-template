@@ -1,18 +1,23 @@
 package com.leijendary.spring.template.iam.strategy
 
-import com.leijendary.spring.template.iam.client.MailClient
 import com.leijendary.spring.template.iam.core.config.properties.VerificationProperties
+import com.leijendary.spring.template.iam.core.util.RequestContext.locale
 import com.leijendary.spring.template.iam.entity.UserCredential
 import com.leijendary.spring.template.iam.entity.UserCredential.Type.EMAIL
 import com.leijendary.spring.template.iam.entity.Verification
 import com.leijendary.spring.template.iam.entity.Verification.Type.*
+import com.leijendary.spring.template.iam.message.NotificationProducer
+import com.leijendary.spring.template.iam.model.EmailMessage
 import com.leijendary.spring.template.iam.model.NotificationTemplate
 import org.springframework.stereotype.Component
 import org.springframework.web.util.UriComponentsBuilder
+import org.thymeleaf.context.Context
+import org.thymeleaf.spring6.SpringTemplateEngine
 
 @Component
 class EmailVerificationNotificationStrategy(
-    private val mailClient: MailClient,
+    private val notificationProducer: NotificationProducer,
+    private val templateEngine: SpringTemplateEngine,
     private val verificationProperties: VerificationProperties
 ) : VerificationNotificationStrategy {
     override val field: UserCredential.Type
@@ -50,9 +55,13 @@ class EmailVerificationNotificationStrategy(
         val value = verification.value!!
         val code = verification.code
         val type = verification.type.let { Verification.Type.from(it) }
-        val template = template(code, type)?.apply { this.to = value } ?: return
+        val template = template(code, type) ?: return
+        val subject = template.subject!!
+        val context = Context(locale, template.parameters)
+        val content = templateEngine.process(template.name, context)
+        val emailMessage = EmailMessage(value, subject, content, null)
 
-        mailClient.send(template)
+        notificationProducer.email(emailMessage)
     }
 
     private fun codeParameter(code: String) = mapOf("code" to code)

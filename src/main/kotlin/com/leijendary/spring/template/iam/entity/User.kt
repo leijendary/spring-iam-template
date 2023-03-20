@@ -39,9 +39,6 @@ class User : AuditingUUIDEntity(), PhoneProjection, SoftDeleteEntity {
     val credentials: MutableSet<UserCredential> = HashSet()
 
     @OneToMany(mappedBy = "user", cascade = [ALL])
-    val devices: MutableSet<UserDevice> = HashSet()
-
-    @OneToMany(mappedBy = "user", cascade = [ALL])
     val socials: MutableSet<UserSocial> = HashSet()
 
     @OneToMany(mappedBy = "user", cascade = [ALL])

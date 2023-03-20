@@ -19,7 +19,6 @@ class Auth : IdentityEntity() {
     var username: String = ""
     var audience: String = ""
     var type: String = ""
-    var deviceId: String = ""
 
     @OneToOne(mappedBy = "auth", cascade = [ALL], orphanRemoval = true)
     var access: AuthAccess? = null

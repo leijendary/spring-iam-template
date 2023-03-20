@@ -7,8 +7,5 @@ data class PasswordResetRequest(
     val password: String? = null,
 
     @field:NotBlank(message = "validation.required")
-    val verificationCode: String? = null,
-
-    @field:NotBlank(message = "validation.required")
-    val deviceId: String? = null,
+    val verificationCode: String? = null
 ) : CredentialFieldRequest()

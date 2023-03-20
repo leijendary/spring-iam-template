@@ -4,6 +4,7 @@ import com.leijendary.spring.template.iam.core.exception.StatusException
 import com.leijendary.spring.template.iam.core.extension.transactional
 import com.leijendary.spring.template.iam.core.util.RequestContext.now
 import com.leijendary.spring.template.iam.entity.Verification
+import com.leijendary.spring.template.iam.entity.Verification.Type
 import com.leijendary.spring.template.iam.repository.VerificationRepository
 import org.springframework.http.HttpStatus.GONE
 import org.springframework.stereotype.Component
@@ -11,19 +12,12 @@ import org.springframework.stereotype.Component
 @Component
 class VerificationValidator(private val verificationRepository: VerificationRepository) {
     /**
-     * Validate that the [field]-[value]-[code]-[deviceId]-[type] combination exists and
+     * Validate that the [field]-[value]-[code]-[type] combination exists and
      * is not expired. This method will throw an error if the verification is not found.
      */
-    fun validateByField(
-        field: String,
-        value: String,
-        code: String,
-        deviceId: String,
-        type: Verification.Type
-    ): Verification {
+    fun validateByField(field: String, value: String, code: String, type: Type): Verification {
         val verification = transactional(readOnly = true) {
-            verificationRepository
-                .findFirstByFieldAndValueAndCodeAndDeviceIdAndTypeOrThrow(field, value, code, deviceId, type.value)
+            verificationRepository.findFirstByFieldAndValueAndCodeAndAndTypeOrThrow(field, value, code, type.value)
         }!!
 
         validateExpiration(verification)
@@ -37,7 +31,7 @@ class VerificationValidator(private val verificationRepository: VerificationRepo
      *
      * This is recommended for verification UUID codes.
      */
-    fun validateByCode(code: String, type: Verification.Type): Verification {
+    fun validateByCode(code: String, type: Type): Verification {
         val verification = transactional(readOnly = true) {
             verificationRepository.findFirstByCodeAndTypeOrThrow(code, type.value)
         }!!

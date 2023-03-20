@@ -315,11 +315,6 @@ databaseChangeLog:
                   name: expires_at
                   type: timestamp with time zone
               - column:
-                  name: device_id
-                  type: text
-                  constraints:
-                    nullable: false
-              - column:
                   name: type
                   type: varchar(20)
                   constraints:
@@ -369,11 +364,6 @@ databaseChangeLog:
               - column:
                   name: type
                   type: VARCHAR(12)
-                  constraints:
-                    nullable: false
-              - column:
-                  name: device_id
-                  type: text
                   constraints:
                     nullable: false
               - column:
@@ -448,40 +438,6 @@ databaseChangeLog:
                   constraints:
                     nullable: false
             tableName: auth_refresh
-  - changeSet:
-      id: create-user-device-table
-      author: Leijendekker
-      changes:
-        - createTable:
-            columns:
-              - column:
-                  name: id
-                  type: bigserial
-                  autoIncrement: true
-                  constraints:
-                    nullable: false
-                    unique: true
-              - column:
-                  name: user_id
-                  type: uuid
-                  constraints:
-                    nullable: false
-              - column:
-                  name: token
-                  type: text
-                  constraints:
-                    nullable: false
-                    unique: true
-              - column:
-                  name: platform
-                  type: varchar(20)
-              - column:
-                  name: created_at
-                  type: timestamp with time zone
-                  constraints:
-                    nullable: false
-                  defaultValueDate: current_timestamp
-            tableName: user_device
   - changeSet:
       id: create-user-social-table
       author: Leijendekker
@@ -754,7 +710,7 @@ databaseChangeLog:
             indexName: verification_field_value_type_idx
             tableName: verification
   - changeSet:
-      id: add-verification-field-value-code-device-id-type-index
+      id: add-verification-field-value-code-type-index
       author: Leijendekker
       changes:
         - createIndex:
@@ -766,10 +722,8 @@ databaseChangeLog:
               - column:
                   name: code
               - column:
-                  name: device_id
-              - column:
                   name: type
-            indexName: verification_field_value_code_device_id_type_idx
+            indexName: verification_field_value_code_type_idx
             tableName: verification
   - changeSet:
       id: add-verification-code-type-index
@@ -870,33 +824,6 @@ databaseChangeLog:
             referencedColumnNames: id
             referencedTableName: auth
             validate: true
-  - changeSet:
-      id: add-user-device-user-id-foreign-key
-      author: Leijendekker
-      changes:
-        - addForeignKeyConstraint:
-            baseColumnNames: user_id
-            baseTableName: user_device
-            constraintName: user_device_user_id_fkey
-            deferrable: false
-            initiallyDeferred: false
-            onDelete: NO ACTION
-            onUpdate: NO ACTION
-            referencedColumnNames: id
-            referencedTableName: user
-            validate: true
-  - changeSet:
-      id: add-user-device-user-id-token-index
-      author: Leijendekker
-      changes:
-        - createIndex:
-            columns:
-              - column:
-                  name: user_id
-              - column:
-                  name: token
-            indexName: user_device_user_id_token_idx
-            tableName: user_device
   - changeSet:
       id: load-initial-roles
       author: Leijendekker

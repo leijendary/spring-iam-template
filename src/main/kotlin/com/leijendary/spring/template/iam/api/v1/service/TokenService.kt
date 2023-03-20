@@ -1,7 +1,6 @@
 package com.leijendary.spring.template.iam.api.v1.service
 
 import com.leijendary.spring.template.iam.api.v1.mapper.TokenMapper
-import com.leijendary.spring.template.iam.api.v1.mapper.UserDeviceMapper
 import com.leijendary.spring.template.iam.api.v1.mapper.UserMapper
 import com.leijendary.spring.template.iam.api.v1.model.*
 import com.leijendary.spring.template.iam.core.config.properties.AuthProperties
@@ -32,7 +31,6 @@ class TokenService(
     private val roleRepository: RoleRepository,
     socialVerificationStrategies: List<SocialVerificationStrategy>,
     private val userCredentialRepository: UserCredentialRepository,
-    private val userDeviceRepository: UserDeviceRepository,
     private val userRepository: UserRepository,
     private val userSocialRepository: UserSocialRepository
 ) {
@@ -40,7 +38,6 @@ class TokenService(
 
     companion object {
         private val TOKEN_MAPPER = TokenMapper.INSTANCE
-        private val USER_DEVICE_MAPPER = UserDeviceMapper.INSTANCE
         private val USER_MAPPER = UserMapper.INSTANCE
         private val ACCOUNT_SOURCE = listOf("data", "Account", "status")
         private val USER_SOURCE = listOf("data", "User", "status")
@@ -71,16 +68,8 @@ class TokenService(
         userCredentialRepository.save(credential)
 
         val user = credential.user!!
-        val deviceId = request.deviceId!!
 
-        // Remove previous access token based on the device ID
-        transactional { authRepository.deleteByDeviceId(deviceId) }
-
-        val auth = authorize(user, username, credential.type, deviceId)
-        val platform = request.platform!!
-        val userDeviceRequest = UserDeviceRequest(deviceId, platform)
-
-        saveDevice(userDeviceRequest, user)
+        val auth = authorize(user, username, credential.type)
 
         return TOKEN_MAPPER.toResponse(auth)
     }
@@ -140,13 +129,8 @@ class TokenService(
             userSocialRepository.findFirstByIdAndUserDeletedAtIsNull(id)
         } ?: createSocial(result, provider)
         val user = userSocial.user!!
-        val deviceId = request.deviceId!!
         val email = result.email
-        val auth = authorize(user, email, EMAIL.value, deviceId)
-        val platform = request.platform!!
-        val userDeviceRequest = UserDeviceRequest(deviceId, platform)
-
-        saveDevice(userDeviceRequest, user)
+        val auth = authorize(user, email, EMAIL.value)
 
         return TOKEN_MAPPER.toResponse(auth)
     }
@@ -200,12 +184,11 @@ class TokenService(
         return userSocialRepository.save(social)
     }
 
-    private fun authorize(user: User, username: String, type: String, deviceId: String): Auth {
+    private fun authorize(user: User, username: String, type: String): Auth {
         val auth = Auth().apply {
             this.user = user
             this.username = username
             this.type = type
-            this.deviceId = deviceId
         }
 
         return authorize(auth, user)
@@ -272,37 +255,5 @@ class TokenService(
         } ?: return
 
         authRepository.delete(auth)
-
-        // Also remove the device from the user's possession
-        removeDevice(auth.deviceId, auth.user!!.id!!)
-    }
-
-    private fun saveDevice(request: UserDeviceRequest, user: User) {
-        val token = request.token
-        var device = transactional(readOnly = true) {
-            userDeviceRepository.findFirstByToken(token)
-        }
-
-        // Device exists AND the user IDs are the same. Skip the process.
-        if (device?.user?.id == user.id) {
-            return
-        }
-
-        // Device exists and the user ID does not match the current user ID.
-        // Delete the old user's device.
-        if (device != null && device.user?.id != user.id) {
-            userDeviceRepository.delete(device)
-        }
-
-        // Device does not exist. Then create a device for that user.
-        device = USER_DEVICE_MAPPER
-            .toEntity(request)
-            .apply { this.user = user }
-
-        userDeviceRepository.save(device)
-    }
-
-    private fun removeDevice(token: String, userId: UUID) = transactional {
-        userDeviceRepository.deleteByTokenAndUserId(token, userId)
     }
 }

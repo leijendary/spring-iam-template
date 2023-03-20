@@ -142,10 +142,10 @@ spring:
     security:
       protocol: SASL_SSL
     topic:
-      user:
-        device:
-          created: \${info.app.organization}.user.device.created
-          deleted: \${info.app.organization}.user.device.deleted
+      notification:
+        email: \${info.app.organization}.notification.email
+        push: \${info.app.organization}.notification.push
+        sms: \${info.app.organization}.notification.sms
 
 server:
   error:

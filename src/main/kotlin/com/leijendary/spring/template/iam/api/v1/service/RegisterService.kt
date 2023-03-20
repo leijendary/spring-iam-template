@@ -35,15 +35,9 @@ class RegisterService(
         val credentialType = request.credentialType.value
         val username = request.username
         val verificationCode = request.verificationCode!!
-        val deviceId = request.deviceId!!
         // Validate if the verification code exists first.
-        val verification = verificationValidator.validateByField(
-            credentialType,
-            username,
-            verificationCode,
-            deviceId,
-            REGISTRATION
-        )
+        val verification =
+            verificationValidator.validateByField(credentialType, username, verificationCode, REGISTRATION)
         val account = Account().apply {
             type = Account.Type.CUSTOMER.value
             status = ACTIVE
