@@ -106,8 +106,6 @@ export class TaskDefinitionConstruct extends TaskDefinition {
         SPRING_DATASOURCE_READONLY_PASSWORD: auroraCredentials.password,
         SPRING_DATA_REDIS_USERNAME: dataSourceCredentials.redis.username,
         SPRING_DATA_REDIS_PASSWORD: dataSourceCredentials.redis.password,
-        SPRING_ELASTICSEARCH_USERNAME: dataSourceCredentials.elasticsearch.username,
-        SPRING_ELASTICSEARCH_PASSWORD: dataSourceCredentials.elasticsearch.password,
         SPRING_KAFKA_JAAS_OPTIONS_USERNAME: integrationCredentials.kafka.username,
         SPRING_KAFKA_JAAS_OPTIONS_PASSWORD: integrationCredentials.kafka.password,
       },
@@ -224,10 +222,6 @@ const getDataSourceCredentials = (scope: Construct) => {
   );
 
   return {
-    elasticsearch: {
-      username: Secret.fromSecretsManager(credential, "elasticsearch.username"),
-      password: Secret.fromSecretsManager(credential, "elasticsearch.password"),
-    },
     redis: {
       username: Secret.fromSecretsManager(credential, "redis.username"),
       password: Secret.fromSecretsManager(credential, "redis.password"),
