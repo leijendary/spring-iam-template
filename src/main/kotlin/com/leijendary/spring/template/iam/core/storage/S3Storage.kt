@@ -1,6 +1,8 @@
 package com.leijendary.spring.template.iam.core.storage
 
 import com.leijendary.spring.template.iam.core.config.properties.AwsS3Properties
+import com.leijendary.spring.template.iam.core.storage.S3Storage.Request.GET
+import com.leijendary.spring.template.iam.core.storage.S3Storage.Request.PUT
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.stereotype.Service
 import software.amazon.awssdk.core.ResponseInputStream
@@ -23,9 +25,9 @@ class S3Storage(
         PUT
     }
 
-    fun sign(key: String, request: Request = Request.GET) = when (request) {
-        Request.GET -> signGet(key)
-        Request.PUT -> signPut(key)
+    fun sign(key: String, request: Request = GET) = when (request) {
+        GET -> signGet(key)
+        PUT -> signPut(key)
     }
 
     fun signGet(key: String): String {

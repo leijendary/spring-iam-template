@@ -8,8 +8,8 @@ import java.util.*
 
 @ConfigurationProperties("auth")
 class AuthProperties {
-    var issuer: String = ""
-    var keyId: String = ""
+    lateinit var issuer: String
+    lateinit var keyId: String
     var accessToken = TokenConfig()
     var refreshToken = TokenConfig()
     var system = System()
@@ -17,14 +17,14 @@ class AuthProperties {
 
     inner class TokenConfig {
         var expiry: Duration = Duration.ofMinutes(5)
-        var privateKey: String = ""
-        var publicKey: String = ""
+        lateinit var privateKey: String
+        lateinit var publicKey: String
 
         fun computeExpiration(): OffsetDateTime = now.plus(expiry)
     }
 
     inner class System {
-        var principal: String = ""
+        lateinit var principal: String
     }
 
     inner class Social {
@@ -34,13 +34,13 @@ class AuthProperties {
     }
 
     inner class SocialConfig {
-        var clientId: String = ""
-        var issuer: String = ""
-        var jwkSetUri: String = ""
+        lateinit var clientId: String
+        lateinit var issuer: String
+        lateinit var jwkSetUri: String
     }
 
     inner class FacebookConfig {
-        var url: String = ""
-        var profilePath: String = ""
+        lateinit var url: String
+        lateinit var profilePath: String
     }
 }

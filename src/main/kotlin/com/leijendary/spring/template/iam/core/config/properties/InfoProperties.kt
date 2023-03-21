@@ -10,15 +10,15 @@ class InfoProperties {
     var api: Api = Api()
 
     inner class App {
-        var organization: String = ""
-        var group: String = ""
-        var name: String = ""
-        var description: String = ""
-        var version: String = ""
+        lateinit var organization: String
+        lateinit var group: String
+        lateinit var name: String
+        lateinit var description: String
+        lateinit var version: String
     }
 
     inner class Api {
-        var termsOfService: String = ""
+        lateinit var termsOfService: String
         var contact: Contact? = null
         var license: License? = null
         var extensions: Map<String, Any> = HashMap()
