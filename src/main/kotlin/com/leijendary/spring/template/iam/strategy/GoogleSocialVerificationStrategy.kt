@@ -1,7 +1,7 @@
 package com.leijendary.spring.template.iam.strategy
 
-import com.leijendary.spring.template.iam.model.SocialProvider
-import com.leijendary.spring.template.iam.model.SocialProvider.GOOGLE
+import com.leijendary.spring.template.iam.entity.UserSocial.Provider
+import com.leijendary.spring.template.iam.entity.UserSocial.Provider.GOOGLE
 import com.leijendary.spring.template.iam.model.SocialResult
 import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.security.oauth2.jwt.JwtDecoder
@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component
 
 @Component
 class GoogleSocialVerificationStrategy(private val googleJwtDecoder: JwtDecoder) : SocialVerificationStrategy() {
-    override val provider: SocialProvider
+    override val provider: Provider
         get() = GOOGLE
 
     override val decoder: JwtDecoder

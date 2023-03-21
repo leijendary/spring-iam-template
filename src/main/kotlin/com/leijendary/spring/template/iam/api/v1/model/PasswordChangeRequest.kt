@@ -1,13 +1,12 @@
 package com.leijendary.spring.template.iam.api.v1.model
 
-import com.leijendary.spring.template.iam.core.validator.annotation.EnumField
-import com.leijendary.spring.template.iam.entity.UserCredential
+import com.leijendary.spring.template.iam.entity.UserCredential.Type
 import jakarta.validation.constraints.NotBlank
+import jakarta.validation.constraints.NotNull
 
 data class PasswordChangeRequest(
-    @field:NotBlank(message = "validation.required")
-    @field:EnumField(enumClass = UserCredential.Type::class)
-    val field: String? = null,
+    @field:NotNull(message = "validation.required")
+    val field: Type? = null,
 
     @field:NotBlank(message = "validation.required")
     val currentPassword: String? = null,

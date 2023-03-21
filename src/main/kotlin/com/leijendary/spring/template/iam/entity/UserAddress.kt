@@ -15,19 +15,19 @@ class UserAddress : UUIDProjection {
     @Id
     @GeneratedValue
     @Column(updatable = false)
-    override var id: UUID? = null
+    override lateinit var id: UUID
 
     @ManyToOne
-    var user: User? = null
+    lateinit var user: User
 
-    var street = ""
-    var city = ""
-    var region = ""
-    var postalCode = ""
-    var country = ""
-    var countryCode = ""
-    var longitude = 0.0
-    var latitude = 0.0
+    lateinit var street: String
+    lateinit var city: String
+    lateinit var region: String
+    lateinit var postalCode: String
+    lateinit var country: String
+    lateinit var countryCode: String
+    var longitude: Double = 0.0
+    var latitude: Double = 0.0
 
     @CreatedDate
     var createdAt: OffsetDateTime = now

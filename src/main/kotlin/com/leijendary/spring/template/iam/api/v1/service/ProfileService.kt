@@ -53,7 +53,7 @@ class ProfileService(
     }
 
     fun username(request: UpdateUsernameRequest): Next {
-        val credentialType = request.credentialType.value
+        val credentialType = request.credentialType
         val username = request.username
         val verificationCode = request.verificationCode!!
         val verificationType = request.verificationType

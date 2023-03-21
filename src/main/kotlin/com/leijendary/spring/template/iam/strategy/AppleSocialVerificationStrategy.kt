@@ -1,7 +1,7 @@
 package com.leijendary.spring.template.iam.strategy
 
-import com.leijendary.spring.template.iam.model.SocialProvider
-import com.leijendary.spring.template.iam.model.SocialProvider.APPLE
+import com.leijendary.spring.template.iam.entity.UserSocial.Provider
+import com.leijendary.spring.template.iam.entity.UserSocial.Provider.APPLE
 import com.leijendary.spring.template.iam.model.SocialResult
 import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.security.oauth2.jwt.JwtDecoder
@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component
 
 @Component
 class AppleSocialVerificationStrategy(private val appleJwtDecoder: JwtDecoder) : SocialVerificationStrategy() {
-    override val provider: SocialProvider
+    override val provider: Provider
         get() = APPLE
 
     override val decoder: JwtDecoder

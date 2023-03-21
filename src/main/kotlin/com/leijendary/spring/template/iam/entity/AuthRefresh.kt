@@ -12,12 +12,12 @@ import java.util.*
 class AuthRefresh : UUIDProjection {
     @Id
     @Column(updatable = false)
-    override var id: UUID? = null
+    override lateinit var id: UUID
 
     @OneToOne
-    var auth: Auth? = null
+    lateinit var auth: Auth
 
-    var accessTokenId: UUID? = null
-    var token: String = ""
-    var expiresAt: OffsetDateTime? = null
+    lateinit var accessTokenId: UUID
+    lateinit var token: String
+    lateinit var expiresAt: OffsetDateTime
 }

@@ -34,50 +34,51 @@ class HttpMessageNotReadableExceptionHandler(private val messageSource: MessageS
             return listOf(error)
         }
 
-        when (val cause = exception.cause) {
-            is InvalidFormatException -> return errors(cause)
-            is JsonMappingException -> return errors(cause)
-        }
+        error = when (val cause = exception.cause) {
+            is InvalidFormatException -> error(cause)
+            is JsonMappingException -> error(cause)
+            else -> {
+                message = exception.message?.replace("JSON decoding error: ", "") ?: ""
 
-        message = exception.message?.replace("JSON decoding error: ", "") ?: ""
-        error = ErrorModel(source, code, message)
+                ErrorModel(source, code, message)
+            }
+        }
 
         return listOf(error)
     }
 
-    private fun errors(exception: InvalidFormatException): List<ErrorModel> {
-        val sources = sources(exception.path)
+    private fun error(exception: InvalidFormatException): ErrorModel {
+        val source = source(exception.path)
         val code = "error.body.format.invalid"
+        val field = source
+            // Remove the parent field source
+            .subList(1, source.size)
+            .joinToString(".")
+        val arguments = arrayOf(field, exception.value, exception.targetType.simpleName)
+        val message = messageSource.getMessage(code, arguments, locale)
 
-        return sources.map {
-            val field = it
-                // Remove the parent field source
-                .subList(1, it.size)
-                .joinToString(".")
-            val arguments = arrayOf(field, exception.value, exception.targetType.simpleName)
-            val message = messageSource.getMessage(code, arguments, locale)
-
-            ErrorModel(it, code, message)
-        }
+        return ErrorModel(source, code, message)
     }
 
-    private fun errors(exception: JsonMappingException): List<ErrorModel> {
-        val sources = sources(exception.path)
+    private fun error(exception: JsonMappingException): ErrorModel {
+        val source = source(exception.path)
         val code = "error.body.format.invalid"
         val message = exception.originalMessage
 
-        return sources.map { ErrorModel(it, code, message) }
+        return ErrorModel(source, code, message)
     }
 
-    private fun sources(path: List<Reference>): List<List<Any>> {
-        return path.map {
-            val source = mutableListOf<Any>(PARENT, it.fieldName)
+    private fun source(path: List<Reference>): List<Any> {
+        val source = mutableListOf<Any>(PARENT)
 
+        path.forEach {
             if (it.index >= 0) {
-                source.add(1, it.index)
+                source.add(it.index)
             }
 
-            source
+            source.add(it.fieldName)
         }
+
+        return source
     }
 }

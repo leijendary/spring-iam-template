@@ -33,6 +33,6 @@ class VerificationService(
             verificationRepository.save(verification)
         }
 
-        return Next(verification.type)
+        return Next(verification.type.value)
     }
 }

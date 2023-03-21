@@ -52,13 +52,13 @@ class EmailVerificationNotificationStrategy(
     }
 
     override fun send(verification: Verification) {
-        val value = verification.value!!
         val code = verification.code
-        val type = verification.type.let { Verification.Type.from(it) }
+        val type = verification.type
         val template = template(code, type) ?: return
         val subject = template.subject!!
         val context = Context(locale, template.parameters)
         val content = templateEngine.process(template.name, context)
+        val value = verification.value!!
         val emailMessage = EmailMessage(value, subject, content, null)
 
         notificationProducer.email(emailMessage)

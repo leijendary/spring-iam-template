@@ -2,9 +2,9 @@ package com.leijendary.spring.template.iam.strategy
 
 import com.leijendary.spring.template.iam.core.exception.StatusException
 import com.leijendary.spring.template.iam.core.extension.logger
-import com.leijendary.spring.template.iam.model.SocialProvider
+import com.leijendary.spring.template.iam.entity.UserSocial.Provider
 import com.leijendary.spring.template.iam.model.SocialResult
-import org.springframework.http.HttpStatus
+import org.springframework.http.HttpStatus.UNAUTHORIZED
 import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.security.oauth2.jwt.JwtDecoder
 import org.springframework.security.oauth2.jwt.JwtException
@@ -12,7 +12,7 @@ import org.springframework.security.oauth2.jwt.JwtException
 abstract class SocialVerificationStrategy {
     private val log = logger()
 
-    abstract val provider: SocialProvider
+    abstract val provider: Provider
     
     open val decoder: JwtDecoder
         get() = throw NotImplementedError()
@@ -42,6 +42,6 @@ abstract class SocialVerificationStrategy {
     private fun statusException(code: String): StatusException {
         val source = listOf("header", "authorization")
 
-        return StatusException(source, code, HttpStatus.UNAUTHORIZED)
+        return StatusException(source, code, UNAUTHORIZED)
     }
 }

@@ -18,7 +18,7 @@ class ResourceNotUniqueExceptionHandler(private val messageSource: MessageSource
     fun catchResourceNotUnique(exception: ResourceNotUniqueException): List<ErrorModel> {
         val source = exception.source
         val code = "validation.alreadyExists"
-        val arguments = arrayOf<Any>(source.joinToString(separator = "."), exception.value)
+        val arguments = arrayOf(source.joinToString("."), exception.value)
         val message = messageSource.getMessage(code, arguments, locale)
         val error = ErrorModel(source, code, message)
 

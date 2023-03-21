@@ -118,10 +118,11 @@ class JwtTools(private val authProperties: AuthProperties) {
         val issuer = claimsSet.issuer
         val subject = claimsSet.subject
         val audience = claimsSet.audience
-        val scopes = claimsSet
-            .getStringClaim(CLAIM_SCOPE)
-            .split(" ")
-            .toSet()
+        val scopes = claimsSet.claims[CLAIM_SCOPE]
+            ?.let { it as String }
+            ?.split(" ")
+            ?.toSet()
+            ?: emptySet()
         val expirationTime = claimsSet
             .expirationTime
             .let { MAPPER.toOffsetDateTime(it.time) }

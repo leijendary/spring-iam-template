@@ -3,6 +3,7 @@ package com.leijendary.spring.template.iam.validator
 import com.leijendary.spring.template.iam.core.exception.StatusException
 import com.leijendary.spring.template.iam.core.extension.transactional
 import com.leijendary.spring.template.iam.core.util.RequestContext.now
+import com.leijendary.spring.template.iam.entity.UserCredential
 import com.leijendary.spring.template.iam.entity.Verification
 import com.leijendary.spring.template.iam.entity.Verification.Type
 import com.leijendary.spring.template.iam.repository.VerificationRepository
@@ -15,9 +16,9 @@ class VerificationValidator(private val verificationRepository: VerificationRepo
      * Validate that the [field]-[value]-[code]-[type] combination exists and
      * is not expired. This method will throw an error if the verification is not found.
      */
-    fun validateByField(field: String, value: String, code: String, type: Type): Verification {
+    fun validateByField(field: UserCredential.Type, value: String, code: String, type: Type): Verification {
         val verification = transactional(readOnly = true) {
-            verificationRepository.findFirstByFieldAndValueAndCodeAndAndTypeOrThrow(field, value, code, type.value)
+            verificationRepository.findFirstByFieldAndValueAndCodeAndAndTypeOrThrow(field, value, code, type)
         }!!
 
         validateExpiration(verification)
@@ -33,7 +34,7 @@ class VerificationValidator(private val verificationRepository: VerificationRepo
      */
     fun validateByCode(code: String, type: Type): Verification {
         val verification = transactional(readOnly = true) {
-            verificationRepository.findFirstByCodeAndTypeOrThrow(code, type.value)
+            verificationRepository.findFirstByCodeAndTypeOrThrow(code, type)
         }!!
 
         validateExpiration(verification)
@@ -42,7 +43,7 @@ class VerificationValidator(private val verificationRepository: VerificationRepo
     }
 
     private fun validateExpiration(verification: Verification) {
-        val expiresAt = verification.expiresAt!!
+        val expiresAt = verification.expiresAt
 
         // Verification is not yet expired
         if (expiresAt.isAfter(now)) {

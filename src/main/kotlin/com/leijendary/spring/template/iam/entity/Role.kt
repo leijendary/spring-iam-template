@@ -7,17 +7,15 @@ import jakarta.persistence.ManyToMany
 
 @Entity
 class Role : AuditingUUIDEntity() {
-    var name = ""
+    enum class Default(val value: String) {
+        CUSTOMER("Customer"),
+        ADMIN("Admin");
+    }
+
+    lateinit var name: String
     var description: String? = null
 
     @ManyToMany
     @JoinTable(name = "role_permission")
     val permissions: MutableSet<Permission> = HashSet()
-
-    enum class Default(val value: String) {
-        CUSTOMER("Customer"),
-        ADMIN("Admin");
-
-        override fun toString() = value
-    }
 }

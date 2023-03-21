@@ -5,5 +5,5 @@ import jakarta.persistence.Entity
 
 @Entity
 class Permission : IdentityEntity() {
-    var value = ""
+    lateinit var value: String
 }

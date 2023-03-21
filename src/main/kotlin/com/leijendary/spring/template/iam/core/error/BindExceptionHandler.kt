@@ -19,9 +19,9 @@ class BindExceptionHandler(private val messageSource: MessageSource) {
     fun catchBind(exception: BindException): List<ErrorModel> {
         return exception.allErrors.map { field ->
             val objectName = if (field is FieldError) field.field else field.objectName
-            val source = listOf("param") + objectName.split(".").map {
-                it.replace("[]", "")
-            }
+            val source = listOf("param") + objectName.split(".", "[", "]")
+                .filter { it.isNotBlank() }
+                .map { it.toIntOrNull() ?: it }
             val code = field.defaultMessage ?: ""
             val arguments = field.arguments
             val message = code.let { messageSource.getMessage(it, arguments, code, locale) }

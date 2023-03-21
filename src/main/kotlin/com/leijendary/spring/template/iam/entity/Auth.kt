@@ -2,11 +2,9 @@ package com.leijendary.spring.template.iam.entity
 
 import com.leijendary.spring.template.iam.core.entity.IdentityEntity
 import com.leijendary.spring.template.iam.core.util.RequestContext.now
+import jakarta.persistence.*
 import jakarta.persistence.CascadeType.ALL
-import jakarta.persistence.Entity
-import jakarta.persistence.JoinColumn
-import jakarta.persistence.ManyToOne
-import jakarta.persistence.OneToOne
+import jakarta.persistence.EnumType.STRING
 import org.springframework.data.annotation.CreatedDate
 import java.time.OffsetDateTime
 
@@ -14,17 +12,19 @@ import java.time.OffsetDateTime
 class Auth : IdentityEntity() {
     @ManyToOne
     @JoinColumn
-    var user: User? = null
+    lateinit var user: User
 
-    var username: String = ""
-    var audience: String = ""
-    var type: String = ""
+    lateinit var username: String
+    lateinit var audience: String
+
+    @Enumerated(STRING)
+    lateinit var type: UserCredential.Type
 
     @OneToOne(mappedBy = "auth", cascade = [ALL], orphanRemoval = true)
-    var access: AuthAccess? = null
+    lateinit var access: AuthAccess
 
     @OneToOne(mappedBy = "auth", cascade = [ALL], orphanRemoval = true)
-    var refresh: AuthRefresh? = null
+    lateinit var refresh: AuthRefresh
 
     @CreatedDate
     var createdAt: OffsetDateTime = now

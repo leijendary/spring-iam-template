@@ -1,14 +1,13 @@
 package com.leijendary.spring.template.iam.api.v1.model
 
-import com.leijendary.spring.template.iam.core.validator.annotation.EnumField
-import com.leijendary.spring.template.iam.entity.UserCredential
+import com.leijendary.spring.template.iam.entity.UserCredential.Type
 import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.validation.constraints.NotBlank
+import jakarta.validation.constraints.NotNull
 
 open class CredentialFieldRequest {
-    @field:NotBlank(message = "validation.required")
-    @field:EnumField(enumClass = UserCredential.Type::class)
-    val field: String? = null
+    @field:NotNull(message = "validation.required")
+    val field: Type? = null
 
     @Schema(
         description = """

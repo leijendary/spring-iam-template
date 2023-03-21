@@ -10,11 +10,11 @@ import com.leijendary.spring.template.iam.core.security.JwtTools
 import com.leijendary.spring.template.iam.core.util.RequestContext.now
 import com.leijendary.spring.template.iam.entity.*
 import com.leijendary.spring.template.iam.entity.UserCredential.Type.EMAIL
-import com.leijendary.spring.template.iam.model.SocialProvider
+import com.leijendary.spring.template.iam.entity.UserSocial.Provider
 import com.leijendary.spring.template.iam.model.SocialResult
+import com.leijendary.spring.template.iam.model.Status
 import com.leijendary.spring.template.iam.repository.*
 import com.leijendary.spring.template.iam.strategy.SocialVerificationStrategy
-import com.leijendary.spring.template.iam.util.Status.ACTIVE
 import com.nimbusds.jose.JOSEException
 import org.springframework.http.HttpStatus.BAD_REQUEST
 import org.springframework.security.crypto.password.PasswordEncoder
@@ -67,8 +67,7 @@ class TokenService(
 
         userCredentialRepository.save(credential)
 
-        val user = credential.user!!
-
+        val user = credential.user
         val auth = authorize(user, username, credential.type)
 
         return TOKEN_MAPPER.toResponse(auth)
@@ -99,7 +98,7 @@ class TokenService(
         val refreshTokenId = UUID.fromString(jwt.id)
         val auth = authRepository
             .findFirstByRefreshId(refreshTokenId)
-            ?.let { authorize(it, it.user!!) }
+            ?.let { authorize(it, it.user) }
             ?: throw ResourceNotFoundException(REFRESH_SOURCE, refreshTokenId)
 
         return TOKEN_MAPPER.toResponse(auth)
@@ -122,20 +121,20 @@ class TokenService(
 
     fun social(request: SocialRequest): TokenResponse {
         val token = request.token!!
-        val provider = request.provider!!.let { SocialProvider.from(it) }
+        val provider = request.provider!!
         val result = socialVerificationStrategy[provider]!!.verify(token)
         val id = result.id
         val userSocial = transactional(readOnly = true) {
             userSocialRepository.findFirstByIdAndUserDeletedAtIsNull(id)
         } ?: createSocial(result, provider)
-        val user = userSocial.user!!
+        val user = userSocial.user
         val email = result.email
-        val auth = authorize(user, email, EMAIL.value)
+        val auth = authorize(user, email, EMAIL)
 
         return TOKEN_MAPPER.toResponse(auth)
     }
 
-    private fun createSocial(socialResult: SocialResult, provider: SocialProvider): UserSocial {
+    private fun createSocial(socialResult: SocialResult, provider: Provider): UserSocial {
         val email = socialResult.email
         val credential = transactional(readOnly = true) {
             userCredentialRepository.findFirstByUsernameAndUserDeletedAtIsNull(email)
@@ -143,17 +142,17 @@ class TokenService(
         var user = credential?.user
 
         if (user != null) {
-            val hasProvider = userSocialRepository.existsByUserIdAndProvider(user.id!!, provider.value)
+            val hasProvider = userSocialRepository.existsByUserIdAndProvider(user.id, provider)
 
             // The user already has the same social provider attached to his/her account.
             if (hasProvider) {
-                throw StatusException(SOCIAL_SOURCE, "access.user.social.exists", BAD_REQUEST, arrayOf(provider.value))
+                throw StatusException(SOCIAL_SOURCE, "access.user.social.exists", BAD_REQUEST, arrayOf(provider))
             }
         } else {
             user = transactional {
                 val account = Account().apply {
-                    type = Account.Type.CUSTOMER.value
-                    status = ACTIVE
+                    type = Account.Type.CUSTOMER
+                    status = Status.ACTIVE
                 }
                 val role = roleRepository.findFirstByNameOrThrow(Role.Default.CUSTOMER.value)
                 val newUser = USER_MAPPER.toEntity(socialResult).apply {
@@ -163,7 +162,7 @@ class TokenService(
                 val newCredential = UserCredential().apply {
                     this.user = newUser
                     this.username = email
-                    this.type = UserCredential.Type.EMAIL.value
+                    this.type = UserCredential.Type.EMAIL
                 }
 
                 newUser.credentials.add(newCredential)
@@ -178,13 +177,13 @@ class TokenService(
         val social = UserSocial().apply {
             this.id = socialResult.id
             this.user = user
-            this.provider = provider.value
+            this.provider = provider
         }
 
         return userSocialRepository.save(social)
     }
 
-    private fun authorize(user: User, username: String, type: String): Auth {
+    private fun authorize(user: User, username: String, type: UserCredential.Type): Auth {
         val auth = Auth().apply {
             this.user = user
             this.username = username
@@ -228,23 +227,23 @@ class TokenService(
 
     private fun validateStatus(account: Account?, user: User) {
         account?.status?.let {
-            if (it != ACTIVE) {
+            if (it != Status.ACTIVE) {
                 throw NotActiveException(ACCOUNT_SOURCE, "access.account.inactive")
             }
         }
 
-        if (user.status != ACTIVE) {
+        if (user.status != Status.ACTIVE) {
             throw NotActiveException(USER_SOURCE, "access.user.inactive")
         }
     }
 
     private fun scopes(role: Role): Set<String> {
         val permissions = transactional(readOnly = true) {
-            rolePermissionRepository.findAllByRoleId(role.id!!)
+            rolePermissionRepository.findAllByRoleId(role.id)
         }!!
 
         return permissions
-            .map { it.permission!!.value }
+            .map { it.permission.value }
             .toSet()
     }
 

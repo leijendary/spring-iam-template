@@ -4,9 +4,9 @@ import com.leijendary.spring.template.iam.core.entity.SoftDeleteEntity
 import com.leijendary.spring.template.iam.core.entity.UUIDEntity
 import com.leijendary.spring.template.iam.core.projection.CreatedProjection
 import com.leijendary.spring.template.iam.core.util.RequestContext.now
-import jakarta.persistence.Entity
-import jakarta.persistence.EntityListeners
-import jakarta.persistence.OneToMany
+import com.leijendary.spring.template.iam.model.Status
+import jakarta.persistence.*
+import jakarta.persistence.EnumType.STRING
 import org.hibernate.annotations.Where
 import org.springframework.data.annotation.CreatedBy
 import org.springframework.data.annotation.CreatedDate
@@ -17,8 +17,15 @@ import java.time.OffsetDateTime
 @EntityListeners(AuditingEntityListener::class)
 @Where(clause = "deleted_at is null")
 class Account : UUIDEntity(), CreatedProjection, SoftDeleteEntity {
-    var type = ""
-    var status = ""
+    enum class Type(val value: String) {
+        CUSTOMER("customer");
+    }
+
+    @Enumerated(STRING)
+    lateinit var type: Type
+
+    @Enumerated(STRING)
+    lateinit var status: Status
 
     @OneToMany(mappedBy = "account")
     val users: Set<User> = HashSet()
@@ -31,10 +38,4 @@ class Account : UUIDEntity(), CreatedProjection, SoftDeleteEntity {
 
     override var deletedAt: OffsetDateTime? = null
     override var deletedBy: String? = null
-
-    enum class Type(val value: String) {
-        CUSTOMER("customer");
-
-        override fun toString() = value
-    }
 }

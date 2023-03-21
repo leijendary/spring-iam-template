@@ -12,8 +12,8 @@ open class UUIDEntity : UUIDProjection {
     @Id
     @GeneratedValue
     @Column(updatable = false)
-    override var id: UUID? = null
+    override lateinit var id: UUID
 
     @Column(insertable = false, updatable = false)
-    var rowId: Long? = null
+    var rowId: Long = 0
 }

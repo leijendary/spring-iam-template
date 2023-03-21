@@ -12,12 +12,12 @@ import com.leijendary.spring.template.iam.entity.Account
 import com.leijendary.spring.template.iam.entity.UserCredential
 import com.leijendary.spring.template.iam.entity.Verification
 import com.leijendary.spring.template.iam.generator.CodeGenerationStrategy
+import com.leijendary.spring.template.iam.model.Status
 import com.leijendary.spring.template.iam.repository.AccountRepository
 import com.leijendary.spring.template.iam.repository.RoleRepository
 import com.leijendary.spring.template.iam.repository.UserRepository
 import com.leijendary.spring.template.iam.repository.VerificationRepository
 import com.leijendary.spring.template.iam.specification.UserListSpecification
-import com.leijendary.spring.template.iam.util.Status
 import org.springframework.cache.annotation.CacheEvict
 import org.springframework.cache.annotation.CachePut
 import org.springframework.cache.annotation.Cacheable
@@ -68,7 +68,7 @@ class UserService(
             this.account = account
             this.role = role
         }
-        val field = UserCredential.Type.EMAIL.value
+        val field = UserCredential.Type.EMAIL
         val username = user.getUsername(field)
         val credential = UserCredential().apply {
             this.user = user
@@ -84,7 +84,7 @@ class UserService(
             this.code = generator.generate()
             this.field = field
             this.value = username
-            this.type = Verification.Type.PASSWORD_NOMINATE.value
+            this.type = Verification.Type.PASSWORD_NOMINATE
             this.expiresAt = verificationProperties.computeExpiration()
         }
 
@@ -119,7 +119,7 @@ class UserService(
 
         MAPPER.update(request, user)
 
-        val field = UserCredential.Type.EMAIL.value
+        val field = UserCredential.Type.EMAIL
         val hasCredential = user.credentials.any { it.type == field }
 
         if (!hasCredential) {

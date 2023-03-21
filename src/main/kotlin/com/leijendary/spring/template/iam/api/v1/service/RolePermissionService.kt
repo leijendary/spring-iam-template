@@ -29,7 +29,7 @@ class RolePermissionService(
                 .map { it.permission }
         }!!
 
-        return permissions.map { MAPPER.toResponse(it!!) }
+        return permissions.map { MAPPER.toResponse(it) }
     }
 
     fun add(roleId: UUID, request: RolePermissionRequest): List<PermissionResponse> {

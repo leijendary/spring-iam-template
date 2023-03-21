@@ -9,9 +9,9 @@ import jakarta.persistence.OneToOne
 class RolePermission : IdentityEntity() {
     @OneToOne
     @JoinColumn
-    var role: Role? = null
+    lateinit var role: Role
 
     @OneToOne
     @JoinColumn
-    var permission: Permission? = null
+    lateinit var permission: Permission
 }
