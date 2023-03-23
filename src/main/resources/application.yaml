@@ -130,6 +130,10 @@ spring:
     clientId: \${info.app.name}
     consumer:
       groupId: \${info.app.name}
+      properties:
+        partition:
+          assignment:
+            strategy: org.apache.kafka.clients.consumer.CooperativeStickyAssignor
     jaas:
       enabled: true
       loginModule: org.apache.kafka.common.security.scram.ScramLoginModule
@@ -138,7 +142,11 @@ spring:
         password:
     listener:
       concurrency: 30
+    producer:
+      acks: all
     properties:
+      interceptor:
+        classes: com.leijendary.spring.template.iam.core.interceptor.KafkaInterceptor
       sasl:
         mechanism: SCRAM-SHA-256
     security:
