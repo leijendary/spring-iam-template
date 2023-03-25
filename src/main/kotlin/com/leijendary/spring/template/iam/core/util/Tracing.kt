@@ -15,15 +15,19 @@ private val tracer = getBean(Tracer::class)
 object Tracing {
     fun get(): TraceContext = tracer.nextSpan().context()
 
-    fun log(traceParent: String, function: () -> Unit) {
-        val trace = traceParent.split("-")
-
-        MDC.put(MDC_TRACE_ID, trace[1])
-        MDC.put(MDC_SPAN_ID, trace[2])
-
-        function()
-
-        MDC.remove(MDC_TRACE_ID)
-        MDC.remove(MDC_SPAN_ID)
+    fun log(traceParent: String?, function: () -> Unit) {
+        traceParent
+            ?.split("-")
+            ?.let {
+                MDC.put(MDC_TRACE_ID, it[1])
+                MDC.put(MDC_SPAN_ID, it[2])
+            }
+            .run {
+                function()
+            }
+            .run {
+                MDC.remove(MDC_TRACE_ID)
+                MDC.remove(MDC_SPAN_ID)
+            }
     }
 }

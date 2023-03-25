@@ -59,5 +59,5 @@ class KafkaInterceptor : ProducerInterceptor<String, Any>, ConsumerInterceptor<S
         // No configuration needed for this
     }
 
-    private fun traceHeader(headers: Headers) = headers.lastHeader(HEADER_TRACE_PARENT).value().let { String(it) }
+    private fun traceHeader(headers: Headers) = headers.lastHeader(HEADER_TRACE_PARENT)?.value()?.let { String(it) }
 }
