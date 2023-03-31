@@ -13,7 +13,7 @@ data class UserRequest(
 
     @field:NotNull(message = "validation.required")
     @field:Valid
-    val role: UuidRequest? = null,
+    val role: UUIDRequest? = null,
 
     @field:NotBlank(message = "validation.required")
     val firstName: String? = null,
