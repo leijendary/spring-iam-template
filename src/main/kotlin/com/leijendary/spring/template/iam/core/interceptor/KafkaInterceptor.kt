@@ -10,7 +10,6 @@ import org.apache.kafka.clients.producer.ProducerInterceptor
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.apache.kafka.clients.producer.RecordMetadata
 import org.apache.kafka.common.TopicPartition
-import org.apache.kafka.common.header.Headers
 
 class KafkaInterceptor : ProducerInterceptor<String, Any>, ConsumerInterceptor<String, Any> {
     private val log = logger()
@@ -32,7 +31,10 @@ class KafkaInterceptor : ProducerInterceptor<String, Any>, ConsumerInterceptor<S
             val partition = it.partition()
             val key = it.key()
             val payload = it.value()
-            val traceParent = traceHeader(it.headers())
+            val traceParent = it.headers()
+                .lastHeader(HEADER_TRACE_PARENT)
+                ?.value()
+                ?.let { bytes -> String(bytes) }
             val text = "Received from topic '$topic' on partition '$partition' with key '$key' and payload '$payload'"
 
             Tracing.log(traceParent) {
@@ -58,6 +60,4 @@ class KafkaInterceptor : ProducerInterceptor<String, Any>, ConsumerInterceptor<S
     override fun close() {
         // No configuration needed for this
     }
-
-    private fun traceHeader(headers: Headers) = headers.lastHeader(HEADER_TRACE_PARENT)?.value()?.let { String(it) }
 }
