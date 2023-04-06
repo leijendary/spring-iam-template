@@ -188,9 +188,6 @@ management:
     web:
       exposure:
         include: '*'
-  tracing:
-    sampling:
-      probability: 1.0
   zipkin:
     tracing:
       endpoint:
