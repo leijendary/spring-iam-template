@@ -48,15 +48,15 @@ encrypt:
 verification:
   expiry: 2h
   register:
-    subject: Welcome!
+    template: register-verify
   password:
     nominate:
-      subject: Password Nominate
+      template: password-nominate
       url:
     reset:
-      subject: Password Reset
+      template: password-reset
   email:
-    subject: Email Change
+    template: email-change
 
 spring:
   application:

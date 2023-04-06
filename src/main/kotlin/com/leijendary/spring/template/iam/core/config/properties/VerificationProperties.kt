@@ -13,7 +13,7 @@ class VerificationProperties {
     var email = Config()
 
     open inner class Config {
-        var subject: String? = null
+        lateinit var template: String
     }
 
     inner class Password {
@@ -22,7 +22,7 @@ class VerificationProperties {
     }
 
     inner class PasswordNominate : Config() {
-        var url: String? = null
+        lateinit var url: String
     }
 
     fun computeExpiration(): OffsetDateTime = now.plus(expiry)
