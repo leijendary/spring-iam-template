@@ -7,14 +7,14 @@ verification:
       url: http://localhost:3000/password/nominate
 
 spring:
+  data:
+    redis:
+      ssl: false
   datasource:
     primary:
       maximumPoolSize: 5
     readonly:
       maximumPoolSize: 5
-  data:
-    redis:
-      ssl: false
   kafka:
     jaas:
       enabled: false

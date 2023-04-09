@@ -61,8 +61,15 @@ verification:
 spring:
   application:
     name: \${info.app.name}
-  main:
-    bannerMode: log
+  cache:
+    type: redis
+    redis:
+      timeToLive: 5h
+  cloud:
+    aws:
+      s3:
+        bucketName: leijendary
+        signatureDuration: 30m
   datasource:
     primary:
       poolName: Primary
@@ -111,22 +118,6 @@ spring:
             timeout: 2000
           sharedCache:
             mode: UNSPECIFIED
-  messages:
-    basename: messages.access, messages.error, messages.notification, messages.validation
-  mvc:
-    throwExceptionIfNoHandlerFound: true
-  web:
-    resources:
-      addMappings: false
-  cache:
-    type: redis
-    redis:
-      timeToLive: 5h
-  cloud:
-    aws:
-      s3:
-        bucketName: leijendary
-        signatureDuration: 30m
   kafka:
     bootstrapServers:
     clientId: \${info.app.name}
@@ -166,6 +157,15 @@ spring:
         name: \${info.app.organization}.notification.sms
         partitions: 5
         replicas: 1
+  main:
+    bannerMode: log
+  messages:
+    basename: messages.access, messages.error, messages.notification, messages.validation
+  mvc:
+    throwExceptionIfNoHandlerFound: true
+  web:
+    resources:
+      addMappings: false
 
 server:
   error:
