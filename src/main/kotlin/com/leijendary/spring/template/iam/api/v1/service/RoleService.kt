@@ -3,7 +3,7 @@ package com.leijendary.spring.template.iam.api.v1.service
 import com.leijendary.spring.template.iam.api.v1.mapper.RoleMapper
 import com.leijendary.spring.template.iam.api.v1.model.RoleRequest
 import com.leijendary.spring.template.iam.api.v1.model.RoleResponse
-import com.leijendary.spring.template.iam.core.extension.transactional
+import com.leijendary.spring.template.iam.core.datasource.transactional
 import com.leijendary.spring.template.iam.core.model.QueryRequest
 import com.leijendary.spring.template.iam.repository.RoleRepository
 import org.springframework.cache.annotation.CacheEvict

@@ -6,7 +6,7 @@ import com.leijendary.spring.template.iam.api.v1.model.Next.Type.AUTHENTICATE
 import com.leijendary.spring.template.iam.api.v1.model.RegisterEmailRequest
 import com.leijendary.spring.template.iam.api.v1.model.RegisterPhoneRequest
 import com.leijendary.spring.template.iam.api.v1.model.RegisterRequest
-import com.leijendary.spring.template.iam.core.extension.transactional
+import com.leijendary.spring.template.iam.core.datasource.transactional
 import com.leijendary.spring.template.iam.core.util.RequestContext.locale
 import com.leijendary.spring.template.iam.entity.Account
 import com.leijendary.spring.template.iam.entity.Role

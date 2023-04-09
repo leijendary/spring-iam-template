@@ -3,7 +3,7 @@ package com.leijendary.spring.template.iam.api.v1.service
 import com.leijendary.spring.template.iam.api.v1.mapper.PermissionMapper
 import com.leijendary.spring.template.iam.api.v1.model.PermissionResponse
 import com.leijendary.spring.template.iam.api.v1.model.RolePermissionRequest
-import com.leijendary.spring.template.iam.core.extension.transactional
+import com.leijendary.spring.template.iam.core.datasource.transactional
 import com.leijendary.spring.template.iam.entity.RolePermission
 import com.leijendary.spring.template.iam.repository.PermissionRepository
 import com.leijendary.spring.template.iam.repository.RolePermissionRepository

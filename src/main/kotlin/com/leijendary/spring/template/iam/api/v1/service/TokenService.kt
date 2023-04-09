@@ -4,8 +4,8 @@ import com.leijendary.spring.template.iam.api.v1.mapper.TokenMapper
 import com.leijendary.spring.template.iam.api.v1.mapper.UserMapper
 import com.leijendary.spring.template.iam.api.v1.model.*
 import com.leijendary.spring.template.iam.core.config.properties.AuthProperties
+import com.leijendary.spring.template.iam.core.datasource.transactional
 import com.leijendary.spring.template.iam.core.exception.*
-import com.leijendary.spring.template.iam.core.extension.transactional
 import com.leijendary.spring.template.iam.core.security.JwtTools
 import com.leijendary.spring.template.iam.core.util.RequestContext.now
 import com.leijendary.spring.template.iam.entity.*
@@ -162,7 +162,7 @@ class TokenService(
                 val newCredential = UserCredential().apply {
                     this.user = newUser
                     this.username = email
-                    this.type = UserCredential.Type.EMAIL
+                    this.type = EMAIL
                 }
 
                 newUser.credentials.add(newCredential)

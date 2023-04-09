@@ -3,7 +3,7 @@ package com.leijendary.spring.template.iam.api.v1.service
 import com.leijendary.spring.template.iam.api.v1.mapper.AddressMapper
 import com.leijendary.spring.template.iam.api.v1.model.AddressRequest
 import com.leijendary.spring.template.iam.api.v1.model.AddressResponse
-import com.leijendary.spring.template.iam.core.extension.transactional
+import com.leijendary.spring.template.iam.core.datasource.transactional
 import com.leijendary.spring.template.iam.repository.UserAddressRepository
 import com.leijendary.spring.template.iam.repository.UserRepository
 import org.springframework.cache.annotation.CacheEvict

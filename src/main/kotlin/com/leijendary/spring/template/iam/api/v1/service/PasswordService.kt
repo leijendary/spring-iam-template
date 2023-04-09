@@ -5,8 +5,8 @@ import com.leijendary.spring.template.iam.api.v1.model.Next.Type.AUTHENTICATE
 import com.leijendary.spring.template.iam.api.v1.model.PasswordChangeRequest
 import com.leijendary.spring.template.iam.api.v1.model.PasswordNominateRequest
 import com.leijendary.spring.template.iam.api.v1.model.PasswordResetRequest
+import com.leijendary.spring.template.iam.core.datasource.transactional
 import com.leijendary.spring.template.iam.core.exception.InvalidCredentialException
-import com.leijendary.spring.template.iam.core.extension.transactional
 import com.leijendary.spring.template.iam.core.util.RequestContext.userIdOrThrow
 import com.leijendary.spring.template.iam.entity.UserCredential
 import com.leijendary.spring.template.iam.entity.Verification.Type.PASSWORD_NOMINATE

@@ -5,7 +5,7 @@ import com.leijendary.spring.template.iam.api.v1.model.UserExclusionQueryRequest
 import com.leijendary.spring.template.iam.api.v1.model.UserRequest
 import com.leijendary.spring.template.iam.api.v1.model.UserResponse
 import com.leijendary.spring.template.iam.core.config.properties.VerificationProperties
-import com.leijendary.spring.template.iam.core.extension.transactional
+import com.leijendary.spring.template.iam.core.datasource.transactional
 import com.leijendary.spring.template.iam.core.model.QueryRequest
 import com.leijendary.spring.template.iam.core.storage.S3Storage
 import com.leijendary.spring.template.iam.entity.Account

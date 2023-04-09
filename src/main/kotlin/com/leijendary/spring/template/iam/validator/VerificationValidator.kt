@@ -1,7 +1,7 @@
 package com.leijendary.spring.template.iam.validator
 
+import com.leijendary.spring.template.iam.core.datasource.transactional
 import com.leijendary.spring.template.iam.core.exception.StatusException
-import com.leijendary.spring.template.iam.core.extension.transactional
 import com.leijendary.spring.template.iam.core.util.RequestContext.now
 import com.leijendary.spring.template.iam.entity.UserCredential
 import com.leijendary.spring.template.iam.entity.Verification

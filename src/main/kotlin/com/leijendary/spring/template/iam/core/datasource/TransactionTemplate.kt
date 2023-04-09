@@ -1,4 +1,4 @@
-package com.leijendary.spring.template.iam.core.extension
+package com.leijendary.spring.template.iam.core.datasource
 
 import com.leijendary.spring.template.iam.core.util.SpringContext.Companion.getBean
 import org.springframework.transaction.PlatformTransactionManager

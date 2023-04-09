@@ -3,7 +3,7 @@ package com.leijendary.spring.template.iam.api.v1.service
 import com.leijendary.spring.template.iam.api.v1.mapper.ProfileMapper
 import com.leijendary.spring.template.iam.api.v1.model.*
 import com.leijendary.spring.template.iam.api.v1.model.Next.Type.AUTHENTICATE
-import com.leijendary.spring.template.iam.core.extension.transactional
+import com.leijendary.spring.template.iam.core.datasource.transactional
 import com.leijendary.spring.template.iam.core.storage.S3Storage
 import com.leijendary.spring.template.iam.core.util.RequestContext.userIdOrThrow
 import com.leijendary.spring.template.iam.repository.UserCredentialRepository
