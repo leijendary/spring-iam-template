@@ -16,8 +16,19 @@ encrypt:
   salt: 08dbf175cbeb91f3
 
 spring:
+  data:
+    redis:
+      ssl: false
   datasource:
     primary:
       maximumPoolSize: 5
     readonly:
       maximumPoolSize: 1
+  kafka:
+    jaas:
+      enabled: false
+    properties:
+      sasl:
+        mechanism: PLAIN
+    security:
+      protocol: PLAINTEXT
