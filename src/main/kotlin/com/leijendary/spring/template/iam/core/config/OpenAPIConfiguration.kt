@@ -25,6 +25,7 @@ class OpenAPIConfiguration(private val infoProperties: InfoProperties) {
             contact = api.contact
             license = api.license
             version = app.version
+            extensions = api.extensions
         }
 
         return OpenAPI().info(info)
