@@ -19,7 +19,6 @@ configurations {
     }
     testImplementation {
         exclude(group = "org.junit.vintage", module = "junit-vintage-engine")
-        exclude(module = "mockito-core")
     }
 }
 
@@ -108,7 +107,8 @@ dependencies {
     implementation("net.ttddyy.observation:datasource-micrometer-spring-boot:1.0.1")
 
     // Test
-    testImplementation("com.ninja-squad:springmockk:4.0.2")
+    testImplementation("org.mockito.kotlin:mockito-kotlin:4.1.0")
+    testImplementation("org.mockito:mockito-inline:5.2.0")
 
     // Test Containers
     testImplementation("org.testcontainers:junit-jupiter")
