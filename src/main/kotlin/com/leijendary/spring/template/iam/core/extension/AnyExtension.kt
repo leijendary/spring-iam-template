@@ -29,8 +29,6 @@ fun Any.reflectSet(property: String, value: Any?): Any? {
     return field.get(this)
 }
 
-object AnyUtil {
-    fun Any.toJson(): String {
-        return mapper.writeValueAsString(this)
-    }
+fun Any.toJson(): String {
+    return mapper.writeValueAsString(this)
 }

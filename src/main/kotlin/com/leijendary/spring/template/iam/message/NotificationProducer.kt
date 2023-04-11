@@ -1,7 +1,7 @@
 package com.leijendary.spring.template.iam.message
 
 import com.leijendary.spring.template.iam.core.config.properties.KafkaTopicProperties
-import com.leijendary.spring.template.iam.core.extension.AnyUtil.toJson
+import com.leijendary.spring.template.iam.core.extension.toJson
 import com.leijendary.spring.template.iam.message.Topic.NOTIFICATION_EMAIL
 import com.leijendary.spring.template.iam.message.Topic.NOTIFICATION_PUSH
 import com.leijendary.spring.template.iam.message.Topic.NOTIFICATION_SMS

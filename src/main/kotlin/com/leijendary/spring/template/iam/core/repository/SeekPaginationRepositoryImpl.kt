@@ -1,9 +1,9 @@
 package com.leijendary.spring.template.iam.core.repository
 
 import com.leijendary.spring.template.iam.core.entity.UUIDEntity
-import com.leijendary.spring.template.iam.core.extension.AnyUtil.toJson
 import com.leijendary.spring.template.iam.core.extension.logger
 import com.leijendary.spring.template.iam.core.extension.toClass
+import com.leijendary.spring.template.iam.core.extension.toJson
 import com.leijendary.spring.template.iam.core.model.FIELD_ROW_ID
 import com.leijendary.spring.template.iam.core.model.Seek
 import com.leijendary.spring.template.iam.core.model.SeekToken
