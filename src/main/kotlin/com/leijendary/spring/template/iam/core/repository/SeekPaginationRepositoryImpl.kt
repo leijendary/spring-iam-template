@@ -119,7 +119,7 @@ class SeekPaginationRepositoryImpl<T : UUIDEntity>(
     }
 
     private fun encode(seekToken: SeekToken): String {
-        val json = seekToken.toJson()!!
+        val json = seekToken.toJson()
 
         log.debug("Encoding next token {}", json)
 
