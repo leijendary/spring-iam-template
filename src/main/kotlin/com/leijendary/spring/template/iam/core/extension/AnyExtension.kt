@@ -6,10 +6,6 @@ import java.lang.reflect.Field
 
 val mapper = getBean(ObjectMapper::class)
 
-inline fun <reified T : Any> Any.toClass(): T {
-    return mapper.convertValue(this, T::class.java)
-}
-
 fun Any.toJson(): String {
     return mapper.writeValueAsString(this)
 }
