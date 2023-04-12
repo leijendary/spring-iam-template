@@ -3,6 +3,10 @@ package com.leijendary.spring.template.iam.core.extension
 import java.lang.Character.toLowerCase
 import java.lang.Character.toUpperCase
 
+inline fun <reified T : Any> String.toClass(): T {
+    return mapper.readValue(this, T::class.java)
+}
+
 fun String.snakeCaseToCamelCase(capitalizeFirst: Boolean = false): String {
     val builder = StringBuilder()
 
