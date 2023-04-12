@@ -3,11 +3,16 @@ package com.leijendary.spring.template.iam.core.extension
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.leijendary.spring.template.iam.core.util.SpringContext.Companion.getBean
 import java.lang.reflect.Field
-import kotlin.reflect.KClass
 
-private val mapper = getBean(ObjectMapper::class)
+val mapper = getBean(ObjectMapper::class)
 
-fun <T : Any> Any.toClass(type: KClass<T>): T = mapper.convertValue(this, type.java)
+inline fun <reified T : Any> Any.toClass(): T {
+    return mapper.convertValue(this, T::class.java)
+}
+
+fun Any.toJson(): String {
+    return mapper.writeValueAsString(this)
+}
 
 fun Any.reflectField(property: String): Field {
     val field = try {
@@ -27,8 +32,4 @@ fun Any.reflectSet(property: String, value: Any?): Any? {
     field.set(this, value)
 
     return field.get(this)
-}
-
-fun Any.toJson(): String {
-    return mapper.writeValueAsString(this)
 }

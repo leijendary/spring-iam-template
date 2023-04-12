@@ -136,6 +136,6 @@ class SeekPaginationRepositoryImpl<T : UUIDEntity>(
 
         log.debug("Decoded next token {}", json)
 
-        return json.toClass(SeekToken::class)
+        return json.toClass()
     }
 }

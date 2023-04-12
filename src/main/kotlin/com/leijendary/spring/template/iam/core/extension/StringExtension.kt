@@ -1,20 +1,12 @@
 package com.leijendary.spring.template.iam.core.extension
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.leijendary.spring.template.iam.core.util.SpringContext.Companion.getBean
 import java.lang.Character.toLowerCase
 import java.lang.Character.toUpperCase
-import kotlin.reflect.KClass
-
-private val mapper = getBean(ObjectMapper::class)
-
-fun <T : Any> String.toClass(type: KClass<T>): T = mapper.readValue(this, type.java)
 
 fun String.snakeCaseToCamelCase(capitalizeFirst: Boolean = false): String {
     val builder = StringBuilder()
 
-    this
-        .split("_".toRegex())
+    this.split("_".toRegex())
         .toTypedArray()
         .forEach { builder.append(it.upperCaseFirst()) }
 
