@@ -8,7 +8,7 @@ import jakarta.persistence.MappedSuperclass
 import java.util.*
 
 @MappedSuperclass
-open class UUIDEntity : UUIDProjection {
+open class UUIDEntity : AppEntity(), UUIDProjection {
     @Id
     @GeneratedValue
     @Column(updatable = false)
