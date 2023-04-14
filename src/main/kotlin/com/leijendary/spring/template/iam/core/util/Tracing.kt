@@ -1,8 +1,7 @@
 package com.leijendary.spring.template.iam.core.util
 
-import com.leijendary.spring.template.iam.core.util.SpringContext.Companion.getBean
+import com.leijendary.spring.template.iam.core.util.BeanContainer.TRACER
 import io.micrometer.tracing.TraceContext
-import io.micrometer.tracing.Tracer
 import org.slf4j.MDC
 
 const val HEADER_TRACE_PARENT = "traceparent"
@@ -10,10 +9,8 @@ const val HEADER_TRACE_PARENT = "traceparent"
 private const val MDC_TRACE_ID = "traceId"
 private const val MDC_SPAN_ID = "spanId"
 
-private val tracer = getBean(Tracer::class)
-
 object Tracing {
-    fun get(): TraceContext = tracer.nextSpan().context()
+    fun get(): TraceContext = TRACER.nextSpan().context()
 
     fun log(traceParent: String?, function: () -> Unit) {
         traceParent

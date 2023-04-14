@@ -1,10 +1,11 @@
 package com.leijendary.spring.template.iam.core.extension
 
+import com.leijendary.spring.template.iam.core.util.BeanContainer.OBJECT_MAPPER
 import java.lang.Character.toLowerCase
 import java.lang.Character.toUpperCase
 
 inline fun <reified T : Any> String.toClass(): T {
-    return mapper.readValue(this, T::class.java)
+    return OBJECT_MAPPER.readValue(this, T::class.java)
 }
 
 fun String.snakeCaseToCamelCase(capitalizeFirst: Boolean = false): String {

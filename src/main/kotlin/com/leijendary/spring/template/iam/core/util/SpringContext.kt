@@ -9,16 +9,16 @@ import kotlin.reflect.KClass
 @Component
 class SpringContext : ApplicationContextAware {
     companion object {
-        private var context: ApplicationContext? = null
+        private lateinit var context: ApplicationContext
 
         fun <T : Any> getBean(beanClass: KClass<T>): T {
-            return context!!.getBean(beanClass.java)
+            return context.getBean(beanClass.java)
         }
 
         fun isProd(): Boolean {
             val profiles = Profiles.of("prod")
 
-            return context!!.environment.acceptsProfiles(profiles)
+            return context.environment.acceptsProfiles(profiles)
         }
     }
 

@@ -1,9 +1,8 @@
 package com.leijendary.spring.template.iam.core.util
 
 import com.leijendary.spring.template.iam.core.config.HEADER_USER_ID
-import com.leijendary.spring.template.iam.core.config.properties.AuthProperties
 import com.leijendary.spring.template.iam.core.exception.StatusException
-import com.leijendary.spring.template.iam.core.util.SpringContext.Companion.getBean
+import com.leijendary.spring.template.iam.core.util.BeanContainer.AUTH_PROPERTIES
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.context.i18n.LocaleContextHolder.getLocale
 import org.springframework.context.i18n.LocaleContextHolder.getTimeZone
@@ -15,7 +14,6 @@ import java.time.OffsetDateTime
 import java.time.ZoneId
 import java.util.*
 
-private val authProperties = getBean(AuthProperties::class)
 private val sourceAuth = listOf("header", HEADER_USER_ID)
 
 object RequestContext {
@@ -33,7 +31,7 @@ object RequestContext {
         get() = userIdOrNull ?: throw StatusException(sourceAuth, "access.session.notFound", UNAUTHORIZED)
 
     val userIdOrSystem: String
-        get() = userIdOrNull?.toString() ?: authProperties.system.principal
+        get() = userIdOrNull?.toString() ?: AUTH_PROPERTIES.system.principal
 
     val uri: URI?
         get() {
