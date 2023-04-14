@@ -78,24 +78,24 @@ dependencies {
     implementation("io.awspring.cloud:spring-cloud-aws-starter")
     implementation("io.awspring.cloud:spring-cloud-aws-starter-s3")
 
+    // Crypto
+    implementation("org.bouncycastle:bcprov-jdk18on:1.72")
+
     // Database
     implementation("org.postgresql:postgresql")
     implementation("org.liquibase:liquibase-core")
-
-    // OpenAPI
-    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.4")
 
     // MapStruct
     implementation("org.mapstruct:mapstruct:1.5.3.Final")
     kapt("org.mapstruct:mapstruct-processor:1.5.3.Final")
     testImplementation("org.mapstruct:mapstruct-processor:1.5.3.Final")
 
-    // Crypto
-    implementation("org.bouncycastle:bcprov-jdk18on:1.72")
-
     // Devtools
     developmentOnly("org.springframework.boot:spring-boot-devtools")
     kapt("org.springframework.boot:spring-boot-configuration-processor")
+
+    // OpenAPI
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.4")
 
     // Tracing
     implementation("com.github.loki4j:loki-logback-appender:1.4.0")
