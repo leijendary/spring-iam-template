@@ -1,6 +1,6 @@
 package com.leijendary.spring.template.iam.core.util
 
-import com.leijendary.spring.template.iam.core.util.BeanContainer.TRACER
+import com.leijendary.spring.template.iam.core.util.BeanContainer.tracer
 import io.micrometer.tracing.TraceContext
 import org.slf4j.MDC
 
@@ -10,7 +10,7 @@ private const val MDC_TRACE_ID = "traceId"
 private const val MDC_SPAN_ID = "spanId"
 
 object Tracing {
-    fun get(): TraceContext = TRACER.nextSpan().context()
+    fun get(): TraceContext = tracer.nextSpan().context()
 
     fun log(traceParent: String?, function: () -> Unit) {
         traceParent

@@ -1,10 +1,10 @@
 package com.leijendary.spring.template.iam.core.extension
 
-import com.leijendary.spring.template.iam.core.util.BeanContainer.OBJECT_MAPPER
+import com.leijendary.spring.template.iam.core.util.BeanContainer.objectMapper
 import java.lang.reflect.Field
 
 fun Any.toJson(): String {
-    return OBJECT_MAPPER.writeValueAsString(this)
+    return objectMapper.writeValueAsString(this)
 }
 
 fun Any.reflectField(property: String): Field {

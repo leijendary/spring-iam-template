@@ -2,7 +2,7 @@ package com.leijendary.spring.template.iam.core.util
 
 import com.leijendary.spring.template.iam.core.config.HEADER_USER_ID
 import com.leijendary.spring.template.iam.core.exception.StatusException
-import com.leijendary.spring.template.iam.core.util.BeanContainer.AUTH_PROPERTIES
+import com.leijendary.spring.template.iam.core.util.BeanContainer.authProperties
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.context.i18n.LocaleContextHolder.getLocale
 import org.springframework.context.i18n.LocaleContextHolder.getTimeZone
@@ -31,7 +31,7 @@ object RequestContext {
         get() = userIdOrNull ?: throw StatusException(sourceAuth, "access.session.notFound", UNAUTHORIZED)
 
     val userIdOrSystem: String
-        get() = userIdOrNull?.toString() ?: AUTH_PROPERTIES.system.principal
+        get() = userIdOrNull?.toString() ?: authProperties.system.principal
 
     val uri: URI?
         get() {
