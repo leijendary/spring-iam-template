@@ -1,1 +1,1 @@
-rootProject.name = "spring-iam-template"
+rootProject.name = "iam-template"
