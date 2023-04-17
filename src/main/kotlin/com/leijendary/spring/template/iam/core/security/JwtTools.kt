@@ -54,8 +54,6 @@ class JwtTools(private val asyncTaskExecutor: AsyncTaskExecutor, private val aut
     fun create(subject: String, audience: String, scopes: Set<String>): JwtSet {
         val accessId = UUID.randomUUID()
         val accessToken = asyncTaskExecutor.submit(Callable {
-            println(Thread.currentThread().name)
-
             create(accessId, ACCESS_TOKEN, subject, audience, scopes)
         })
         val refreshToken = asyncTaskExecutor.submit(Callable {
