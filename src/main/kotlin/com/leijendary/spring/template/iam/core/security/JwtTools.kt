@@ -15,8 +15,7 @@ import com.nimbusds.jose.crypto.RSASSASigner
 import com.nimbusds.jose.crypto.RSASSAVerifier
 import com.nimbusds.jwt.JWTClaimsSet
 import com.nimbusds.jwt.SignedJWT
-import kotlinx.coroutines.async
-import kotlinx.coroutines.runBlocking
+import org.springframework.core.task.AsyncTaskExecutor
 import org.springframework.stereotype.Component
 import java.security.KeyFactory
 import java.security.interfaces.RSAPrivateKey
@@ -24,6 +23,7 @@ import java.security.interfaces.RSAPublicKey
 import java.security.spec.PKCS8EncodedKeySpec
 import java.security.spec.X509EncodedKeySpec
 import java.util.*
+import java.util.concurrent.Callable
 
 private const val CLAIM_SCOPE = "scope"
 private const val CLAIM_ATI = "ati"
@@ -31,15 +31,15 @@ private const val CLAIM_ISSUE_TIME = "iat"
 private val keyFactory = KeyFactory.getInstance("RSA")
 
 @Component
-class JwtTools(private val authProperties: AuthProperties) {
-    private val privateKey = mapOf(
-        ACCESS_TOKEN to rsaPrivateKey(authProperties.accessToken.privateKey),
-        REFRESH_TOKEN to rsaPrivateKey(authProperties.refreshToken.privateKey),
-    )
-
+class JwtTools(private val asyncTaskExecutor: AsyncTaskExecutor, private val authProperties: AuthProperties) {
     val publicKey = mapOf(
         ACCESS_TOKEN to rsaPublicKey(authProperties.accessToken.publicKey),
         REFRESH_TOKEN to rsaPublicKey(authProperties.refreshToken.publicKey),
+    )
+
+    private val privateKey = mapOf(
+        ACCESS_TOKEN to rsaPrivateKey(authProperties.accessToken.privateKey),
+        REFRESH_TOKEN to rsaPrivateKey(authProperties.refreshToken.privateKey),
     )
 
     companion object {
@@ -51,18 +51,20 @@ class JwtTools(private val authProperties: AuthProperties) {
         REFRESH_TOKEN
     }
 
-    fun create(subject: String, audience: String, scopes: Set<String>): JwtSet = runBlocking {
+    fun create(subject: String, audience: String, scopes: Set<String>): JwtSet {
         val accessId = UUID.randomUUID()
-        val accessToken = async {
+        val accessToken = asyncTaskExecutor.submit(Callable {
+            println(Thread.currentThread().name)
+
             create(accessId, ACCESS_TOKEN, subject, audience, scopes)
-        }
-        val refreshToken = async {
+        })
+        val refreshToken = asyncTaskExecutor.submit(Callable {
             val refreshId = UUID.randomUUID()
 
             create(refreshId, REFRESH_TOKEN, subject, audience, scopes, accessId.toString())
-        }
+        })
 
-        JwtSet(accessToken.await(), refreshToken.await())
+        return JwtSet(accessToken.get(), refreshToken.get())
     }
 
     fun create(
