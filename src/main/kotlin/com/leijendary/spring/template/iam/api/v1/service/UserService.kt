@@ -46,20 +46,14 @@ class UserService(
         pageable: Pageable
     ): Page<UserResponse> {
         val specification = UserListSpecification(queryRequest.query, userExclusionQueryRequest)
-        val page = transactional(readOnly = true) {
-            userRepository.findAll(specification, pageable)
-        }!!
+        val page = userRepository.findAll(specification, pageable)
 
         return page.map { MAPPER.toResponse(it, s3Storage) }
     }
 
     @CachePut(value = [CACHE_NAME], key = "#result.id")
     fun create(request: UserRequest): UserResponse {
-        val role = transactional(readOnly = true) {
-            request.role!!.id!!.let {
-                roleRepository.findByIdOrThrow(it)
-            }
-        }
+        val role = request.role!!.id!!.let { roleRepository.findByIdOrThrow(it) }
         val account = Account().apply {
             type = request.account!!.type!!
             status = Status.ACTIVE
@@ -98,24 +92,17 @@ class UserService(
 
     @Cacheable(value = [CACHE_NAME], key = "#id")
     fun get(id: UUID): UserResponse {
-        val user = transactional(readOnly = true) {
-            userRepository.findByIdOrThrow(id)
-        }!!
+        val user = userRepository.findByIdOrThrow(id)
 
         return MAPPER.toResponse(user, s3Storage)
     }
 
     @CachePut(value = [CACHE_NAME], key = "#result.id")
     fun update(id: UUID, request: UserRequest): UserResponse {
-        val user = transactional(readOnly = true) {
-            val role = request.role!!.id!!.let {
-                roleRepository.findByIdOrThrow(it)
-            }
-
-            userRepository
-                .findByIdOrThrow(id)
-                .apply { this.role = role }
-        }!!
+        val role = request.role!!.id!!.let { roleRepository.findByIdOrThrow(it) }
+        val user = userRepository
+            .findByIdOrThrow(id)
+            .apply { this.role = role }
 
         MAPPER.update(request, user)
 

@@ -26,13 +26,11 @@ class PermissionService(
 
     fun list(request: QueryRequest, pageable: Pageable): Page<PermissionResponse> {
         val query = request.query
-        val page = transactional(readOnly = true) {
-            if (query.isNullOrBlank()) {
-                permissionRepository.findAll(pageable)
-            } else {
-                permissionRepository.findAllByValueContainingIgnoreCase(query, pageable)
-            }
-        }!!
+        val page = if (query.isNullOrBlank()) {
+            permissionRepository.findAll(pageable)
+        } else {
+            permissionRepository.findAllByValueContainingIgnoreCase(query, pageable)
+        }
 
         return page.map { MAPPER.toResponse(it) }
     }
@@ -50,9 +48,7 @@ class PermissionService(
 
     @Cacheable(value = [CACHE_NAME], key = "#id")
     fun get(id: Long): PermissionResponse {
-        val permission = transactional(readOnly = true) {
-            permissionRepository.findByIdOrThrow(id)
-        }!!
+        val permission = permissionRepository.findByIdOrThrow(id)
 
         return MAPPER.toResponse(permission)
     }
@@ -62,7 +58,11 @@ class PermissionService(
         val permission = transactional {
             permissionRepository
                 .findByIdOrThrow(id)
-                .let { MAPPER.update(request, it) }
+                .let {
+                    MAPPER.update(request, it)
+
+                    permissionRepository.save(it)
+                }
         }!!
 
         return MAPPER.toResponse(permission)

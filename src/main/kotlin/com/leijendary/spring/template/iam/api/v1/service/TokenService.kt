@@ -49,9 +49,7 @@ class TokenService(
     fun create(request: TokenRequest): TokenResponse {
         val username = request.username!!
         val password = request.password!!
-        val credential = transactional(readOnly = true) {
-            userCredentialRepository.findFirstByUsernameAndUserDeletedAtIsNullOrThrow(username)
-        }!!
+        val credential = userCredentialRepository.findFirstByUsernameAndUserDeletedAtIsNullOrThrow(username)
         val encoded = credential.password
 
         if (!passwordEncoder.matches(password, encoded)) {
@@ -124,9 +122,9 @@ class TokenService(
         val provider = request.provider!!
         val result = socialVerificationStrategy[provider]!!.verify(token)
         val id = result.id
-        val userSocial = transactional(readOnly = true) {
-            userSocialRepository.findFirstByIdAndUserDeletedAtIsNull(id)
-        } ?: createSocial(result, provider)
+        val userSocial = userSocialRepository
+            .findFirstByIdAndUserDeletedAtIsNull(id)
+            ?: createSocial(result, provider)
         val user = userSocial.user
         val email = result.email
         val auth = authorize(user, email, EMAIL)
@@ -136,9 +134,7 @@ class TokenService(
 
     private fun createSocial(socialResult: SocialResult, provider: Provider): UserSocial {
         val email = socialResult.email
-        val credential = transactional(readOnly = true) {
-            userCredentialRepository.findFirstByUsernameAndUserDeletedAtIsNull(email)
-        }
+        val credential = userCredentialRepository.findFirstByUsernameAndUserDeletedAtIsNull(email)
         var user = credential?.user
 
         if (user != null) {
@@ -238,9 +234,7 @@ class TokenService(
     }
 
     private fun scopes(role: Role): Set<String> {
-        val permissions = transactional(readOnly = true) {
-            rolePermissionRepository.findAllByRoleId(role.id)
-        }!!
+        val permissions = rolePermissionRepository.findAllByRoleId(role.id)
 
         return permissions
             .map { it.permission.value }
@@ -249,9 +243,7 @@ class TokenService(
 
     private fun removeByAccessId(accessTokenId: String) {
         val accessId = UUID.fromString(accessTokenId)
-        val auth = transactional(readOnly = true) {
-            authRepository.findFirstByAccessId(accessId)
-        } ?: return
+        val auth = authRepository.findFirstByAccessId(accessId) ?: return
 
         authRepository.delete(auth)
     }

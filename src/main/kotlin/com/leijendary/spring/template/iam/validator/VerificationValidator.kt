@@ -1,6 +1,5 @@
 package com.leijendary.spring.template.iam.validator
 
-import com.leijendary.spring.template.iam.core.datasource.transactional
 import com.leijendary.spring.template.iam.core.exception.StatusException
 import com.leijendary.spring.template.iam.core.util.RequestContext.now
 import com.leijendary.spring.template.iam.entity.UserCredential
@@ -17,9 +16,8 @@ class VerificationValidator(private val verificationRepository: VerificationRepo
      * is not expired. This method will throw an error if the verification is not found.
      */
     fun validateByField(field: UserCredential.Type, value: String, code: String, type: Type): Verification {
-        val verification = transactional(readOnly = true) {
-            verificationRepository.findFirstByFieldAndValueAndCodeAndAndTypeOrThrow(field, value, code, type)
-        }!!
+        val verification = verificationRepository
+            .findFirstByFieldAndValueAndCodeAndAndTypeOrThrow(field, value, code, type)
 
         validateExpiration(verification)
 
@@ -33,9 +31,7 @@ class VerificationValidator(private val verificationRepository: VerificationRepo
      * This is recommended for verification UUID codes.
      */
     fun validateByCode(code: String, type: Type): Verification {
-        val verification = transactional(readOnly = true) {
-            verificationRepository.findFirstByCodeAndTypeOrThrow(code, type)
-        }!!
+        val verification = verificationRepository.findFirstByCodeAndTypeOrThrow(code, type)
 
         validateExpiration(verification)
 

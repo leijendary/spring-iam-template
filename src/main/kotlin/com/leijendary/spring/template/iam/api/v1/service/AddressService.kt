@@ -25,18 +25,14 @@ class AddressService(
     }
 
     fun list(userId: UUID, pageable: Pageable): Page<AddressResponse> {
-        val addresses = transactional(readOnly = true) {
-            userAddressRepository.findByUserId(userId, pageable)
-        }!!
-
-        return addresses.map { MAPPER.toResponse(it) }
+        return userAddressRepository
+            .findByUserId(userId, pageable)
+            .map { MAPPER.toResponse(it) }
     }
 
     @CachePut(value = [CACHE_NAME], key = "(#userId + ':' + #result.id)")
     fun create(userId: UUID, request: AddressRequest): AddressResponse {
-        val user = transactional(readOnly = true) {
-            userRepository.findByIdOrThrow(userId)
-        }!!
+        val user = userRepository.findByIdOrThrow(userId)
         val address = transactional {
             MAPPER
                 .toEntity(request)
@@ -49,22 +45,18 @@ class AddressService(
 
     @Cacheable(value = [CACHE_NAME], key = "(#userId + ':' + #id)")
     fun get(userId: UUID, id: UUID): AddressResponse {
-        val address = transactional(readOnly = true) {
-            userAddressRepository.findFirstByIdAndUserIdOrThrow(id, userId)
-        }!!
+        val address = userAddressRepository.findFirstByIdAndUserIdOrThrow(id, userId)
 
         return MAPPER.toResponse(address)
     }
 
     @CachePut(value = [CACHE_NAME], key = "(#userId + ':' + #id)")
     fun update(userId: UUID, id: UUID, request: AddressRequest): AddressResponse {
-        val address = transactional(readOnly = true) {
-            userAddressRepository.findFirstByIdAndUserIdOrThrow(id, userId)
-        }!!
+        val address = userAddressRepository.findFirstByIdAndUserIdOrThrow(id, userId)
 
         MAPPER.update(request, address)
 
-        transactional { userAddressRepository.save(address) }
+        userAddressRepository.save(address)
 
         return MAPPER.toResponse(address)
     }

@@ -48,9 +48,7 @@ class PasswordService(
     }
 
     fun change(request: PasswordChangeRequest): Next {
-        val user = transactional(readOnly = true) {
-            userRepository.findByIdOrThrow(userIdOrThrow)
-        }!!
+        val user = userRepository.findByIdOrThrow(userIdOrThrow)
         val field = request.field!!
         val credential = user
             .credentials
@@ -76,9 +74,7 @@ class PasswordService(
         val verificationCode = request.verificationCode!!
         // Validate if the verification code exists first.
         val verification = verificationValidator.validateByField(field, value, verificationCode, PASSWORD_RESET)
-        val credential = transactional(readOnly = true) {
-            userCredentialRepository.findFirstByUsernameAndTypeAndUserDeletedAtIsNullOrThrow(value, field)
-        }!!
+        val credential = userCredentialRepository.findFirstByUsernameAndTypeAndUserDeletedAtIsNullOrThrow(value, field)
         val password = request.password!!
 
         transactional {

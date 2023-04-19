@@ -23,13 +23,11 @@ class RoleService(private val roleRepository: RoleRepository) {
 
     fun list(request: QueryRequest, pageable: Pageable): Page<RoleResponse> {
         val query = request.query
-        val page = transactional(readOnly = true) {
-            if (query.isNullOrBlank()) {
-                roleRepository.findAll(pageable)
-            } else {
-                roleRepository.findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(query, query, pageable)
-            }
-        }!!
+        val page = if (query.isNullOrBlank()) {
+            roleRepository.findAll(pageable)
+        } else {
+            roleRepository.findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(query, query, pageable)
+        }
 
         return page.map { MAPPER.toResponse(it) }
     }
@@ -45,9 +43,7 @@ class RoleService(private val roleRepository: RoleRepository) {
 
     @Cacheable(value = [CACHE_NAME], key = "#id")
     fun get(id: UUID): RoleResponse {
-        val role = transactional(readOnly = true) {
-            roleRepository.findByIdOrThrow(id)
-        }!!
+        val role = roleRepository.findByIdOrThrow(id)
 
         return MAPPER.toResponse(role)
     }
@@ -71,10 +67,8 @@ class RoleService(private val roleRepository: RoleRepository) {
     fun delete(id: UUID) = transactional {
         roleRepository
             .findByIdOrThrow(id)
-            .let {
+            .also {
                 roleRepository.delete(it)
-
-                it
             }
     }
 }

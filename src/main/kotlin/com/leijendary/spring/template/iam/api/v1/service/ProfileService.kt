@@ -30,9 +30,7 @@ class ProfileService(
 
     @Cacheable(value = [CACHE_NAME], key = "#id")
     fun detail(id: UUID): ProfileResponse {
-        val user = transactional(readOnly = true) {
-            userRepository.findByIdOrThrow(id)
-        }!!
+        val user = userRepository.findByIdOrThrow(id)
 
         return MAPPER.toResponse(user, s3Storage)
     }
@@ -64,9 +62,7 @@ class ProfileService(
             verificationCode,
             verificationType
         )
-        val user = transactional(readOnly = true) {
-            userRepository.findByIdOrThrow(userIdOrThrow)
-        }!!
+        val user = userRepository.findByIdOrThrow(userIdOrThrow)
         val credential = user
             .credentials
             .firstOrNull { it.type == credentialType }

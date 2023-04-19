@@ -3,7 +3,6 @@ package com.leijendary.spring.template.iam.api.v1.service
 import com.leijendary.spring.template.iam.api.v1.mapper.PermissionMapper
 import com.leijendary.spring.template.iam.api.v1.model.PermissionResponse
 import com.leijendary.spring.template.iam.api.v1.model.RolePermissionRequest
-import com.leijendary.spring.template.iam.core.datasource.transactional
 import com.leijendary.spring.template.iam.entity.RolePermission
 import com.leijendary.spring.template.iam.repository.PermissionRepository
 import com.leijendary.spring.template.iam.repository.RolePermissionRepository
@@ -23,19 +22,15 @@ class RolePermissionService(
     }
 
     fun list(roleId: UUID): List<PermissionResponse> {
-        val permissions = transactional(readOnly = true) {
-            rolePermissionRepository
-                .findAllByRoleId(roleId)
-                .map { it.permission }
-        }!!
+        val permissions = rolePermissionRepository
+            .findAllByRoleId(roleId)
+            .map { it.permission }
 
         return permissions.map { MAPPER.toResponse(it) }
     }
 
     fun add(roleId: UUID, request: RolePermissionRequest): List<PermissionResponse> {
-        val role = transactional(readOnly = true) {
-            roleRepository.findByIdOrThrow(roleId)
-        }!!
+        val role = roleRepository.findByIdOrThrow(roleId)
         val permissionIds = request.permissions.map { it.id }
         val permissions = permissionRepository.findAllById(permissionIds)
         val rolePermissions = permissions

@@ -48,9 +48,7 @@ class RegisterService(
             type = Account.Type.CUSTOMER
             status = Status.ACTIVE
         }
-        val role = transactional(readOnly = true) {
-            roleRepository.findFirstByNameOrThrow(Role.Default.CUSTOMER.value)
-        }!!
+        val role = roleRepository.findFirstByNameOrThrow(Role.Default.CUSTOMER.value)
         val user = when (request) {
             is RegisterEmailRequest -> MAPPER.toEntity(request)
             is RegisterPhoneRequest -> MAPPER.toEntity(request)
