@@ -12,7 +12,7 @@ open class UUIDEntity : AppEntity(), UUIDProjection {
     @Id
     @GeneratedValue
     @Column(updatable = false)
-    override lateinit var id: UUID
+    override var id: UUID? = null
 
     @Column(insertable = false, updatable = false)
     var rowId: Long = 0

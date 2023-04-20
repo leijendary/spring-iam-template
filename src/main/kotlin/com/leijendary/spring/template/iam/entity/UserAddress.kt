@@ -15,7 +15,7 @@ class UserAddress : UUIDProjection {
     @Id
     @GeneratedValue
     @Column(updatable = false)
-    override lateinit var id: UUID
+    override var id: UUID? = null
 
     @ManyToOne
     lateinit var user: User

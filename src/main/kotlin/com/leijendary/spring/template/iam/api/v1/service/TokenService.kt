@@ -138,7 +138,7 @@ class TokenService(
         var user = credential?.user
 
         if (user != null) {
-            val hasProvider = userSocialRepository.existsByUserIdAndProvider(user.id, provider)
+            val hasProvider = userSocialRepository.existsByUserIdAndProvider(user.id!!, provider)
 
             // The user already has the same social provider attached to his/her account.
             if (hasProvider) {
@@ -234,7 +234,7 @@ class TokenService(
     }
 
     private fun scopes(role: Role): Set<String> {
-        val permissions = rolePermissionRepository.findAllByRoleId(role.id)
+        val permissions = rolePermissionRepository.findAllByRoleId(role.id!!)
 
         return permissions
             .map { it.permission.value }

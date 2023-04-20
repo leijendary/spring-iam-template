@@ -12,7 +12,7 @@ import java.util.*
 class AuthAccess : UUIDProjection {
     @Id
     @Column(updatable = false)
-    override lateinit var id: UUID
+    override var id: UUID? = null
 
     @OneToOne
     lateinit var auth: Auth

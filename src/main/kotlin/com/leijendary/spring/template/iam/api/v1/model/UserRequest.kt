@@ -28,9 +28,9 @@ data class UserRequest(
     val email: String? = null,
 
     @field:NotBlank(message = "validation.required")
-    override val countryCode: String? = null,
+    override var countryCode: String? = null,
 
     @field:NotBlank(message = "validation.required")
     @field:Phone
-    override val phone: String? = null
+    override var phone: String? = null
 ) : PhoneProjection

@@ -73,7 +73,7 @@ class RegisterService(
             verificationRepository.delete(verification)
         }
 
-        val userId = user.id
+        val userId = user.id!!
         val title = messageSource.getMessage("notification.push.registration.title", emptyArray(), locale)
         val body = messageSource.getMessage("notification.push.registration.body", emptyArray(), locale)
         val pushMessage = PushMessage(userId, title, body)
