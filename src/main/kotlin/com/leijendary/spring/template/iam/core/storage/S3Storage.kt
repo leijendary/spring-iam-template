@@ -67,18 +67,16 @@ class S3Storage(
     }
 
     fun get(key: String): GetObjectResponse {
-        val s3Object = stream(key)
-
-        return s3Object.response()
+        return stream(key) { it.response() }
     }
 
-    fun stream(key: String): ResponseInputStream<GetObjectResponse> {
+    fun <T> stream(key: String, stream: (ResponseInputStream<GetObjectResponse>) -> T): T {
         val request = GetObjectRequest.builder()
             .bucket(awsS3Properties.bucketName)
             .key(key)
             .build()
 
-        return s3Client.getObject(request)
+        return s3Client.getObject(request).use(stream)
     }
 
     fun put(key: String, file: File): PutObjectResponse {
@@ -92,14 +90,12 @@ class S3Storage(
     }
 
     fun render(key: String, servletResponse: HttpServletResponse) {
-        val objectStream = stream(key)
-        val s3Object = objectStream.response()
-        val contentType = s3Object.contentType()
-        val outputStream = servletResponse.outputStream
-
-        servletResponse.contentType = contentType
-
-        objectStream.transferTo(outputStream)
+        stream(key) { inputStream ->
+            servletResponse.run {
+                contentType = inputStream.response().contentType()
+                outputStream.use { inputStream::transferTo }
+            }
+        }
     }
 
     fun delete(key: String): DeleteObjectResponse {
@@ -112,12 +108,10 @@ class S3Storage(
     }
 
     fun deleteAll(keys: List<String>): DeleteObjectsResponse {
-        val ids = keys.map { key -> ObjectIdentifier.builder().key(key).build() }
+        val ids = keys.map { ObjectIdentifier.builder().key(it).build() }
         val request = DeleteObjectsRequest.builder()
             .bucket(awsS3Properties.bucketName)
-            .delete {
-                it.objects(ids).build()
-            }
+            .delete { it.objects(ids).build() }
             .build()
 
         return s3Client.deleteObjects(request)
