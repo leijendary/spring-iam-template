@@ -1,8 +1,8 @@
 package com.leijendary.spring.template.iam.core.projection
 
 interface PhoneProjection {
-    val countryCode: String?
-    val phone: String?
+    var countryCode: String?
+    var phone: String?
 
     val fullPhone: String
         get() = "$countryCode $phone"
