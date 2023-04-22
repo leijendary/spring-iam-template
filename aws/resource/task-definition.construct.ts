@@ -106,8 +106,8 @@ export class TaskDefinitionConstruct extends TaskDefinition {
         SPRING_DATASOURCE_READONLY_PASSWORD: auroraCredentials.password,
         SPRING_DATA_REDIS_USERNAME: dataSourceCredentials.redis.username,
         SPRING_DATA_REDIS_PASSWORD: dataSourceCredentials.redis.password,
-        SPRING_KAFKA_JAAS_OPTIONS_USERNAME: integrationCredentials.kafka.username,
-        SPRING_KAFKA_JAAS_OPTIONS_PASSWORD: integrationCredentials.kafka.password,
+        SPRING_KAFKA_JAAS_OPTIONS_USERNAME: dataSourceCredentials.kafka.username,
+        SPRING_KAFKA_JAAS_OPTIONS_PASSWORD: dataSourceCredentials.kafka.password,
       },
     });
   }
@@ -222,6 +222,10 @@ const getDataSourceCredentials = (scope: Construct) => {
   );
 
   return {
+    kafka: {
+      username: Secret.fromSecretsManager(credential, "kafka.username"),
+      password: Secret.fromSecretsManager(credential, "kafka.password"),
+    },
     redis: {
       username: Secret.fromSecretsManager(credential, "redis.username"),
       password: Secret.fromSecretsManager(credential, "redis.password"),
@@ -242,10 +246,6 @@ const getIntegrationCredentials = (scope: Construct) => {
     },
     google: {
       clientId: Secret.fromSecretsManager(credential, "google.clientId"),
-    },
-    kafka: {
-      username: Secret.fromSecretsManager(credential, "kafka.username"),
-      password: Secret.fromSecretsManager(credential, "kafka.password"),
     },
   };
 };
