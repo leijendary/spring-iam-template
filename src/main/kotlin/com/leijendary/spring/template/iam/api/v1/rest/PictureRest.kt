@@ -17,10 +17,15 @@ import org.springframework.web.bind.annotation.RestController
 )
 class PictureRest(private val pictureService: PictureService) {
     @GetMapping("link")
-    @Operation(summary = "Get a link to upload a new profile picture.")
+    @Operation(summary = "Get a link to upload a new profile picture. The link is only valid for PUT requests.")
     fun link() = pictureService.link(userIdOrThrow)
 
-    @PutMapping
-    @Operation(summary = "Update the profile picture by updating the profile image url based on the previous upload.")
+    @PutMapping("link")
+    @Operation(
+        summary = """
+            Update the profile picture by updating the profile image url based on the previous upload.
+            This will return the updated URL.
+        """
+    )
     fun update() = pictureService.update(userIdOrThrow)
 }

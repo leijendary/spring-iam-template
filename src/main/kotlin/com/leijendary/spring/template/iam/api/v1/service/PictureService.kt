@@ -2,16 +2,19 @@ package com.leijendary.spring.template.iam.api.v1.service
 
 import com.leijendary.spring.template.iam.api.v1.model.LinkResponse
 import com.leijendary.spring.template.iam.core.datasource.transactional
+import com.leijendary.spring.template.iam.core.exception.ResourceNotFoundException
 import com.leijendary.spring.template.iam.core.storage.S3Storage
 import com.leijendary.spring.template.iam.core.storage.S3Storage.Request.PUT
 import com.leijendary.spring.template.iam.repository.UserRepository
 import org.springframework.stereotype.Service
+import software.amazon.awssdk.services.s3.model.NoSuchKeyException
 import java.util.*
 
 @Service
 class PictureService(private val s3Storage: S3Storage, private val userRepository: UserRepository) {
     companion object {
-        private const val KEY_PREFIX = "profile/image/"
+        private val source = listOf("profile", "image")
+        private val keyPrefix = source.joinToString("/", postfix = "/")
         private const val KEY_SUFFIX = ".png"
         private const val KEY_TEMP_SUFFIX = ".tmp$KEY_SUFFIX"
     }
@@ -29,13 +32,17 @@ class PictureService(private val s3Storage: S3Storage, private val userRepositor
         val user = userRepository.findByIdOrThrow(id)
         user.image = destinationKey
 
-        transactional {
-            userRepository.save(user)
+        try {
+            transactional {
+                userRepository.save(user)
 
-            s3Storage.run {
-                copy(sourceKey, destinationKey)
-                delete(sourceKey)
+                s3Storage.run {
+                    copy(sourceKey, destinationKey)
+                    delete(sourceKey)
+                }
             }
+        } catch (noSuchKeyException: NoSuchKeyException) {
+            throw ResourceNotFoundException(source, id.toString())
         }
 
         val link = s3Storage.sign(user.image!!)
@@ -43,7 +50,7 @@ class PictureService(private val s3Storage: S3Storage, private val userRepositor
         return LinkResponse(link)
     }
 
-    private fun createSourceKey(id: UUID) = "$KEY_PREFIX$id$KEY_TEMP_SUFFIX"
+    private fun createSourceKey(id: UUID) = "$keyPrefix$id$KEY_TEMP_SUFFIX"
 
-    private fun createDestinationKey(id: UUID) = "$KEY_PREFIX$id$KEY_SUFFIX"
+    private fun createDestinationKey(id: UUID) = "$keyPrefix$id$KEY_SUFFIX"
 }
