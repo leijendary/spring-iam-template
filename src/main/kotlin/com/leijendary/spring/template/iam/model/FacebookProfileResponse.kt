@@ -17,10 +17,7 @@ class FacebookProfileResponse(
     private var picture: String? = null
 
     fun setPicture(picture: JsonNode) {
-        this.picture = picture
-            .get("data")
-            ?.get("url")
-            ?.asText()
+        this.picture = picture.get("data")?.get("url")?.asText()
     }
 
     fun getPicture() = this.picture
