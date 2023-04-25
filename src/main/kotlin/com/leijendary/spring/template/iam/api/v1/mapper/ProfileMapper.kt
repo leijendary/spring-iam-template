@@ -26,8 +26,6 @@ interface ProfileMapper {
 
     @AfterMapping
     fun toResponse(@MappingTarget profileResponse: ProfileResponse, user: User, @Context s3Storage: S3Storage) {
-        val image = user.image
-
-        profileResponse.image = image?.let { s3Storage.sign(it) }
+        profileResponse.image = user.image?.let { s3Storage.signGet(it) }
     }
 }
