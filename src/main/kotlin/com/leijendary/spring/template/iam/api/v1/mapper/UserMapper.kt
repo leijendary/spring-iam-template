@@ -40,7 +40,7 @@ interface UserMapper {
         val image = user.image
 
         if (image != null && !image.startsWith("http")) {
-            userResponse.image = image.let { s3Storage.signGet(it) }
+            userResponse.image = image.let { s3Storage.sign(it) }
         }
     }
 }

@@ -66,6 +66,17 @@ class S3Storage(
             .toString()
     }
 
+    fun copy(sourceKey: String, destinationKey: String): CopyObjectResponse {
+        val request = CopyObjectRequest.builder()
+            .sourceBucket(awsS3Properties.bucketName)
+            .destinationBucket(awsS3Properties.bucketName)
+            .sourceKey(sourceKey)
+            .destinationKey(destinationKey)
+            .build()
+
+        return s3Client.copyObject(request)
+    }
+
     fun get(key: String): GetObjectResponse {
         return stream(key) { it.response() }
     }
