@@ -21,7 +21,6 @@ class PermissionService(
 ) {
     companion object {
         private const val CACHE_NAME = "permission:v1"
-        private val MAPPER = PermissionMapper.INSTANCE
     }
 
     fun list(request: QueryRequest, pageable: Pageable): Page<PermissionResponse> {
@@ -32,25 +31,25 @@ class PermissionService(
             permissionRepository.findAllByValueContainingIgnoreCase(query, pageable)
         }
 
-        return page.map { MAPPER.toResponse(it) }
+        return page.map { PermissionMapper.INSTANCE.toResponse(it) }
     }
 
     @CachePut(value = [CACHE_NAME], key = "#result.id")
     fun create(request: PermissionRequest): PermissionResponse {
-        val permission = MAPPER
+        val permission = PermissionMapper.INSTANCE
             .toEntity(request)
             .let {
                 permissionRepository.save(it)
             }
 
-        return MAPPER.toResponse(permission)
+        return PermissionMapper.INSTANCE.toResponse(permission)
     }
 
     @Cacheable(value = [CACHE_NAME], key = "#id")
     fun get(id: Long): PermissionResponse {
         val permission = permissionRepository.findByIdOrThrow(id)
 
-        return MAPPER.toResponse(permission)
+        return PermissionMapper.INSTANCE.toResponse(permission)
     }
 
     @CachePut(value = [CACHE_NAME], key = "#result.id")
@@ -59,13 +58,13 @@ class PermissionService(
             permissionRepository
                 .findByIdOrThrow(id)
                 .let {
-                    MAPPER.update(request, it)
+                    PermissionMapper.INSTANCE.update(request, it)
 
                     permissionRepository.save(it)
                 }
         }!!
 
-        return MAPPER.toResponse(permission)
+        return PermissionMapper.INSTANCE.toResponse(permission)
     }
 
     @CacheEvict(value = [CACHE_NAME], key = "#id")

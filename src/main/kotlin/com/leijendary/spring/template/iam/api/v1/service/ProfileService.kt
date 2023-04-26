@@ -25,14 +25,13 @@ class ProfileService(
 ) {
     companion object {
         private const val CACHE_NAME = "profile:v1"
-        private val MAPPER = ProfileMapper.INSTANCE
     }
 
     @Cacheable(value = [CACHE_NAME], key = "#id")
     fun detail(id: UUID): ProfileResponse {
         val user = userRepository.findByIdOrThrow(id)
 
-        return MAPPER.toResponse(user, s3Storage)
+        return ProfileMapper.INSTANCE.toResponse(user, s3Storage)
     }
 
     @CachePut(value = [CACHE_NAME], key = "#id")
@@ -41,13 +40,13 @@ class ProfileService(
             userRepository
                 .findByIdOrThrow(id)
                 .let {
-                    MAPPER.update(request, it)
+                    ProfileMapper.INSTANCE.update(request, it)
 
                     userRepository.save(it)
                 }
         }!!
 
-        return MAPPER.toResponse(user, s3Storage)
+        return ProfileMapper.INSTANCE.toResponse(user, s3Storage)
     }
 
     fun username(request: UpdateUsernameRequest): Next {
@@ -68,8 +67,8 @@ class ProfileService(
             .firstOrNull { it.type == credentialType }
 
         when (request) {
-            is UpdateEmailRequest -> MAPPER.update(request, user)
-            is UpdatePhoneRequest -> MAPPER.update(request, user)
+            is UpdateEmailRequest -> ProfileMapper.INSTANCE.update(request, user)
+            is UpdatePhoneRequest -> ProfileMapper.INSTANCE.update(request, user)
         }
 
         user.setVerified(credentialType)

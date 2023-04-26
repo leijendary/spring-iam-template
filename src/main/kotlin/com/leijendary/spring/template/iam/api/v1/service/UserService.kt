@@ -37,7 +37,6 @@ class UserService(
 ) {
     companion object {
         private const val CACHE_NAME = "user:v1"
-        private val MAPPER = UserMapper.INSTANCE
     }
 
     fun list(
@@ -48,7 +47,7 @@ class UserService(
         val specification = UserListSpecification(queryRequest.query, userExclusionQueryRequest)
         val page = userRepository.findAll(specification, pageable)
 
-        return page.map { MAPPER.toResponse(it, s3Storage) }
+        return page.map { UserMapper.INSTANCE.toResponse(it, s3Storage) }
     }
 
     @CachePut(value = [CACHE_NAME], key = "#result.id")
@@ -58,7 +57,7 @@ class UserService(
             type = request.account!!.type!!
             status = Status.ACTIVE
         }
-        val user = MAPPER.toEntity(request).apply {
+        val user = UserMapper.INSTANCE.toEntity(request).apply {
             this.account = account
             this.role = role
         }
@@ -87,14 +86,14 @@ class UserService(
             verificationRepository.save(verification)
         }
 
-        return MAPPER.toResponse(user, s3Storage)
+        return UserMapper.INSTANCE.toResponse(user, s3Storage)
     }
 
     @Cacheable(value = [CACHE_NAME], key = "#id")
     fun get(id: UUID): UserResponse {
         val user = userRepository.findByIdOrThrow(id)
 
-        return MAPPER.toResponse(user, s3Storage)
+        return UserMapper.INSTANCE.toResponse(user, s3Storage)
     }
 
     @CachePut(value = [CACHE_NAME], key = "#result.id")
@@ -104,7 +103,7 @@ class UserService(
             .findByIdOrThrow(id)
             .apply { this.role = role }
 
-        MAPPER.update(request, user)
+        UserMapper.INSTANCE.update(request, user)
 
         val field = UserCredential.Type.EMAIL
         val hasCredential = user.credentials.any { it.type == field }
@@ -122,7 +121,7 @@ class UserService(
 
         transactional { userRepository.save(user) }
 
-        return MAPPER.toResponse(user, s3Storage)
+        return UserMapper.INSTANCE.toResponse(user, s3Storage)
     }
 
     @CacheEvict(value = [CACHE_NAME], key = "#id")

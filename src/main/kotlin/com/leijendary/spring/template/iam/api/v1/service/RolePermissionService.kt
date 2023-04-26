@@ -17,16 +17,12 @@ class RolePermissionService(
     private val rolePermissionRepository: RolePermissionRepository,
     private val roleRepository: RoleRepository
 ) {
-    companion object {
-        private val MAPPER = PermissionMapper.INSTANCE
-    }
-
     fun list(roleId: UUID): List<PermissionResponse> {
         val permissions = rolePermissionRepository
             .findAllByRoleId(roleId)
             .map { it.permission }
 
-        return permissions.map { MAPPER.toResponse(it) }
+        return permissions.map { PermissionMapper.INSTANCE.toResponse(it) }
     }
 
     fun add(roleId: UUID, request: RolePermissionRequest): List<PermissionResponse> {
@@ -43,7 +39,7 @@ class RolePermissionService(
 
         rolePermissionRepository.saveAll(rolePermissions)
 
-        return permissions.map { MAPPER.toResponse(it) }
+        return permissions.map { PermissionMapper.INSTANCE.toResponse(it) }
     }
 
     @Transactional

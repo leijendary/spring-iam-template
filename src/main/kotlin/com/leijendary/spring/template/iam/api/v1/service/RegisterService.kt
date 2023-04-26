@@ -33,10 +33,6 @@ class RegisterService(
     private val verificationRepository: VerificationRepository,
     private val verificationValidator: VerificationValidator
 ) {
-    companion object {
-        private val MAPPER = UserMapper.INSTANCE
-    }
-
     fun register(request: RegisterRequest): Next {
         val credentialType = request.credentialType
         val username = request.username
@@ -50,8 +46,8 @@ class RegisterService(
         }
         val role = roleRepository.findFirstByNameOrThrow(Role.Default.CUSTOMER.value)
         val user = when (request) {
-            is RegisterEmailRequest -> MAPPER.toEntity(request)
-            is RegisterPhoneRequest -> MAPPER.toEntity(request)
+            is RegisterEmailRequest -> UserMapper.INSTANCE.toEntity(request)
+            is RegisterPhoneRequest -> UserMapper.INSTANCE.toEntity(request)
         }.apply {
             this.account = account
             this.role = role

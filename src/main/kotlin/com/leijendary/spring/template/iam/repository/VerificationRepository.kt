@@ -36,5 +36,12 @@ interface VerificationRepository : JpaRepository<Verification, Long> {
             ?: throw ResourceNotFoundException(sourceCode, code)
     }
 
+    @Transactional(readOnly = true)
+    fun findFirstByFieldAndValueAndType(
+        field: UserCredential.Type,
+        value: String,
+        type: Verification.Type
+    ): Verification?
+
     fun deleteAllByFieldAndValueAndType(field: UserCredential.Type, value: String, type: Verification.Type)
 }

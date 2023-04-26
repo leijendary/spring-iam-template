@@ -37,13 +37,11 @@ class TokenService(
     private val socialVerificationStrategy = socialVerificationStrategies.associateBy { it.provider }
 
     companion object {
-        private val TOKEN_MAPPER = TokenMapper.INSTANCE
-        private val USER_MAPPER = UserMapper.INSTANCE
-        private val ACCOUNT_SOURCE = listOf("data", "Account", "status")
-        private val USER_SOURCE = listOf("data", "User", "status")
-        private val ACCESS_SOURCE = listOf("body", "accessToken")
-        private val REFRESH_SOURCE = listOf("body", "refreshToken")
-        private val SOCIAL_SOURCE = listOf("body", "provider")
+        private val accountSource = listOf("data", "Account", "status")
+        private val userSource = listOf("data", "User", "status")
+        private val accessSource = listOf("body", "accessToken")
+        private val refreshSource = listOf("body", "refreshToken")
+        private val socialSource = listOf("body", "provider")
     }
 
     fun create(request: TokenRequest): TokenResponse {
@@ -68,7 +66,7 @@ class TokenService(
         val user = credential.user
         val auth = authorize(user, username, credential.type)
 
-        return TOKEN_MAPPER.toResponse(auth)
+        return TokenMapper.INSTANCE.toResponse(auth)
     }
 
     fun refresh(request: TokenRefreshRequest): TokenResponse {
@@ -76,11 +74,11 @@ class TokenService(
         val jwt = try {
             jwtTools.parse(refreshToken)
         } catch (exception: JOSEException) {
-            throw TokenInvalidSignatureException(REFRESH_SOURCE)
+            throw TokenInvalidSignatureException(refreshSource)
         }
 
         if (!jwt.isVerified) {
-            throw TokenInvalidSignatureException(REFRESH_SOURCE)
+            throw TokenInvalidSignatureException(refreshSource)
         }
 
         val isExpired = jwt.expirationTime.isBefore(now)
@@ -90,16 +88,16 @@ class TokenService(
 
             removeByAccessId(accessTokenId)
 
-            throw TokenExpiredException(REFRESH_SOURCE)
+            throw TokenExpiredException(refreshSource)
         }
 
         val refreshTokenId = UUID.fromString(jwt.id)
         val auth = authRepository
             .findFirstByRefreshId(refreshTokenId)
             ?.let { authorize(it, it.user) }
-            ?: throw ResourceNotFoundException(REFRESH_SOURCE, refreshTokenId)
+            ?: throw ResourceNotFoundException(refreshSource, refreshTokenId)
 
-        return TOKEN_MAPPER.toResponse(auth)
+        return TokenMapper.INSTANCE.toResponse(auth)
     }
 
     fun revoke(request: TokenRevokeRequest) {
@@ -107,11 +105,11 @@ class TokenService(
         val jwt = try {
             jwtTools.parse(accessToken)
         } catch (exception: JOSEException) {
-            throw TokenInvalidSignatureException(ACCESS_SOURCE)
+            throw TokenInvalidSignatureException(accessSource)
         }
 
         if (!jwt.isVerified) {
-            throw TokenInvalidSignatureException(ACCESS_SOURCE)
+            throw TokenInvalidSignatureException(accessSource)
         }
 
         removeByAccessId(jwt.id)
@@ -129,7 +127,7 @@ class TokenService(
         val email = result.email
         val auth = authorize(user, email, EMAIL)
 
-        return TOKEN_MAPPER.toResponse(auth)
+        return TokenMapper.INSTANCE.toResponse(auth)
     }
 
     private fun createSocial(socialResult: SocialResult, provider: Provider): UserSocial {
@@ -142,7 +140,7 @@ class TokenService(
 
             // The user already has the same social provider attached to his/her account.
             if (hasProvider) {
-                throw StatusException(SOCIAL_SOURCE, "access.user.social.exists", BAD_REQUEST, arrayOf(provider))
+                throw StatusException(socialSource, "access.user.social.exists", BAD_REQUEST, arrayOf(provider))
             }
         } else {
             user = transactional {
@@ -151,7 +149,7 @@ class TokenService(
                     status = Status.ACTIVE
                 }
                 val role = roleRepository.findFirstByNameOrThrow(Role.Default.CUSTOMER.value)
-                val newUser = USER_MAPPER.toEntity(socialResult).apply {
+                val newUser = UserMapper.INSTANCE.toEntity(socialResult).apply {
                     this.account = account
                     this.role = role
                 }
@@ -224,12 +222,12 @@ class TokenService(
     private fun validateStatus(account: Account?, user: User) {
         account?.status?.let {
             if (it != Status.ACTIVE) {
-                throw NotActiveException(ACCOUNT_SOURCE, "access.account.inactive")
+                throw NotActiveException(accountSource, "access.account.inactive")
             }
         }
 
         if (user.status != Status.ACTIVE) {
-            throw NotActiveException(USER_SOURCE, "access.user.inactive")
+            throw NotActiveException(userSource, "access.user.inactive")
         }
     }
 

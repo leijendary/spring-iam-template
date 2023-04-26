@@ -1,13 +1,16 @@
 package com.leijendary.spring.template.iam.entity
 
 import com.leijendary.spring.template.iam.core.entity.IdentityEntity
+import com.leijendary.spring.template.iam.core.util.RequestContext.now
 import com.leijendary.spring.template.iam.entity.listener.VerificationListener
 import jakarta.persistence.*
 import jakarta.persistence.EnumType.STRING
+import org.springframework.data.annotation.CreatedDate
+import org.springframework.data.jpa.domain.support.AuditingEntityListener
 import java.time.OffsetDateTime
 
 @Entity
-@EntityListeners(VerificationListener::class)
+@EntityListeners(AuditingEntityListener::class, VerificationListener::class)
 class Verification : IdentityEntity() {
     enum class Type(val value: String) {
         REGISTRATION("registration"),
@@ -31,4 +34,7 @@ class Verification : IdentityEntity() {
 
     var value: String? = null
     lateinit var expiresAt: OffsetDateTime
+
+    @CreatedDate
+    var createdAt: OffsetDateTime = now
 }

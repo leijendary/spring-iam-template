@@ -18,7 +18,6 @@ import java.util.*
 class RoleService(private val roleRepository: RoleRepository) {
     companion object {
         private const val CACHE_NAME = "role:v1"
-        private val MAPPER = RoleMapper.INSTANCE
     }
 
     fun list(request: QueryRequest, pageable: Pageable): Page<RoleResponse> {
@@ -29,23 +28,23 @@ class RoleService(private val roleRepository: RoleRepository) {
             roleRepository.findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(query, query, pageable)
         }
 
-        return page.map { MAPPER.toResponse(it) }
+        return page.map { RoleMapper.INSTANCE.toResponse(it) }
     }
 
     @CachePut(value = [CACHE_NAME], key = "#result.id")
     fun create(request: RoleRequest): RoleResponse {
-        val role = MAPPER
+        val role = RoleMapper.INSTANCE
             .toEntity(request)
             .let { roleRepository.save(it) }
 
-        return MAPPER.toResponse(role)
+        return RoleMapper.INSTANCE.toResponse(role)
     }
 
     @Cacheable(value = [CACHE_NAME], key = "#id")
     fun get(id: UUID): RoleResponse {
         val role = roleRepository.findByIdOrThrow(id)
 
-        return MAPPER.toResponse(role)
+        return RoleMapper.INSTANCE.toResponse(role)
     }
 
     @CachePut(value = [CACHE_NAME], key = "#result.id")
@@ -54,13 +53,13 @@ class RoleService(private val roleRepository: RoleRepository) {
             roleRepository
                 .findByIdOrThrow(id)
                 .let {
-                    MAPPER.update(request, it)
+                    RoleMapper.INSTANCE.update(request, it)
 
                     roleRepository.save(it)
                 }
         }!!
 
-        return MAPPER.toResponse(role)
+        return RoleMapper.INSTANCE.toResponse(role)
     }
 
     @CacheEvict(value = [CACHE_NAME], key = "#id")

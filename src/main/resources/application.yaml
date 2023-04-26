@@ -47,6 +47,7 @@ encrypt:
 
 verification:
   expiry: 2h
+  timeout: 60s
   register:
     template: register-verify
   password:

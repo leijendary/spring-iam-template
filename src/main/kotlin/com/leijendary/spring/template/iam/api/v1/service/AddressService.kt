@@ -21,44 +21,43 @@ class AddressService(
 ) {
     companion object {
         private const val CACHE_NAME = "address:v1"
-        private val MAPPER = AddressMapper.INSTANCE
     }
 
     fun list(userId: UUID, pageable: Pageable): Page<AddressResponse> {
         return userAddressRepository
             .findByUserId(userId, pageable)
-            .map { MAPPER.toResponse(it) }
+            .map { AddressMapper.INSTANCE.toResponse(it) }
     }
 
     @CachePut(value = [CACHE_NAME], key = "(#userId + ':' + #result.id)")
     fun create(userId: UUID, request: AddressRequest): AddressResponse {
         val user = userRepository.findByIdOrThrow(userId)
         val address = transactional {
-            MAPPER
+            AddressMapper.INSTANCE
                 .toEntity(request)
                 .apply { this.user = user }
                 .let { userAddressRepository.save(it) }
         }!!
 
-        return MAPPER.toResponse(address)
+        return AddressMapper.INSTANCE.toResponse(address)
     }
 
     @Cacheable(value = [CACHE_NAME], key = "(#userId + ':' + #id)")
     fun get(userId: UUID, id: UUID): AddressResponse {
         val address = userAddressRepository.findFirstByIdAndUserIdOrThrow(id, userId)
 
-        return MAPPER.toResponse(address)
+        return AddressMapper.INSTANCE.toResponse(address)
     }
 
     @CachePut(value = [CACHE_NAME], key = "(#userId + ':' + #id)")
     fun update(userId: UUID, id: UUID, request: AddressRequest): AddressResponse {
         val address = userAddressRepository.findFirstByIdAndUserIdOrThrow(id, userId)
 
-        MAPPER.update(request, address)
+        AddressMapper.INSTANCE.update(request, address)
 
         userAddressRepository.save(address)
 
-        return MAPPER.toResponse(address)
+        return AddressMapper.INSTANCE.toResponse(address)
     }
 
     @CacheEvict(value = [CACHE_NAME], key = "(#userId + ':' + #id)")

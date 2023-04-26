@@ -8,6 +8,7 @@ import java.time.OffsetDateTime
 @ConfigurationProperties(prefix = "verification")
 class VerificationProperties {
     var expiry: Duration = Duration.ofHours(2)
+    var timeout: Duration = Duration.ofSeconds(60)
     var register = Config()
     var password = Password()
     var email = Config()
@@ -26,4 +27,6 @@ class VerificationProperties {
     }
 
     fun computeExpiration(): OffsetDateTime = now.plus(expiry)
+
+    fun computeTimeout(): OffsetDateTime = now.minusSeconds(timeout.toSeconds())
 }

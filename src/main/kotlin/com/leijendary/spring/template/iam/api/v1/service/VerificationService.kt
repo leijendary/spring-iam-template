@@ -5,8 +5,10 @@ import com.leijendary.spring.template.iam.api.v1.model.Next
 import com.leijendary.spring.template.iam.api.v1.model.VerificationCreateRequest
 import com.leijendary.spring.template.iam.core.config.properties.VerificationProperties
 import com.leijendary.spring.template.iam.core.datasource.transactional
+import com.leijendary.spring.template.iam.core.exception.StatusException
 import com.leijendary.spring.template.iam.generator.CodeGenerationStrategy
 import com.leijendary.spring.template.iam.repository.VerificationRepository
+import org.springframework.http.HttpStatus.BAD_REQUEST
 import org.springframework.stereotype.Service
 
 @Service
@@ -15,15 +17,23 @@ class VerificationService(
     private val verificationRepository: VerificationRepository
 ) {
     companion object {
-        private val MAPPER = VerificationMapper.INSTANCE
+        private val timeoutSource = listOf("data", "Verification", "createdAt")
     }
 
     fun create(request: VerificationCreateRequest): Next {
         val field = request.field!!
         val value = request.value!!
         val type = request.type!!
+        val existing = verificationRepository.findFirstByFieldAndValueAndType(field, value, type)
+        val timeout = verificationProperties.computeTimeout()
+        val isTimedOut = existing?.createdAt?.isAfter(timeout) ?: false
+
+        if (isTimedOut) {
+            throw StatusException(timeoutSource, "validation.verification.timeout", BAD_REQUEST)
+        }
+
         val generator = CodeGenerationStrategy.fromField(field)
-        val verification = MAPPER.toEntity(request).apply {
+        val verification = VerificationMapper.INSTANCE.toEntity(request).apply {
             code = generator.generate()
             expiresAt = verificationProperties.computeExpiration()
         }

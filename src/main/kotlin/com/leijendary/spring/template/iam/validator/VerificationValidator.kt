@@ -11,6 +11,10 @@ import org.springframework.stereotype.Component
 
 @Component
 class VerificationValidator(private val verificationRepository: VerificationRepository) {
+    companion object {
+        val expirySource = listOf("data", "Verification", "expiry")
+    }
+
     /**
      * Validate that the [field]-[value]-[code]-[type] combination exists and
      * is not expired. This method will throw an error if the verification is not found.
@@ -46,8 +50,6 @@ class VerificationValidator(private val verificationRepository: VerificationRepo
             return
         }
 
-        val source = listOf("data", "Verification", "expiry")
-
-        throw StatusException(source, "validation.verification.expired", GONE)
+        throw StatusException(expirySource, "validation.verification.expired", GONE)
     }
 }
