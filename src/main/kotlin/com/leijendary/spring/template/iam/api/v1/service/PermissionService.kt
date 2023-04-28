@@ -13,6 +13,7 @@ import org.springframework.cache.annotation.Cacheable
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 @Service
 class PermissionService(
@@ -38,9 +39,7 @@ class PermissionService(
     fun create(request: PermissionRequest): PermissionResponse {
         val permission = PermissionMapper.INSTANCE
             .toEntity(request)
-            .let {
-                permissionRepository.save(it)
-            }
+            .let { permissionRepository.save(it) }
 
         return PermissionMapper.INSTANCE.toResponse(permission)
     }
@@ -68,7 +67,8 @@ class PermissionService(
     }
 
     @CacheEvict(value = [CACHE_NAME], key = "#id")
-    fun delete(id: Long) = transactional {
+    @Transactional
+    fun delete(id: Long) {
         permissionRepository
             .findByIdOrThrow(id)
             .let {

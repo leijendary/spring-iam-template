@@ -12,6 +12,7 @@ import org.springframework.cache.annotation.Cacheable
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import java.util.*
 
 @Service
@@ -63,11 +64,10 @@ class RoleService(private val roleRepository: RoleRepository) {
     }
 
     @CacheEvict(value = [CACHE_NAME], key = "#id")
-    fun delete(id: UUID) = transactional {
+    @Transactional
+    fun delete(id: UUID) {
         roleRepository
             .findByIdOrThrow(id)
-            .also {
-                roleRepository.delete(it)
-            }
+            .also { roleRepository.delete(it) }
     }
 }

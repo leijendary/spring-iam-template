@@ -24,6 +24,7 @@ import org.springframework.cache.annotation.Cacheable
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import java.util.*
 
 @Service
@@ -125,7 +126,8 @@ class UserService(
     }
 
     @CacheEvict(value = [CACHE_NAME], key = "#id")
-    fun delete(id: UUID) = transactional {
+    @Transactional
+    fun delete(id: UUID) {
         userRepository
             .findByIdOrThrow(id)
             .let { user ->
