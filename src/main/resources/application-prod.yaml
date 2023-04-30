@@ -3,6 +3,18 @@ verification:
     nominate:
       url: https://leijendary.com/password/nominate
 
+spring:
+  kafka:
+    listener:
+      concurrency: 40
+    topic:
+      notificationEmail:
+        partitions: 20
+      notificationPush:
+        partitions: 10
+      notificationSms:
+        partitions: 10
+
 springdoc:
   apiDocs:
     enabled: false
