@@ -19,9 +19,11 @@ open class AuditingUUIDEntity : UUIDEntity(), CreatedProjection, LastModifiedPro
     var version = 0
 
     @CreatedDate
+    @Column(updatable = false)
     override var createdAt: OffsetDateTime = now
 
     @CreatedBy
+    @Column(updatable = false)
     override var createdBy: String = ""
 
     @LastModifiedDate
