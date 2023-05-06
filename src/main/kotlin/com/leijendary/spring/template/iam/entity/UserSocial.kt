@@ -25,5 +25,6 @@ class UserSocial : AppEntity() {
     lateinit var provider: Provider
 
     @CreatedDate
+    @Column(updatable = false)
     var createdAt: OffsetDateTime = now
 }

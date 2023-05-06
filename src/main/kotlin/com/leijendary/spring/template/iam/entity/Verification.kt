@@ -36,5 +36,6 @@ class Verification : IdentityEntity() {
     lateinit var expiresAt: OffsetDateTime
 
     @CreatedDate
+    @Column(updatable = false)
     var createdAt: OffsetDateTime = now
 }

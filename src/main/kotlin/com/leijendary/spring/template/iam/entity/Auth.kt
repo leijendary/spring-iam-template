@@ -27,5 +27,6 @@ class Auth : IdentityEntity() {
     lateinit var refresh: AuthRefresh
 
     @CreatedDate
+    @Column(updatable = false)
     var createdAt: OffsetDateTime = now
 }
