@@ -31,9 +31,11 @@ class Account : UUIDEntity(), CreatedProjection, SoftDeleteEntity {
     val users: Set<User> = HashSet()
 
     @CreatedDate
+    @Column(updatable = false)
     override var createdAt: OffsetDateTime = now
 
     @CreatedBy
+    @Column(updatable = false)
     override var createdBy: String = ""
 
     override var deletedAt: OffsetDateTime? = null
