@@ -1,4 +1,4 @@
-import { ISecurityGroup, IVpc, SecurityGroup, SubnetType, Vpc } from "aws-cdk-lib/aws-ec2";
+import { ISecurityGroup, IVpc, SecurityGroup, Vpc } from "aws-cdk-lib/aws-ec2";
 import { Cluster, FargateService, FargateServiceProps, TaskDefinition } from "aws-cdk-lib/aws-ecs";
 import { INamespace, PrivateDnsNamespace } from "aws-cdk-lib/aws-servicediscovery";
 import { Construct } from "constructs";
@@ -17,15 +17,12 @@ const { id: namespaceId, name: namespaceName } = env.namespace;
 
 export class FargateServiceConstruct extends FargateService {
   constructor(scope: Construct, props: FargateServiceConstructProps) {
-    const { vpcId, clusterArn, namespaceArn, taskDefinition, ...rest } = props;
+    const { vpcId, clusterArn, namespaceArn, taskDefinition } = props;
     const vpc = getVpc(scope, vpcId);
     const securityGroup = getSecurityGroup(scope, vpc);
     const namespace = getNamespace(scope, namespaceArn);
     const cluster = getCluster(scope, clusterArn, vpc, securityGroup, namespace);
     const config: FargateServiceProps = {
-      vpcSubnets: {
-        subnetType: SubnetType.PRIVATE_WITH_EGRESS,
-      },
       cluster,
       serviceName: name,
       securityGroups: [securityGroup],
@@ -43,7 +40,6 @@ export class FargateServiceConstruct extends FargateService {
           },
         ],
       },
-      ...rest,
     };
 
     super(scope, `${id}Service-${environment}`, config);
