@@ -19,11 +19,11 @@ auth:
   issuer: https://leijendary.com
   keyId: spring-iam-template
   accessToken:
-    expiry: 7D
+    expiry: 7d
     privateKey:
     publicKey:
   refreshToken:
-    expiry: 200D
+    expiry: 200d
     privateKey:
     publicKey:
   social:
