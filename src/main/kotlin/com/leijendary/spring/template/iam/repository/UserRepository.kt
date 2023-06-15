@@ -16,7 +16,7 @@ private val source = listOf("data", "User", "id")
 
 interface UserRepository : JpaRepository<User, UUID>, SoftDeleteRepository<User>, JpaSpecificationExecutor<User> {
     @Transactional(readOnly = true)
-    override fun findAll(specification: Specification<User>?, pageable: Pageable): Page<User>
+    override fun findAll(specification: Specification<User>, pageable: Pageable): Page<User>
 
     @Transactional(readOnly = true)
     fun findByIdOrThrow(id: UUID) = findByIdOrNull(id) ?: throw ResourceNotFoundException(source, id)

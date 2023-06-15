@@ -9,7 +9,8 @@ verification:
 spring:
   data:
     redis:
-      ssl: false
+      ssl:
+        enabled: false
   datasource:
     primary:
       maximumPoolSize: 5

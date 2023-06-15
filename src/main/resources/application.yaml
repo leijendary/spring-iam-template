@@ -63,7 +63,7 @@ spring:
   application:
     name: \${info.app.name}
   cache:
-    type: redis
+    type: REDIS
     redis:
       timeToLive: 5h
   cloud:
@@ -95,12 +95,15 @@ spring:
         enabled: false
       host:
       port:
-      ssl: true
+      ssl:
+        enabled: true
       username:
       password:
     web:
       pageable:
         maxPageSize: 100
+  jackson:
+    defaultPropertyInclusion: NON_ABSENT
   jpa:
     openInView: false
     properties:
@@ -146,7 +149,7 @@ spring:
       notificationSms:
         name: \${info.app.organization}.notification.sms
   main:
-    bannerMode: log
+    bannerMode: LOG
   messages:
     basename: messages.access, messages.error, messages.notification, messages.validation
   mvc:
