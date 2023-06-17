@@ -1,6 +1,7 @@
 package com.leijendary.spring.template.iam.core.config
 
 import com.leijendary.spring.template.iam.core.config.properties.InfoProperties
+import com.leijendary.spring.template.iam.core.util.HEADER_USER_ID
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeIn.HEADER
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType.APIKEY
 import io.swagger.v3.oas.annotations.security.SecurityScheme
@@ -8,8 +9,6 @@ import io.swagger.v3.oas.models.OpenAPI
 import io.swagger.v3.oas.models.info.Info
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-
-const val HEADER_USER_ID = "X-User-ID"
 
 @Configuration
 @SecurityScheme(name = HEADER_USER_ID, type = APIKEY, `in` = HEADER)

@@ -1,6 +1,5 @@
 package com.leijendary.spring.template.iam.core.util
 
-import com.leijendary.spring.template.iam.core.config.HEADER_USER_ID
 import com.leijendary.spring.template.iam.core.exception.StatusException
 import com.leijendary.spring.template.iam.core.util.BeanContainer.authProperties
 import jakarta.servlet.http.HttpServletRequest
@@ -13,6 +12,8 @@ import java.net.URI
 import java.time.OffsetDateTime
 import java.time.ZoneId
 import java.util.*
+
+const val HEADER_USER_ID = "X-User-ID"
 
 private val sourceAuth = listOf("header", HEADER_USER_ID)
 
