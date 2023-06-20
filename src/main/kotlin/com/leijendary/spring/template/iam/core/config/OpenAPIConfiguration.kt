@@ -1,17 +1,17 @@
 package com.leijendary.spring.template.iam.core.config
 
 import com.leijendary.spring.template.iam.core.config.properties.InfoProperties
-import com.leijendary.spring.template.iam.core.util.HEADER_USER_ID
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeIn.HEADER
-import io.swagger.v3.oas.annotations.enums.SecuritySchemeType.APIKEY
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeType.HTTP
 import io.swagger.v3.oas.annotations.security.SecurityScheme
 import io.swagger.v3.oas.models.OpenAPI
 import io.swagger.v3.oas.models.info.Info
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.http.HttpHeaders.AUTHORIZATION
 
 @Configuration
-@SecurityScheme(name = HEADER_USER_ID, type = APIKEY, `in` = HEADER)
+@SecurityScheme(name = AUTHORIZATION, type = HTTP, `in` = HEADER, scheme = "bearer")
 class OpenAPIConfiguration(private val infoProperties: InfoProperties) {
     @Bean
     fun openAPI(): OpenAPI {
@@ -27,6 +27,6 @@ class OpenAPIConfiguration(private val infoProperties: InfoProperties) {
             extensions = api.extensions
         }
 
-        return OpenAPI().info(info)
+        return OpenAPI().info(info).servers(api.servers)
     }
 }
