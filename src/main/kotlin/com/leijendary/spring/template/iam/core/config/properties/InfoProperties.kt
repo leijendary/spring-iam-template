@@ -23,6 +23,6 @@ class InfoProperties {
         var contact: Contact? = null
         var license: License? = null
         var extensions: Map<String, Any> = HashMap()
-        var servers: List<Server> = arrayListOf()
+        var servers: List<Server> = ArrayList()
     }
 }
