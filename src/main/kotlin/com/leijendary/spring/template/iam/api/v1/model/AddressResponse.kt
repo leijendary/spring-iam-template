@@ -5,8 +5,8 @@ import java.util.*
 
 data class AddressResponse(
     val id: UUID,
-    val line1: String,
-    val line2: String,
+    val street: String,
+    val additional: String?,
     val city: String,
     val region: String,
     val postalCode: String,

@@ -7,10 +7,10 @@ import jakarta.validation.constraints.Size
 data class AddressRequest(
     @field:NotBlank(message = "validation.required")
     @field:Size(max = 150, message = "validation.maxLength")
-    val line1: String? = null,
+    val street: String? = null,
 
     @field:Size(max = 100, message = "validation.maxLength")
-    val line2: String? = null,
+    val additional: String? = null,
 
     @field:NotBlank(message = "validation.required")
     @field:Size(max = 60, message = "validation.maxLength")
