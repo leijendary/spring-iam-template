@@ -20,7 +20,12 @@ class UserAddress : UUIDProjection {
     @ManyToOne
     lateinit var user: User
 
-    lateinit var street: String
+    @Column(name = "line_1")
+    lateinit var line1: String
+
+    @Column(name = "line_2")
+    var line2: String? = null
+
     lateinit var city: String
     lateinit var region: String
     lateinit var postalCode: String

@@ -486,10 +486,13 @@ databaseChangeLog:
                   constraints:
                     nullable: false
               - column:
-                  name: street
+                  name: line_1
                   type: varchar(150)
                   constraints:
                     nullable: false
+              - column:
+                  name: line_2
+                  type: varchar(100)
               - column:
                   name: city
                   type: varchar(60)
