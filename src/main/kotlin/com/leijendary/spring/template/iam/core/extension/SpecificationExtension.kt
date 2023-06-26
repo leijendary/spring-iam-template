@@ -4,16 +4,16 @@ import jakarta.persistence.criteria.CriteriaBuilder
 import jakarta.persistence.criteria.Path
 import jakarta.persistence.criteria.Predicate
 
-fun lowerLike(query: String, path: Path<String>, criteriaBuilder: CriteriaBuilder): Predicate {
+fun Path<String>.lowerLike(query: String, criteriaBuilder: CriteriaBuilder): Predicate {
     val lowerQuery = query.lowercase()
-    val lowerPath = criteriaBuilder.lower(path)
+    val lowerPath = criteriaBuilder.lower(this)
 
     return criteriaBuilder.like(lowerPath, "%$lowerQuery%")
 }
 
-fun lowerEqual(value: String, path: Path<String>, criteriaBuilder: CriteriaBuilder): Predicate {
+fun Path<String>.lowerEqual(value: String, criteriaBuilder: CriteriaBuilder): Predicate {
     val lowerValue = value.lowercase()
-    val lowerPath = criteriaBuilder.lower(path)
+    val lowerPath = criteriaBuilder.lower(this)
 
     return criteriaBuilder.equal(lowerPath, lowerValue)
 }

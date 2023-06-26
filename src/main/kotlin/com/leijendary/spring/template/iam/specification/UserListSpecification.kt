@@ -23,21 +23,9 @@ class UserListSpecification(
         val predicates = mutableListOf<Predicate>()
 
         if (!query.isNullOrBlank()) {
-            val firstName = root
-                .get<String>("firstName")
-                .let {
-                    lowerLike(query, it, criteriaBuilder)
-                }
-            val middleName = root
-                .get<String>("middleName")
-                .let {
-                    lowerLike(query, it, criteriaBuilder)
-                }
-            val lastName = root
-                .get<String>("lastName")
-                .let {
-                    lowerLike(query, it, criteriaBuilder)
-                }
+            val firstName = root.get<String>("firstName").lowerLike(query, criteriaBuilder)
+            val middleName = root.get<String>("middleName").lowerLike(query, criteriaBuilder)
+            val lastName = root.get<String>("lastName").lowerLike(query, criteriaBuilder)
             val orNames = criteriaBuilder.or(firstName, middleName, lastName)
 
             predicates.add(orNames)
