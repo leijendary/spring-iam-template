@@ -93,7 +93,7 @@ dependencies {
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.4")
 
     // Tracing
-    implementation("com.github.loki4j:loki-logback-appender:1.4.0")
+    implementation("com.github.loki4j:loki-logback-appender:1.4.1")
     implementation("io.github.openfeign:feign-micrometer")
     implementation("io.micrometer:micrometer-registry-prometheus")
     implementation("io.micrometer:micrometer-tracing-bridge-otel")
