@@ -1,25 +1,37 @@
 package com.leijendary.spring.template.iam.core.storage
 
+import com.leijendary.spring.template.iam.core.config.properties.AwsCloudFrontProperties
 import com.leijendary.spring.template.iam.core.config.properties.AwsS3Properties
+import com.leijendary.spring.template.iam.core.extension.rsaPrivateKey
 import com.leijendary.spring.template.iam.core.storage.S3Storage.Request.GET
 import com.leijendary.spring.template.iam.core.storage.S3Storage.Request.PUT
+import com.leijendary.spring.template.iam.core.util.RequestContext.now
 import jakarta.servlet.http.HttpServletResponse
+import org.bouncycastle.jce.provider.BouncyCastleProvider
 import org.springframework.stereotype.Service
 import software.amazon.awssdk.core.ResponseInputStream
 import software.amazon.awssdk.core.sync.RequestBody
+import software.amazon.awssdk.services.cloudfront.CloudFrontUtilities
+import software.amazon.awssdk.services.cloudfront.model.CannedSignerRequest
 import software.amazon.awssdk.services.s3.S3Client
 import software.amazon.awssdk.services.s3.model.*
 import software.amazon.awssdk.services.s3.presigner.S3Presigner
-import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest
 import software.amazon.awssdk.services.s3.presigner.model.PutObjectPresignRequest
 import java.io.File
+import java.security.KeyFactory
+
+private val keyFactory = KeyFactory.getInstance("RSA", BouncyCastleProvider())
 
 @Service
 class S3Storage(
+    private val awsCloudFrontProperties: AwsCloudFrontProperties,
     private val awsS3Properties: AwsS3Properties,
     private val s3Client: S3Client,
     private val s3Presigner: S3Presigner
 ) {
+    private val cloudFrontUtilities = CloudFrontUtilities.create()
+    private val privateKey = keyFactory.rsaPrivateKey(awsCloudFrontProperties.privateKey)
+
     enum class Request {
         GET,
         PUT
@@ -31,21 +43,16 @@ class S3Storage(
     }
 
     fun signGet(key: String): String {
-        val request = GetObjectRequest
-            .builder()
-            .bucket(awsS3Properties.bucketName)
-            .key(key)
-            .build()
-        val signRequest = GetObjectPresignRequest
-            .builder()
-            .getObjectRequest(request)
-            .signatureDuration(awsS3Properties.signatureDuration)
+        val resourceUrl = "${awsCloudFrontProperties.url}/$key"
+        val expiry = now.plus(awsCloudFrontProperties.signatureDuration).toInstant()
+        val signerRequest = CannedSignerRequest.builder()
+            .keyPairId(awsCloudFrontProperties.publicKeyId)
+            .resourceUrl(resourceUrl)
+            .privateKey(privateKey)
+            .expirationDate(expiry)
             .build()
 
-        return s3Presigner
-            .presignGetObject(signRequest)
-            .url()
-            .toString()
+        return cloudFrontUtilities.getSignedUrlWithCannedPolicy(signerRequest).url()
     }
 
     fun signPut(key: String): String {
@@ -60,10 +67,7 @@ class S3Storage(
             .signatureDuration(awsS3Properties.signatureDuration)
             .build()
 
-        return s3Presigner
-            .presignPutObject(signRequest)
-            .url()
-            .toString()
+        return s3Presigner.presignPutObject(signRequest).url().toString()
     }
 
     fun copy(sourceKey: String, destinationKey: String): CopyObjectResponse {
@@ -78,16 +82,18 @@ class S3Storage(
     }
 
     fun get(key: String): GetObjectResponse {
-        return stream(key) { it.response() }
+        val s3Object = stream(key)
+
+        return s3Object.response()
     }
 
-    fun <T> stream(key: String, stream: (ResponseInputStream<GetObjectResponse>) -> T): T {
+    fun stream(key: String): ResponseInputStream<GetObjectResponse> {
         val request = GetObjectRequest.builder()
             .bucket(awsS3Properties.bucketName)
             .key(key)
             .build()
 
-        return s3Client.getObject(request).use(stream)
+        return s3Client.getObject(request)
     }
 
     fun put(key: String, file: File): PutObjectResponse {
@@ -101,12 +107,14 @@ class S3Storage(
     }
 
     fun render(key: String, servletResponse: HttpServletResponse) {
-        stream(key) { inputStream ->
-            servletResponse.run {
-                contentType = inputStream.response().contentType()
-                outputStream.use { inputStream::transferTo }
-            }
-        }
+        val objectStream = stream(key)
+        val s3Object = objectStream.response()
+        val contentType = s3Object.contentType()
+        val outputStream = servletResponse.outputStream
+
+        servletResponse.contentType = contentType
+
+        objectStream.transferTo(outputStream)
     }
 
     fun delete(key: String): DeleteObjectResponse {
@@ -119,10 +127,12 @@ class S3Storage(
     }
 
     fun deleteAll(keys: List<String>): DeleteObjectsResponse {
-        val ids = keys.map { ObjectIdentifier.builder().key(it).build() }
+        val ids = keys.map { key -> ObjectIdentifier.builder().key(key).build() }
         val request = DeleteObjectsRequest.builder()
             .bucket(awsS3Properties.bucketName)
-            .delete { it.objects(ids).build() }
+            .delete {
+                it.objects(ids).build()
+            }
             .build()
 
         return s3Client.deleteObjects(request)

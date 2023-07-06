@@ -72,6 +72,7 @@ dependencies {
     // AWS
     implementation("io.awspring.cloud:spring-cloud-aws-starter")
     implementation("io.awspring.cloud:spring-cloud-aws-starter-s3")
+    implementation("software.amazon.awssdk:cloudfront")
 
     // Crypto
     implementation("org.bouncycastle:bcprov-jdk18on:1.72")
@@ -116,6 +117,7 @@ dependencyManagement {
         mavenBom("io.micrometer:micrometer-tracing-bom:1.1.2")
         mavenBom("org.springframework.cloud:spring-cloud-dependencies:2022.0.3")
         mavenBom("org.testcontainers:testcontainers-bom:1.18.3")
+        mavenBom("software.amazon.awssdk:bom:2.20.98")
     }
 }
 

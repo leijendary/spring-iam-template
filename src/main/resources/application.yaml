@@ -71,6 +71,11 @@ spring:
       timeToLive: 5h
   cloud:
     aws:
+      cloudFront:
+        url:
+        publicKeyId:
+        privateKey:
+        signatureDuration: 30m
       s3:
         bucketName:
         signatureDuration: 30m

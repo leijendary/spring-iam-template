@@ -1,6 +1,8 @@
 package com.leijendary.spring.template.iam.core.security
 
 import com.leijendary.spring.template.iam.core.config.properties.AuthProperties
+import com.leijendary.spring.template.iam.core.extension.rsaPrivateKey
+import com.leijendary.spring.template.iam.core.extension.rsaPublicKey
 import com.leijendary.spring.template.iam.core.mapper.DateMapper
 import com.leijendary.spring.template.iam.core.model.JwtSet
 import com.leijendary.spring.template.iam.core.model.ParsedJwt
@@ -18,10 +20,6 @@ import com.nimbusds.jwt.SignedJWT
 import org.springframework.core.task.AsyncTaskExecutor
 import org.springframework.stereotype.Component
 import java.security.KeyFactory
-import java.security.interfaces.RSAPrivateKey
-import java.security.interfaces.RSAPublicKey
-import java.security.spec.PKCS8EncodedKeySpec
-import java.security.spec.X509EncodedKeySpec
 import java.util.*
 import java.util.concurrent.Callable
 
@@ -33,18 +31,14 @@ private val keyFactory = KeyFactory.getInstance("RSA")
 @Component
 class JwtTools(private val asyncTaskExecutor: AsyncTaskExecutor, private val authProperties: AuthProperties) {
     val publicKey = mapOf(
-        ACCESS_TOKEN to rsaPublicKey(authProperties.accessToken.publicKey),
-        REFRESH_TOKEN to rsaPublicKey(authProperties.refreshToken.publicKey),
+        ACCESS_TOKEN to keyFactory.rsaPublicKey(authProperties.accessToken.publicKey),
+        REFRESH_TOKEN to keyFactory.rsaPublicKey(authProperties.refreshToken.publicKey),
     )
 
     private val privateKey = mapOf(
-        ACCESS_TOKEN to rsaPrivateKey(authProperties.accessToken.privateKey),
-        REFRESH_TOKEN to rsaPrivateKey(authProperties.refreshToken.privateKey),
+        ACCESS_TOKEN to keyFactory.rsaPrivateKey(authProperties.accessToken.privateKey),
+        REFRESH_TOKEN to keyFactory.rsaPrivateKey(authProperties.refreshToken.privateKey),
     )
-
-    companion object {
-        private val MAPPER = DateMapper.INSTANCE
-    }
 
     enum class TokenType {
         ACCESS_TOKEN,
@@ -81,7 +75,7 @@ class JwtTools(private val asyncTaskExecutor: AsyncTaskExecutor, private val aut
             .type(JOSEObjectType.JWT)
             .keyID(authProperties.keyId)
             .build()
-        val expirationMilli = MAPPER.toEpochMilli(expiration)
+        val expirationMilli = DateMapper.INSTANCE.toEpochMilli(expiration)
         val expirationTime = Date(expirationMilli)
         val claims = JWTClaimsSet.Builder()
             .jwtID(id.toString())
@@ -125,10 +119,10 @@ class JwtTools(private val asyncTaskExecutor: AsyncTaskExecutor, private val aut
             ?: emptySet()
         val expirationTime = claimsSet
             .expirationTime
-            .let { MAPPER.toOffsetDateTime(it.time) }
+            .let { DateMapper.INSTANCE.toOffsetDateTime(it.time) }
         val issueTime = claimsSet
             .issueTime
-            .let { MAPPER.toOffsetDateTime(it.time) }
+            .let { DateMapper.INSTANCE.toOffsetDateTime(it.time) }
         val accessTokenId = claimsSet.getStringClaim(CLAIM_ATI)
         val type = if (accessTokenId == null) ACCESS_TOKEN else REFRESH_TOKEN
         val publicKey = publicKey[type]!!
@@ -149,22 +143,4 @@ class JwtTools(private val asyncTaskExecutor: AsyncTaskExecutor, private val aut
     }
 
     fun getPublicKey(type: TokenType) = publicKey[type]!!
-
-    private fun rsaPrivateKey(privateKey: String): RSAPrivateKey {
-        return privateKey.let {
-            val base64 = Base64.getDecoder().decode(it)
-            val keySpec = PKCS8EncodedKeySpec(base64)
-
-            keyFactory.generatePrivate(keySpec) as RSAPrivateKey
-        }
-    }
-
-    private fun rsaPublicKey(publicKey: String): RSAPublicKey {
-        return publicKey.let {
-            val base64 = Base64.getDecoder().decode(it)
-            val keySpec = X509EncodedKeySpec(base64)
-
-            keyFactory.generatePublic(keySpec) as RSAPublicKey
-        }
-    }
 }

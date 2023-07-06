@@ -9,6 +9,8 @@ verification:
 spring:
   cloud:
     aws:
+      cloudFront:
+        url: https://cdn.dev.leijendary.com
       s3:
         bucketName: leijendary-api-dev
   data:

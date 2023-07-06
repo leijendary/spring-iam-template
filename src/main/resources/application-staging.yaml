@@ -6,5 +6,7 @@ verification:
 spring:
   cloud:
     aws:
+      cloudFront:
+        url: https://cdn.staging.leijendary.com
       s3:
         bucketName: leijendary-api-staging

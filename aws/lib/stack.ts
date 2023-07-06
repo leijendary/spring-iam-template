@@ -1,7 +1,6 @@
 import { Stack, StackProps } from "aws-cdk-lib";
 import { Construct } from "constructs";
 import env from "../env";
-import { BucketConstruct } from "./../resource/bucket.construct";
 import { FargateServiceConstruct } from "./../resource/fargate-service.construct";
 import { TaskDefinitionConstruct } from "./../resource/task-definition.construct";
 
@@ -19,11 +18,9 @@ export class ApplicationStack extends Stack {
     const repositoryArn = `arn:aws:ecr:${region}:${account}:repository/${name}`;
     const clusterArn = `arn:aws:ecs:${region}:${account}:cluster/api-cluster-${environment}`;
     const namespaceArn = `arn:aws:servicediscovery:${region}:${account}:namespace/${namespaceId}`;
-    const bucket = new BucketConstruct(this);
     const taskDefinition = new TaskDefinitionConstruct(this, {
       ...props,
       repositoryArn,
-      bucket,
     });
 
     new FargateServiceConstruct(this, {

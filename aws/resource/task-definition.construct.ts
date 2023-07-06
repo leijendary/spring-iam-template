@@ -14,17 +14,17 @@ import {
 import { PolicyDocument, PolicyStatement, Role, ServicePrincipal } from "aws-cdk-lib/aws-iam";
 import { LogGroup, RetentionDays } from "aws-cdk-lib/aws-logs";
 import { DatabaseSecret } from "aws-cdk-lib/aws-rds";
-import { Bucket } from "aws-cdk-lib/aws-s3";
+import { Bucket, IBucket } from "aws-cdk-lib/aws-s3";
 import { Secret as SecretManager } from "aws-cdk-lib/aws-secretsmanager";
 import { Construct } from "constructs";
 import env, { isProd } from "../env";
 
 type TaskDefinitionConstructProps = {
   repositoryArn: string;
-  bucket: Bucket;
 };
 
 const environment = env.environment;
+const organization = env.organization;
 const port = env.port;
 const imageTag = env.imageTag;
 const { id, name } = env.stack;
@@ -34,11 +34,12 @@ const logPrefix = "/ecs/fargate";
 
 export class TaskDefinitionConstruct extends TaskDefinition {
   constructor(scope: Construct, props: TaskDefinitionConstructProps) {
-    const { repositoryArn, bucket } = props;
+    const { repositoryArn } = props;
     const memoryMiB = isProd() ? "2 GB" : "0.5 GB";
     const cpu = isProd() ? "1 vCPU" : "0.25 vCPU";
     const repository = getRepository(scope, repositoryArn);
     const image = getImage(repository);
+    const bucket = getBucket(scope);
     const logGroup = createLogGroup(scope);
     const taskRole = createTaskRole(scope);
     const executionRole = createExecutionRole(scope, logGroup, repository);
@@ -100,6 +101,8 @@ export class TaskDefinitionConstruct extends TaskDefinition {
         AUTH_SOCIAL_GOOGLE_CLIENT_ID: integrationCredentials.google.clientId,
         ENCRYPT_KEY: securityCredentials.encrypt.key,
         ENCRYPT_SALT: securityCredentials.encrypt.salt,
+        SPRING_CLOUD_AWS_CLOUD_FRONT_PUBLIC_KEY_ID: securityCredentials.cloudFront.publicKeyId,
+        SPRING_CLOUD_AWS_CLOUD_FRONT_PRIVATE_KEY: securityCredentials.cloudFront.privateKey,
         SPRING_DATASOURCE_PRIMARY_USERNAME: auroraCredentials.username,
         SPRING_DATASOURCE_PRIMARY_PASSWORD: auroraCredentials.password,
         SPRING_DATASOURCE_READONLY_USERNAME: auroraCredentials.username,
@@ -122,7 +125,7 @@ export class TaskDefinitionConstruct extends TaskDefinition {
     executionRole.addToPolicy(trustPolicy);
   }
 
-  private grantBucketAccess(role: Role, bucket: Bucket) {
+  private grantBucketAccess(role: Role, bucket: IBucket) {
     bucket.grantReadWrite(role);
     bucket.grantPut(role);
     bucket.grantDelete(role);
@@ -178,6 +181,10 @@ const getImage = (repository: IRepository) => {
   return ContainerImage.fromEcrRepository(repository, imageTag);
 };
 
+const getBucket = (scope: Construct) => {
+  return Bucket.fromBucketName(scope, `${id}Bucket-${environment}`, `${organization}-app-${environment}`);
+};
+
 const getSecurityCredentials = (scope: Construct) => {
   const credential = SecretManager.fromSecretNameV2(
     scope,
@@ -197,6 +204,10 @@ const getSecurityCredentials = (scope: Construct) => {
     encrypt: {
       key: Secret.fromSecretsManager(credential, "encrypt.key"),
       salt: Secret.fromSecretsManager(credential, "encrypt.salt"),
+    },
+    cloudFront: {
+      publicKeyId: Secret.fromSecretsManager(credential, "cloudFront.publicKeyId"),
+      privateKey: Secret.fromSecretsManager(credential, "cloudFront.privateKey"),
     },
   };
 };
