@@ -7,6 +7,10 @@ verification:
       url: http://localhost:3000/password/nominate
 
 spring:
+  cloud:
+    aws:
+      s3:
+        bucketName: leijendary-api-dev
   data:
     redis:
       ssl:

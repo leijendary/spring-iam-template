@@ -2,3 +2,9 @@ verification:
   password:
     nominate:
       url: https://dev.leijendary.com/password/nominate
+
+spring:
+  cloud:
+    aws:
+      s3:
+        bucketName: leijendary-api-dev

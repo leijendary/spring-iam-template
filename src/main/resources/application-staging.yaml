@@ -2,3 +2,9 @@ verification:
   password:
     nominate:
       url: https://staging.leijendary.com/password/nominate
+
+spring:
+  cloud:
+    aws:
+      s3:
+        bucketName: leijendary-api-staging

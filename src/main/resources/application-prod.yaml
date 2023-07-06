@@ -4,6 +4,10 @@ verification:
       url: https://leijendary.com/password/nominate
 
 spring:
+  cloud:
+    aws:
+      s3:
+        bucketName: leijendary-api-prod
   kafka:
     listener:
       concurrency: 40
