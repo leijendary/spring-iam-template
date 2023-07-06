@@ -182,7 +182,7 @@ const getImage = (repository: IRepository) => {
 };
 
 const getBucket = (scope: Construct) => {
-  return Bucket.fromBucketName(scope, `${id}Bucket-${environment}`, `${organization}-app-${environment}`);
+  return Bucket.fromBucketName(scope, `${id}Bucket-${environment}`, `${organization}-api-${environment}`);
 };
 
 const getSecurityCredentials = (scope: Construct) => {
