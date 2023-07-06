@@ -151,24 +151,20 @@ class JwtTools(private val asyncTaskExecutor: AsyncTaskExecutor, private val aut
     fun getPublicKey(type: TokenType) = publicKey[type]!!
 
     private fun rsaPrivateKey(privateKey: String): RSAPrivateKey {
-        return privateKey
-            .replace("\\n", "")
-            .let {
-                val base64 = Base64.getDecoder().decode(it)
-                val keySpec = PKCS8EncodedKeySpec(base64)
+        return privateKey.let {
+            val base64 = Base64.getDecoder().decode(it)
+            val keySpec = PKCS8EncodedKeySpec(base64)
 
-                keyFactory.generatePrivate(keySpec) as RSAPrivateKey
-            }
+            keyFactory.generatePrivate(keySpec) as RSAPrivateKey
+        }
     }
 
     private fun rsaPublicKey(publicKey: String): RSAPublicKey {
-        return publicKey
-            .replace("\\n", "")
-            .let {
-                val base64 = Base64.getDecoder().decode(it)
-                val keySpec = X509EncodedKeySpec(base64)
+        return publicKey.let {
+            val base64 = Base64.getDecoder().decode(it)
+            val keySpec = X509EncodedKeySpec(base64)
 
-                keyFactory.generatePublic(keySpec) as RSAPublicKey
-            }
+            keyFactory.generatePublic(keySpec) as RSAPublicKey
+        }
     }
 }
