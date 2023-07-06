@@ -41,7 +41,7 @@ class PictureService(private val s3Storage: S3Storage, private val userRepositor
                     delete(sourceKey)
                 }
             }
-        } catch (noSuchKeyException: NoSuchKeyException) {
+        } catch (_: NoSuchKeyException) {
             throw ResourceNotFoundException(source, id.toString())
         }
 
