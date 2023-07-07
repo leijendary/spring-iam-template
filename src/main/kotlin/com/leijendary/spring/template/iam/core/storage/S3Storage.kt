@@ -20,7 +20,7 @@ import software.amazon.awssdk.services.s3.presigner.model.PutObjectPresignReques
 import java.io.File
 import java.security.KeyFactory
 
-private val keyFactory = KeyFactory.getInstance("RSA", BouncyCastleProvider())
+private const val KEY_TEMP_SUFFIX = ".tmp"
 
 @Service
 class S3Storage(
@@ -30,11 +30,25 @@ class S3Storage(
     private val s3Presigner: S3Presigner
 ) {
     private val cloudFrontUtilities = CloudFrontUtilities.create()
-    private val privateKey = keyFactory.rsaPrivateKey(awsCloudFrontProperties.privateKey)
+    private val privateKey = KeyFactory.getInstance("RSA", BouncyCastleProvider())
+        .rsaPrivateKey(awsCloudFrontProperties.privateKey)
 
     enum class Request {
         GET,
         PUT
+    }
+
+    fun signTemp(key: String): String {
+        val tempKey = "$key$KEY_TEMP_SUFFIX"
+
+        return signPut(tempKey)
+    }
+
+    fun moveTemp(key: String) {
+        val tempKey = "$key$KEY_TEMP_SUFFIX"
+
+        copy(tempKey, key)
+        delete(tempKey)
     }
 
     fun sign(key: String, request: Request = GET) = when (request) {
