@@ -31,7 +31,6 @@ class User : AuditingUUIDEntity(), PhoneProjection, SoftDeleteEntity {
     var status = ACTIVE
 
     @ManyToOne(cascade = [ALL])
-    @JoinColumn
     var account: Account? = null
 
     @OneToOne
@@ -49,6 +48,7 @@ class User : AuditingUUIDEntity(), PhoneProjection, SoftDeleteEntity {
 
     override var deletedAt: OffsetDateTime? = null
     override var deletedBy: String? = null
+    var deletedReason: String? = null
 
     fun getUsername(field: UserCredential.Type) = when (field) {
         EMAIL -> this.email

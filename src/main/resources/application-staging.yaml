@@ -1,3 +1,6 @@
+auth:
+  issuer: https://staging.leijendary.com
+
 verification:
   password:
     nominate:

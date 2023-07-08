@@ -21,7 +21,6 @@ class Verification : IdentityEntity() {
     }
 
     @ManyToOne
-    @JoinColumn
     var user: User? = null
 
     lateinit var code: String

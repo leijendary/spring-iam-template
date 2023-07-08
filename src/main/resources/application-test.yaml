@@ -1,3 +1,6 @@
+auth:
+  issuer: https://test.leijendary.com
+
 verification:
   password:
     nominate:

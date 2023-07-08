@@ -10,8 +10,7 @@ import java.time.OffsetDateTime
 
 @Entity
 class Auth : IdentityEntity() {
-    @ManyToOne
-    @JoinColumn
+    @ManyToOne(optional = false)
     lateinit var user: User
 
     lateinit var username: String

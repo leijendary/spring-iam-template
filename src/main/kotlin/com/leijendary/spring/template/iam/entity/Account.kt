@@ -40,4 +40,5 @@ class Account : UUIDEntity(), CreatedProjection, SoftDeleteEntity {
 
     override var deletedAt: OffsetDateTime? = null
     override var deletedBy: String? = null
+    var deletedReason: String? = null
 }

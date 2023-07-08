@@ -47,6 +47,9 @@ databaseChangeLog:
               - column:
                   name: deleted_by
                   type: text
+              - column:
+                  name: deleted_reason
+                  type: text
             tableName: account
   - changeSet:
       id: create-role-table
@@ -205,6 +208,9 @@ databaseChangeLog:
                   type: timestamp with time zone
               - column:
                   name: deleted_by
+                  type: text
+              - column:
+                  name: deleted_reason
                   type: text
             tableName: user
   - changeSet:

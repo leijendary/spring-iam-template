@@ -8,7 +8,7 @@ import org.testcontainers.utility.DockerImageName
 
 class PostgresContainerTest {
     companion object {
-        private val image = DockerImageName.parse("postgres:14-alpine")
+        private val image = DockerImageName.parse("postgres:15-alpine")
         private val postgres = PostgreSQLContainer(image)
     }
 

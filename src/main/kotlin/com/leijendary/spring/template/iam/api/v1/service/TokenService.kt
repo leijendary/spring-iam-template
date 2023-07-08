@@ -29,10 +29,10 @@ class TokenService(
     private val passwordEncoder: PasswordEncoder,
     private val rolePermissionRepository: RolePermissionRepository,
     private val roleRepository: RoleRepository,
-    socialVerificationStrategies: List<SocialVerificationStrategy>,
     private val userCredentialRepository: UserCredentialRepository,
     private val userRepository: UserRepository,
-    private val userSocialRepository: UserSocialRepository
+    private val userSocialRepository: UserSocialRepository,
+    socialVerificationStrategies: List<SocialVerificationStrategy>,
 ) {
     private val socialVerificationStrategy = socialVerificationStrategies.associateBy { it.provider }
 
