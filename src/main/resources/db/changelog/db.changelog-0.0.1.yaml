@@ -908,3 +908,63 @@ databaseChangeLog:
                   name: user_id
             indexName: user_address_id_user_id_idx
             tableName: user_address
+  - changeSet:
+      id: add-user-account-id-index
+      author: Leijendekker
+      changes:
+        - createIndex:
+            columns:
+              - column:
+                  name: account_id
+            indexName: user_account_id_idx
+            tableName: user
+  - changeSet:
+      id: add-user-role-id-index
+      author: Leijendekker
+      changes:
+        - createIndex:
+            columns:
+              - column:
+                  name: role_id
+            indexName: user_role_id_idx
+            tableName: user
+  - changeSet:
+      id: add-verification-user-id-index
+      author: Leijendekker
+      changes:
+        - createIndex:
+            columns:
+              - column:
+                  name: user_id
+            indexName: verification_user_id_idx
+            tableName: verification
+  - changeSet:
+      id: add-auth-user-id-index
+      author: Leijendekker
+      changes:
+        - createIndex:
+            columns:
+              - column:
+                  name: user_id
+            indexName: auth_user_id_idx
+            tableName: auth
+  - changeSet:
+      id: add-role-permission-permission-id-index
+      author: Leijendekker
+      changes:
+        - createIndex:
+            columns:
+              - column:
+                  name: permission_id
+            indexName: role_permission_permission_id_idx
+            tableName: role_permission
+  - changeSet:
+      id: add-user-address-user-id-index
+      author: Leijendekker
+      changes:
+        - createIndex:
+            columns:
+              - column:
+                  name: user_id
+            indexName: user_address_user_id_idx
+            tableName: user_address
