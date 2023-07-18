@@ -44,13 +44,10 @@ class EmailVerificationNotificationStrategy(
     }
 
     override fun send(verification: Verification) {
-        val code = verification.code
-        val type = verification.type
-        val template = template(code, type) ?: return
-        val to = verification.value!!
+        val template = template(verification.code, verification.type) ?: return
         val name = template.name
         val parameters = template.parameters
-        val emailMessage = EmailMessage(to, name, parameters)
+        val emailMessage = EmailMessage(verification.value!!, name, parameters)
 
         notificationProducer.email(emailMessage)
     }
@@ -58,13 +55,11 @@ class EmailVerificationNotificationStrategy(
     private fun codeParameter(code: String) = mapOf("code" to code)
 
     private fun linkParameter(code: String): Map<String, String> {
-        val link = verificationProperties.password.nominate.url.let {
-            UriComponentsBuilder
-                .fromUriString(it)
-                .replaceQueryParam("code", code)
-                .build()
-                .toUriString()
-        }
+        val link = UriComponentsBuilder
+            .fromUriString(verificationProperties.password.nominate.url)
+            .replaceQueryParam("code", code)
+            .build()
+            .toUriString()
 
         return mapOf("link" to link)
     }
