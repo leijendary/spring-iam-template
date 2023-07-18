@@ -66,7 +66,7 @@ export class TaskDefinitionConstruct extends TaskDefinition {
   private container(scope: Construct, image: ContainerImage, logGroup: LogGroup) {
     const securityCredentials = getSecurityCredentials(scope);
     const auroraCredentials = getAuroraCredentials(scope);
-    const dataSourceCredentials = getDataSourceCredentials(scope);
+    const dataStorageCredentials = getDataStorageCredentials(scope);
     const integrationCredentials = getIntegrationCredentials(scope);
 
     this.addContainer(`${id}Container-${environment}`, {
@@ -103,14 +103,14 @@ export class TaskDefinitionConstruct extends TaskDefinition {
         ENCRYPT_SALT: securityCredentials.encrypt.salt,
         SPRING_CLOUD_AWS_CLOUD_FRONT_PUBLIC_KEY_ID: securityCredentials.cloudFront.publicKeyId,
         SPRING_CLOUD_AWS_CLOUD_FRONT_PRIVATE_KEY: securityCredentials.cloudFront.privateKey,
-        SPRING_DATA_REDIS_USERNAME: dataSourceCredentials.redis.username,
-        SPRING_DATA_REDIS_PASSWORD: dataSourceCredentials.redis.password,
+        SPRING_DATA_REDIS_USERNAME: dataStorageCredentials.redis.username,
+        SPRING_DATA_REDIS_PASSWORD: dataStorageCredentials.redis.password,
         SPRING_DATASOURCE_PRIMARY_USERNAME: auroraCredentials.username,
         SPRING_DATASOURCE_PRIMARY_PASSWORD: auroraCredentials.password,
         SPRING_DATASOURCE_READONLY_USERNAME: auroraCredentials.username,
         SPRING_DATASOURCE_READONLY_PASSWORD: auroraCredentials.password,
-        SPRING_KAFKA_JAAS_OPTIONS_USERNAME: dataSourceCredentials.kafka.username,
-        SPRING_KAFKA_JAAS_OPTIONS_PASSWORD: dataSourceCredentials.kafka.password,
+        SPRING_KAFKA_JAAS_OPTIONS_USERNAME: dataStorageCredentials.kafka.username,
+        SPRING_KAFKA_JAAS_OPTIONS_PASSWORD: dataStorageCredentials.kafka.password,
       },
     });
   }
@@ -225,7 +225,7 @@ const getAuroraCredentials = (scope: Construct) => {
   };
 };
 
-const getDataSourceCredentials = (scope: Construct) => {
+const getDataStorageCredentials = (scope: Construct) => {
   const credential = SecretManager.fromSecretNameV2(
     scope,
     `${id}DataStorageSecret-${environment}`,
