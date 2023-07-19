@@ -39,7 +39,7 @@ interface UserMapper {
     fun update(userRequest: UserRequest, @MappingTarget user: User)
 
     @AfterMapping
-    fun toResponse(@MappingTarget userResponse: UserResponse, user: User) {
+    fun setImage(user: User, @MappingTarget userResponse: UserResponse) {
         val image = user.image
 
         if (image != null && !image.startsWith("http")) {

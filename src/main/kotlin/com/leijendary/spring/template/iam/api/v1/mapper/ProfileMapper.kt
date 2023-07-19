@@ -28,7 +28,7 @@ interface ProfileMapper {
     fun update(updatePhoneRequest: UpdatePhoneRequest, @MappingTarget user: User)
 
     @AfterMapping
-    fun toResponse(@MappingTarget profileResponse: ProfileResponse, user: User) {
+    fun setImage(user: User, @MappingTarget profileResponse: ProfileResponse) {
         profileResponse.image = user.image?.let { s3Storage.sign(it) }
     }
 }
