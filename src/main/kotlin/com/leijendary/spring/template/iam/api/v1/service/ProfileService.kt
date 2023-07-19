@@ -4,7 +4,6 @@ import com.leijendary.spring.template.iam.api.v1.mapper.ProfileMapper
 import com.leijendary.spring.template.iam.api.v1.model.*
 import com.leijendary.spring.template.iam.api.v1.model.Next.Type.AUTHENTICATE
 import com.leijendary.spring.template.iam.core.datasource.transactional
-import com.leijendary.spring.template.iam.core.storage.S3Storage
 import com.leijendary.spring.template.iam.core.util.RequestContext.userIdOrThrow
 import com.leijendary.spring.template.iam.repository.UserCredentialRepository
 import com.leijendary.spring.template.iam.repository.UserRepository
@@ -17,7 +16,6 @@ import java.util.*
 
 @Service
 class ProfileService(
-    private val s3Storage: S3Storage,
     private val userCredentialRepository: UserCredentialRepository,
     private val userRepository: UserRepository,
     private val verificationRepository: VerificationRepository,
@@ -31,7 +29,7 @@ class ProfileService(
     fun detail(id: UUID): ProfileResponse {
         val user = userRepository.findByIdOrThrow(id)
 
-        return ProfileMapper.INSTANCE.toResponse(user, s3Storage)
+        return ProfileMapper.INSTANCE.toResponse(user)
     }
 
     @CachePut(value = [CACHE_NAME], key = "#id")
@@ -46,7 +44,7 @@ class ProfileService(
                 }
         }!!
 
-        return ProfileMapper.INSTANCE.toResponse(user, s3Storage)
+        return ProfileMapper.INSTANCE.toResponse(user)
     }
 
     fun username(request: UpdateUsernameRequest): Next {

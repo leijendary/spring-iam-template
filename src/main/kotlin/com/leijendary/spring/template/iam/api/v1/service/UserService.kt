@@ -7,7 +7,6 @@ import com.leijendary.spring.template.iam.api.v1.model.UserResponse
 import com.leijendary.spring.template.iam.core.config.properties.VerificationProperties
 import com.leijendary.spring.template.iam.core.datasource.transactional
 import com.leijendary.spring.template.iam.core.model.QueryRequest
-import com.leijendary.spring.template.iam.core.storage.S3Storage
 import com.leijendary.spring.template.iam.entity.Account
 import com.leijendary.spring.template.iam.entity.UserCredential
 import com.leijendary.spring.template.iam.entity.Verification
@@ -31,7 +30,6 @@ import java.util.*
 class UserService(
     private val accountRepository: AccountRepository,
     private val roleRepository: RoleRepository,
-    private val s3Storage: S3Storage,
     private val userRepository: UserRepository,
     private val verificationProperties: VerificationProperties,
     private val verificationRepository: VerificationRepository
@@ -48,7 +46,7 @@ class UserService(
         val specification = UserListSpecification(queryRequest.query, userExclusionQueryRequest)
         val page = userRepository.findAll(specification, pageable)
 
-        return page.map { UserMapper.INSTANCE.toResponse(it, s3Storage) }
+        return page.map(UserMapper.INSTANCE::toResponse)
     }
 
     @CachePut(value = [CACHE_NAME], key = "#result.id")
@@ -87,14 +85,14 @@ class UserService(
             verificationRepository.save(verification)
         }
 
-        return UserMapper.INSTANCE.toResponse(user, s3Storage)
+        return UserMapper.INSTANCE.toResponse(user)
     }
 
     @Cacheable(value = [CACHE_NAME], key = "#id")
     fun get(id: UUID): UserResponse {
         val user = userRepository.findByIdOrThrow(id)
 
-        return UserMapper.INSTANCE.toResponse(user, s3Storage)
+        return UserMapper.INSTANCE.toResponse(user)
     }
 
     @CachePut(value = [CACHE_NAME], key = "#result.id")
@@ -122,7 +120,7 @@ class UserService(
 
         transactional { userRepository.save(user) }
 
-        return UserMapper.INSTANCE.toResponse(user, s3Storage)
+        return UserMapper.INSTANCE.toResponse(user)
     }
 
     @CacheEvict(value = [CACHE_NAME], key = "#id")

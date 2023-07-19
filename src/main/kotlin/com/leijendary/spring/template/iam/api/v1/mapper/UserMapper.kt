@@ -4,10 +4,13 @@ import com.leijendary.spring.template.iam.api.v1.model.RegisterEmailRequest
 import com.leijendary.spring.template.iam.api.v1.model.RegisterPhoneRequest
 import com.leijendary.spring.template.iam.api.v1.model.UserRequest
 import com.leijendary.spring.template.iam.api.v1.model.UserResponse
-import com.leijendary.spring.template.iam.core.storage.S3Storage
+import com.leijendary.spring.template.iam.core.util.BeanContainer.s3Storage
 import com.leijendary.spring.template.iam.entity.User
 import com.leijendary.spring.template.iam.model.SocialResult
-import org.mapstruct.*
+import org.mapstruct.AfterMapping
+import org.mapstruct.Mapper
+import org.mapstruct.Mapping
+import org.mapstruct.MappingTarget
 import org.mapstruct.factory.Mappers.getMapper
 
 @Mapper
@@ -17,7 +20,7 @@ interface UserMapper {
     }
 
     @Mapping(target = "image", ignore = true)
-    fun toResponse(user: User, @Context s3Storage: S3Storage): UserResponse
+    fun toResponse(user: User): UserResponse
 
     fun toEntity(registerEmailRequest: RegisterEmailRequest): User
 
@@ -36,7 +39,7 @@ interface UserMapper {
     fun update(userRequest: UserRequest, @MappingTarget user: User)
 
     @AfterMapping
-    fun toResponse(@MappingTarget userResponse: UserResponse, user: User, @Context s3Storage: S3Storage) {
+    fun toResponse(@MappingTarget userResponse: UserResponse, user: User) {
         val image = user.image
 
         if (image != null && !image.startsWith("http")) {
