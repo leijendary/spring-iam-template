@@ -14,7 +14,7 @@ class VerificationProperties {
     var email = Config()
 
     open inner class Config {
-        lateinit var template: String
+        lateinit var templateId: String
     }
 
     inner class Password {

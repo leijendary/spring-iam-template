@@ -32,15 +32,11 @@ class PhoneVerificationNotificationStrategy(
     }
 
     override fun send(verification: Verification) {
-        val code = verification.code
-        val type = verification.type
-        val template = template(code, type) ?: return
-        val args = template.parameters
-            .map { it.value }
-            .toTypedArray()
+        val template = template(verification.code, verification.type) ?: return
+        val args = template.parameters.map { it.value }.toTypedArray()
+        val to = verification.value!!.replace(" ", "")
         val message = messageSource.getMessage(template.name, args, locale)
-        val value = verification.value!!
-        val smsMessage = SmsMessage(value, message)
+        val smsMessage = SmsMessage(to, message)
 
         notificationProducer.sms(smsMessage)
     }

@@ -21,22 +21,22 @@ class EmailVerificationNotificationStrategy(
 
     override fun template(code: String, type: Verification.Type) = when (type) {
         REGISTRATION -> NotificationTemplate(
-            verificationProperties.register.template,
+            verificationProperties.register.templateId,
             codeParameter(code),
         )
 
         EMAIL_CHANGE -> NotificationTemplate(
-            verificationProperties.email.template,
+            verificationProperties.email.templateId,
             codeParameter(code),
         )
 
         PASSWORD_RESET -> NotificationTemplate(
-            verificationProperties.password.reset.template,
+            verificationProperties.password.reset.templateId,
             codeParameter(code),
         )
 
         PASSWORD_NOMINATE -> NotificationTemplate(
-            verificationProperties.password.nominate.template,
+            verificationProperties.password.nominate.templateId,
             linkParameter(code),
         )
 
@@ -45,9 +45,7 @@ class EmailVerificationNotificationStrategy(
 
     override fun send(verification: Verification) {
         val template = template(verification.code, verification.type) ?: return
-        val name = template.name
-        val parameters = template.parameters
-        val emailMessage = EmailMessage(verification.value!!, name, parameters)
+        val emailMessage = EmailMessage(verification.value!!, template.name, template.parameters)
 
         notificationProducer.email(emailMessage)
     }

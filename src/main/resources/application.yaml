@@ -60,15 +60,15 @@ verification:
   expiry: 2h
   timeout: 60s
   register:
-    template: register-verify
+    templateId: register-verify
   password:
     nominate:
-      template: password-nominate
+      templateId: password-nominate
       url:
     reset:
-      template: password-reset
+      templateId: password-reset
   email:
-    template: email-change
+    templateId: email-change
 
 spring:
   application:
@@ -170,6 +170,8 @@ spring:
     basename: messages.access, messages.error, messages.notification, messages.validation
   mvc:
     throwExceptionIfNoHandlerFound: true
+  sendgrid:
+    apiKey:
   web:
     resources:
       addMappings: false
