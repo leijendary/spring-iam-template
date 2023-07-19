@@ -3,10 +3,8 @@ package com.leijendary.spring.template.iam.api.v1.rest
 import com.leijendary.spring.template.iam.api.v1.model.*
 import com.leijendary.spring.template.iam.api.v1.service.PasswordService
 import io.swagger.v3.oas.annotations.Operation
-import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
-import org.springframework.http.HttpHeaders.AUTHORIZATION
 import org.springframework.web.bind.annotation.*
 
 @RestController
@@ -22,7 +20,6 @@ class PasswordRest(private val passwordService: PasswordService) {
 
     @PutMapping
     @Operation(summary = "Change the current user's password based on the field.")
-    @SecurityRequirement(name = AUTHORIZATION)
     fun change(@Valid @RequestBody request: PasswordChangeRequest) = passwordService.change(request)
 
     @PostMapping("reset")

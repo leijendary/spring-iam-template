@@ -4,10 +4,8 @@ import com.leijendary.spring.template.iam.api.v1.model.PermissionResponse
 import com.leijendary.spring.template.iam.api.v1.model.RolePermissionRequest
 import com.leijendary.spring.template.iam.api.v1.service.RolePermissionService
 import io.swagger.v3.oas.annotations.Operation
-import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
-import org.springframework.http.HttpHeaders.AUTHORIZATION
 import org.springframework.http.HttpStatus.NO_CONTENT
 import org.springframework.web.bind.annotation.*
 import java.util.*
@@ -18,7 +16,6 @@ import java.util.*
     name = "Role Permission",
     description = "Role Permission resource API. Contains all the permission APIs under a specific role"
 )
-@SecurityRequirement(name = AUTHORIZATION)
 class RolePermissionRest(private val rolePermissionService: RolePermissionService) {
     @GetMapping
     @Operation(description = "Get the list of permissions")

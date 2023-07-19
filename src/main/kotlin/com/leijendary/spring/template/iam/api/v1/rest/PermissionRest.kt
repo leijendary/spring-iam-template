@@ -5,11 +5,9 @@ import com.leijendary.spring.template.iam.api.v1.model.PermissionResponse
 import com.leijendary.spring.template.iam.api.v1.service.PermissionService
 import com.leijendary.spring.template.iam.core.model.QueryRequest
 import io.swagger.v3.oas.annotations.Operation
-import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
 import org.springframework.data.domain.Pageable
-import org.springframework.http.HttpHeaders.AUTHORIZATION
 import org.springframework.http.HttpStatus.CREATED
 import org.springframework.http.HttpStatus.NO_CONTENT
 import org.springframework.web.bind.annotation.*
@@ -20,7 +18,6 @@ import org.springframework.web.bind.annotation.*
     name = "Permission",
     description = "Permission resource API. All permissions should be in an urn format (prefixed with 'urn:')."
 )
-@SecurityRequirement(name = AUTHORIZATION)
 class PermissionRest(private val permissionService: PermissionService) {
     @GetMapping
     @Operation(summary = "Get the paginated list of permissions.")
