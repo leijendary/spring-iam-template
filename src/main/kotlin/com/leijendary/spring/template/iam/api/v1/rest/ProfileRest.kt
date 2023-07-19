@@ -6,8 +6,10 @@ import com.leijendary.spring.template.iam.api.v1.model.UpdatePhoneRequest
 import com.leijendary.spring.template.iam.api.v1.service.ProfileService
 import com.leijendary.spring.template.iam.core.util.RequestContext.userIdOrThrow
 import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
+import org.springframework.http.HttpHeaders.AUTHORIZATION
 import org.springframework.web.bind.annotation.*
 
 @RestController
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.*
     name = "Profile",
     description = "Profile API reference. Anything regarding the profile activity are included here."
 )
+@SecurityRequirement(name = AUTHORIZATION)
 class ProfileRest(private val profileService: ProfileService) {
     @GetMapping
     @Operation(summary = "Gets the current user's profile details")
