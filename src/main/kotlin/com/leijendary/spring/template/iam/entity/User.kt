@@ -34,7 +34,6 @@ class User : AuditingUUIDEntity(), PhoneProjection, SoftDeleteEntity {
     var account: Account? = null
 
     @OneToOne
-    @JoinColumn
     var role: Role? = null
 
     @OneToMany(mappedBy = "user", cascade = [ALL], fetch = EAGER)
