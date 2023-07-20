@@ -12,5 +12,6 @@ interface AuthRepository : JpaRepository<Auth, Long> {
     @Transactional(readOnly = true)
     fun findFirstByRefreshId(refreshId: UUID): Auth?
 
+    @Transactional
     fun deleteByUserId(userId: UUID)
 }
