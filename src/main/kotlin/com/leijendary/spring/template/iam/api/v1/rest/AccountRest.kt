@@ -17,8 +17,13 @@ import org.springframework.web.bind.annotation.*
 )
 class AccountRest(private val accountService: AccountService) {
     @DeleteMapping
-    @Operation(summary = "Delete the current user's account. This will also delete all users associated in the account.")
     @ResponseStatus(NO_CONTENT)
+    @Operation(
+        summary = """
+            Delete the current user's account. This will also delete all users associated in the account.
+            Note that this will only do a soft delete. The account and user still exists in the database.
+        """
+    )
     fun delete(@Valid @RequestBody accountDeleteRequest: AccountDeleteRequest) {
         accountService.delete(userIdOrThrow, accountDeleteRequest)
     }

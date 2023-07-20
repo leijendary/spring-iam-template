@@ -40,5 +40,11 @@ class UserRest(private val userService: UserService) {
 
     @DeleteMapping("{id}")
     @ResponseStatus(NO_CONTENT)
+    @Operation(
+        summary = """
+            Soft deletes the user from the database. After deleting a user, the user will not be 
+            able to log in any more.
+        """
+    )
     fun delete(@PathVariable id: UUID) = userService.delete(id)
 }

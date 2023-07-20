@@ -38,5 +38,6 @@ class AddressRest(private val addressService: AddressService) {
 
     @DeleteMapping("{id}")
     @ResponseStatus(NO_CONTENT)
+    @Operation(summary = "Deletes the user's address from the database.")
     fun delete(@PathVariable id: UUID) = addressService.delete(userIdOrThrow, id)
 }
