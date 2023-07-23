@@ -52,9 +52,11 @@ class UserService(
     @CachePut(value = [CACHE_NAME], key = "#result.id")
     fun create(request: UserRequest): UserResponse {
         val role = request.role!!.id!!.let { roleRepository.findByIdOrThrow(it) }
-        val account = Account().apply {
-            type = request.account!!.type!!
-            status = Status.ACTIVE
+        val account = request.account?.let {
+            Account().apply {
+                type = it.type!!
+                status = Status.ACTIVE
+            }
         }
         val user = UserMapper.INSTANCE.toEntity(request).apply {
             this.account = account
