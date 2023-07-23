@@ -4,7 +4,6 @@ import com.leijendary.spring.template.iam.core.entity.SoftDeleteEntity
 import com.leijendary.spring.template.iam.core.entity.UUIDEntity
 import com.leijendary.spring.template.iam.core.projection.CreatedProjection
 import com.leijendary.spring.template.iam.core.util.RequestContext.now
-import com.leijendary.spring.template.iam.model.Status
 import jakarta.persistence.*
 import jakarta.persistence.EnumType.STRING
 import org.hibernate.annotations.Where
@@ -17,6 +16,10 @@ import java.time.OffsetDateTime
 @EntityListeners(AuditingEntityListener::class)
 @Where(clause = "deleted_at is null")
 class Account : UUIDEntity(), CreatedProjection, SoftDeleteEntity {
+    enum class Status {
+        ACTIVE
+    }
+
     enum class Type(val value: String) {
         CUSTOMER("customer");
     }

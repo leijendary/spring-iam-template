@@ -10,11 +10,11 @@ import com.leijendary.spring.template.iam.core.datasource.transactional
 import com.leijendary.spring.template.iam.core.util.RequestContext.locale
 import com.leijendary.spring.template.iam.entity.Account
 import com.leijendary.spring.template.iam.entity.Role
+import com.leijendary.spring.template.iam.entity.User
 import com.leijendary.spring.template.iam.entity.UserCredential
 import com.leijendary.spring.template.iam.entity.Verification.Type.REGISTRATION
 import com.leijendary.spring.template.iam.message.NotificationProducer
 import com.leijendary.spring.template.iam.model.PushMessage
-import com.leijendary.spring.template.iam.model.Status
 import com.leijendary.spring.template.iam.repository.RoleRepository
 import com.leijendary.spring.template.iam.repository.UserRepository
 import com.leijendary.spring.template.iam.repository.VerificationRepository
@@ -38,11 +38,11 @@ class RegisterService(
         val username = request.username
         val verificationCode = request.verificationCode!!
         // Validate if the verification code exists first.
-        val verification =
-            verificationValidator.validateByField(credentialType, username, verificationCode, REGISTRATION)
+        val verification = verificationValidator
+            .validateByField(credentialType, username, verificationCode, REGISTRATION)
         val account = Account().apply {
             type = Account.Type.CUSTOMER
-            status = Status.ACTIVE
+            status = Account.Status.ACTIVE
         }
         val role = roleRepository.findFirstByNameOrThrow(Role.Default.CUSTOMER.value)
         val user = when (request) {
@@ -51,7 +51,7 @@ class RegisterService(
         }.apply {
             this.account = account
             this.role = role
-            this.status = Status.ACTIVE
+            this.status = User.Status.ACTIVE
 
             setVerified(credentialType)
         }

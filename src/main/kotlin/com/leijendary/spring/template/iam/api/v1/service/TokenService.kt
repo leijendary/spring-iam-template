@@ -12,7 +12,6 @@ import com.leijendary.spring.template.iam.entity.*
 import com.leijendary.spring.template.iam.entity.UserCredential.Type.EMAIL
 import com.leijendary.spring.template.iam.entity.UserSocial.Provider
 import com.leijendary.spring.template.iam.model.SocialResult
-import com.leijendary.spring.template.iam.model.Status
 import com.leijendary.spring.template.iam.repository.*
 import com.leijendary.spring.template.iam.strategy.SocialVerificationStrategy
 import com.nimbusds.jose.JOSEException
@@ -146,7 +145,7 @@ class TokenService(
             user = transactional {
                 val account = Account().apply {
                     type = Account.Type.CUSTOMER
-                    status = Status.ACTIVE
+                    status = Account.Status.ACTIVE
                 }
                 val role = roleRepository.findFirstByNameOrThrow(Role.Default.CUSTOMER.value)
                 val newUser = UserMapper.INSTANCE.toEntity(socialResult).apply {
@@ -221,12 +220,12 @@ class TokenService(
 
     private fun validateStatus(account: Account?, user: User) {
         account?.status?.let {
-            if (it != Status.ACTIVE) {
+            if (it != Account.Status.ACTIVE) {
                 throw NotActiveException(accountSource, "access.account.inactive")
             }
         }
 
-        if (user.status != Status.ACTIVE) {
+        if (user.status != User.Status.ACTIVE) {
             throw NotActiveException(userSource, "access.user.inactive")
         }
     }

@@ -11,7 +11,6 @@ import com.leijendary.spring.template.iam.entity.Account
 import com.leijendary.spring.template.iam.entity.UserCredential
 import com.leijendary.spring.template.iam.entity.Verification
 import com.leijendary.spring.template.iam.generator.CodeGenerationStrategy
-import com.leijendary.spring.template.iam.model.Status
 import com.leijendary.spring.template.iam.repository.AccountRepository
 import com.leijendary.spring.template.iam.repository.RoleRepository
 import com.leijendary.spring.template.iam.repository.UserRepository
@@ -55,7 +54,7 @@ class UserService(
         val account = request.account?.let {
             Account().apply {
                 type = it.type!!
-                status = Status.ACTIVE
+                status = Account.Status.ACTIVE
             }
         }
         val user = UserMapper.INSTANCE.toEntity(request).apply {

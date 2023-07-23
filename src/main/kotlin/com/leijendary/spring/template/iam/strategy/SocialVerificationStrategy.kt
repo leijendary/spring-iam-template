@@ -13,7 +13,7 @@ abstract class SocialVerificationStrategy {
     private val log = logger()
 
     abstract val provider: Provider
-    
+
     open val decoder: JwtDecoder
         get() = throw NotImplementedError()
 

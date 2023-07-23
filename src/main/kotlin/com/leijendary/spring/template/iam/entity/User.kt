@@ -4,9 +4,9 @@ import com.leijendary.spring.template.iam.core.entity.AuditingUUIDEntity
 import com.leijendary.spring.template.iam.core.entity.SoftDeleteEntity
 import com.leijendary.spring.template.iam.core.extension.reflectSet
 import com.leijendary.spring.template.iam.core.projection.PhoneProjection
+import com.leijendary.spring.template.iam.entity.User.Status.ACTIVE
 import com.leijendary.spring.template.iam.entity.UserCredential.Type.EMAIL
 import com.leijendary.spring.template.iam.entity.UserCredential.Type.PHONE
-import com.leijendary.spring.template.iam.model.Status.ACTIVE
 import jakarta.persistence.*
 import jakarta.persistence.CascadeType.ALL
 import jakarta.persistence.EnumType.STRING
@@ -17,6 +17,10 @@ import java.time.OffsetDateTime
 @Entity
 @Where(clause = "deleted_at is null")
 class User : AuditingUUIDEntity(), PhoneProjection, SoftDeleteEntity {
+    enum class Status {
+        ACTIVE
+    }
+
     lateinit var firstName: String
     var middleName: String? = null
     lateinit var lastName: String
