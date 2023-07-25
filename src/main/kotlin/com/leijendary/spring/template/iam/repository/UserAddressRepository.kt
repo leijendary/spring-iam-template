@@ -5,6 +5,8 @@ import com.leijendary.spring.template.iam.entity.UserAddress
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.data.jpa.repository.Modifying
+import org.springframework.data.jpa.repository.Query
 import org.springframework.transaction.annotation.Transactional
 import java.util.*
 
@@ -21,4 +23,8 @@ interface UserAddressRepository : JpaRepository<UserAddress, UUID> {
     fun findFirstByIdAndUserIdOrThrow(id: UUID, userId: UUID): UserAddress {
         return findFirstByIdAndUserId(id, userId) ?: throw ResourceNotFoundException(source, id)
     }
+
+    @Modifying
+    @Query("update UserAddress set primary = false where primary = true and id <> ?1")
+    fun unsetOthersAsPrimary(id: UUID)
 }

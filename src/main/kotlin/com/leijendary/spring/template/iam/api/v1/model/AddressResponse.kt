@@ -5,6 +5,7 @@ import java.util.*
 
 data class AddressResponse(
     val id: UUID,
+    val name: String,
     val street: String,
     val additional: String?,
     val city: String,
@@ -14,4 +15,5 @@ data class AddressResponse(
     val countryCode: String,
     val latitude: Double,
     val longitude: Double,
+    val primary: Boolean
 ) : Serializable

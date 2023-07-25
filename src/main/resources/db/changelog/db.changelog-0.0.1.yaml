@@ -492,6 +492,11 @@ databaseChangeLog:
                   constraints:
                     nullable: false
               - column:
+                  name: name
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+              - column:
                   name: street
                   type: varchar(150)
                   constraints:
@@ -534,6 +539,12 @@ databaseChangeLog:
                   type: double precision
                   constraints:
                     nullable: false
+              - column:
+                  name: primary
+                  type: boolean
+                  constraints:
+                    nullable: false
+                  defaultValueBoolean: false
               - column:
                   name: created_at
                   type: timestamp with time zone
@@ -908,6 +919,12 @@ databaseChangeLog:
                   name: user_id
             indexName: user_address_id_user_id_idx
             tableName: user_address
+  - changeSet:
+      id: add-user-address-case-insensitive-unique-constraint
+      author: Leijendekker
+      changes:
+        - sql:
+            sql: create unique index user_address_user_id_name_key on user_address (user_id, lower(name));
   - changeSet:
       id: add-user-account-id-index
       author: Leijendekker

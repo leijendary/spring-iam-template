@@ -20,6 +20,7 @@ class UserAddress : UUIDProjection {
     @ManyToOne
     lateinit var user: User
 
+    lateinit var name: String
     lateinit var street: String
     var additional: String? = null
     lateinit var city: String
@@ -29,6 +30,7 @@ class UserAddress : UUIDProjection {
     lateinit var countryCode: String
     var longitude: Double = 0.0
     var latitude: Double = 0.0
+    var primary: Boolean = false
 
     @CreatedDate
     @Column(updatable = false)

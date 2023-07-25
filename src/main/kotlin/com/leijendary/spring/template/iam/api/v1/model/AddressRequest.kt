@@ -6,6 +6,10 @@ import jakarta.validation.constraints.Size
 
 data class AddressRequest(
     @field:NotBlank(message = "validation.required")
+    @field:Size(max = 50, message = "validation.maxLength")
+    val name: String? = null,
+
+    @field:NotBlank(message = "validation.required")
     @field:Size(max = 150, message = "validation.maxLength")
     val street: String? = null,
 
@@ -36,5 +40,7 @@ data class AddressRequest(
     val latitude: Double? = null,
 
     @field:NotNull(message = "validation.required")
-    val longitude: Double? = null
+    val longitude: Double? = null,
+
+    val primary: Boolean = false
 )

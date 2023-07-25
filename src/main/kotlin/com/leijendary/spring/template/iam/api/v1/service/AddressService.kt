@@ -34,10 +34,16 @@ class AddressService(
     fun create(userId: UUID, request: AddressRequest): AddressResponse {
         val user = userRepository.findByIdOrThrow(userId)
         val address = transactional {
-            AddressMapper.INSTANCE
+            val address = AddressMapper.INSTANCE
                 .toEntity(request)
                 .apply { this.user = user }
                 .let { userAddressRepository.save(it) }
+
+            if (request.primary) {
+                userAddressRepository.unsetOthersAsPrimary(address.id!!)
+            }
+
+            address
         }!!
 
         return AddressMapper.INSTANCE.toResponse(address)
@@ -56,7 +62,13 @@ class AddressService(
 
         AddressMapper.INSTANCE.update(request, address)
 
-        userAddressRepository.save(address)
+        transactional {
+            userAddressRepository.save(address)
+
+            if (request.primary) {
+                userAddressRepository.unsetOthersAsPrimary(address.id!!)
+            }
+        }
 
         return AddressMapper.INSTANCE.toResponse(address)
     }
