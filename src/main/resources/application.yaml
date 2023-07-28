@@ -103,12 +103,7 @@ spring:
       username:
       password:
   data:
-    jdbc:
-      repositories:
-        enabled: false
     redis:
-      repositories:
-        enabled: false
       host:
       port:
       ssl:
