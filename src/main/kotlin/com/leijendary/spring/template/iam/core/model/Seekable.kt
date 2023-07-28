@@ -1,5 +1,6 @@
 package com.leijendary.spring.template.iam.core.model
 
+import org.springframework.data.domain.Sort
 import org.springframework.data.domain.Sort.Direction
 import org.springframework.data.domain.Sort.Order.asc
 import org.springframework.data.domain.Sort.Order.desc
@@ -14,8 +15,8 @@ class Seekable(
     val direction: Direction = Direction
         .fromOptionalString(direction.uppercase())
         .orElse(Direction.DESC)
-    val sort = sort
+    val sort: Sort = sort
         .distinct()
         .map { if (this.direction.isAscending) asc(it) else desc(it) }
-        .let { by(it) }
+        .let(::by)
 }

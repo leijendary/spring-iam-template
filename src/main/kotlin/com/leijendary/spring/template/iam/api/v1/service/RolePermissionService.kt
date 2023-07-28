@@ -22,7 +22,7 @@ class RolePermissionService(
             .findAllByRoleId(roleId)
             .map { it.permission }
 
-        return permissions.map { PermissionMapper.INSTANCE.toResponse(it) }
+        return permissions.map(PermissionMapper.INSTANCE::toResponse)
     }
 
     fun add(roleId: UUID, request: RolePermissionRequest): List<PermissionResponse> {
@@ -39,7 +39,7 @@ class RolePermissionService(
 
         rolePermissionRepository.saveAll(rolePermissions)
 
-        return permissions.map { PermissionMapper.INSTANCE.toResponse(it) }
+        return permissions.map(PermissionMapper.INSTANCE::toResponse)
     }
 
     @Transactional

@@ -29,6 +29,6 @@ interface ProfileMapper {
 
     @AfterMapping
     fun setImage(user: User, @MappingTarget profileResponse: ProfileResponse) {
-        profileResponse.image = user.image?.let { s3Storage.sign(it) }
+        profileResponse.image = user.image?.let(s3Storage::sign)
     }
 }

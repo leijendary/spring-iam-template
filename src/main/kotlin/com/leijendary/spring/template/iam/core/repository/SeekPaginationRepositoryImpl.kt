@@ -93,7 +93,7 @@ class SeekPaginationRepositoryImpl<T : UUIDEntity>(
                 val type = path.javaType
                 // Convert value to it's actual data type to support JSON
                 // serialization/deserialization on fields like OffsetDateTime
-                val value = it.value?.let { v -> criteriaBuilder.literal(v) } ?: criteriaBuilder.nullLiteral(type)
+                val value = it.value?.let(criteriaBuilder::literal) ?: criteriaBuilder.nullLiteral(type)
 
                 leftValues.add(path)
                 rightValues.add(value)

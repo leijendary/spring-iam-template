@@ -50,7 +50,7 @@ class UserService(
 
     @CachePut(value = [CACHE_NAME], key = "#result.id")
     fun create(request: UserRequest): UserResponse {
-        val role = request.role!!.id!!.let { roleRepository.findByIdOrThrow(it) }
+        val role = request.role!!.id!!.let(roleRepository::findByIdOrThrow)
         val account = request.account?.let {
             Account().apply {
                 type = it.type!!
@@ -98,7 +98,7 @@ class UserService(
 
     @CachePut(value = [CACHE_NAME], key = "#result.id")
     fun update(id: UUID, request: UserRequest): UserResponse {
-        val role = request.role!!.id!!.let { roleRepository.findByIdOrThrow(it) }
+        val role = request.role!!.id!!.let(roleRepository::findByIdOrThrow)
         val user = userRepository
             .findByIdOrThrow(id)
             .apply { this.role = role }

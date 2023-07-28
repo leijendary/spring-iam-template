@@ -23,7 +23,7 @@ class MethodArgumentTypeMismatchExceptionHandler(private val messageSource: Mess
         val parameter = exception.parameter
         val requiredType = parameter.parameterType.simpleName
         val value = exception.value
-        val valueType = ClassUtils.getDescriptiveType(value)?.let { getShortName(it) }
+        val valueType = ClassUtils.getDescriptiveType(value)?.let(::getShortName)
         val arguments = arrayOf(name, value, valueType, requiredType)
         val message = messageSource.getMessage(code, arguments, locale)
         val error = ErrorModel(mutableListOf("body", name), code, message)

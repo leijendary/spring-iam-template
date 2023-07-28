@@ -29,13 +29,13 @@ class RoleService(private val roleRepository: RoleRepository) {
             roleRepository.findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(query, query, pageable)
         }
 
-        return page.map { RoleMapper.INSTANCE.toResponse(it) }
+        return page.map(RoleMapper.INSTANCE::toResponse)
     }
 
     @CachePut(value = [CACHE_NAME], key = "#result.id")
     fun create(request: RoleRequest): RoleResponse {
         val role = RoleMapper.INSTANCE.toEntity(request)
-            .let { roleRepository.save(it) }
+            .let(roleRepository::save)
 
         return RoleMapper.INSTANCE.toResponse(role)
     }
@@ -67,6 +67,6 @@ class RoleService(private val roleRepository: RoleRepository) {
     fun delete(id: UUID) {
         roleRepository
             .findByIdOrThrow(id)
-            .also { roleRepository.delete(it) }
+            .also(roleRepository::delete)
     }
 }

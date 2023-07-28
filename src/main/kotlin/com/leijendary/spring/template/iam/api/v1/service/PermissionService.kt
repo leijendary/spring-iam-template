@@ -32,13 +32,13 @@ class PermissionService(
             permissionRepository.findAllByValueContainingIgnoreCase(query, pageable)
         }
 
-        return page.map { PermissionMapper.INSTANCE.toResponse(it) }
+        return page.map(PermissionMapper.INSTANCE::toResponse)
     }
 
     @CachePut(value = [CACHE_NAME], key = "#result.id")
     fun create(request: PermissionRequest): PermissionResponse {
         val permission = PermissionMapper.INSTANCE.toEntity(request)
-            .let { permissionRepository.save(it) }
+            .let(permissionRepository::save)
 
         return PermissionMapper.INSTANCE.toResponse(permission)
     }

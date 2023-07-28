@@ -29,7 +29,7 @@ class AddressService(
     fun list(userId: UUID, pageable: Pageable): Page<AddressResponse> {
         return userAddressRepository
             .findByUserId(userId, pageable)
-            .map { AddressMapper.INSTANCE.toResponse(it) }
+            .map(AddressMapper.INSTANCE::toResponse)
     }
 
     @CachePut(value = [CACHE_NAME], key = "(#userId + ':' + #result.id)")
@@ -39,7 +39,7 @@ class AddressService(
         val address = transactional {
             val address = AddressMapper.INSTANCE.toEntity(request, country)
                 .apply { this.user = user }
-                .let { userAddressRepository.save(it) }
+                .let(userAddressRepository::save)
 
             if (request.primary) {
                 userAddressRepository.unsetOthersAsPrimary(address.id!!)
@@ -81,6 +81,6 @@ class AddressService(
     fun delete(userId: UUID, id: UUID) {
         userAddressRepository
             .findFirstByIdAndUserIdOrThrow(id, userId)
-            .let { userAddressRepository.delete(it) }
+            .let(userAddressRepository::delete)
     }
 }

@@ -26,7 +26,7 @@ object RequestContext {
         }
 
     val userIdOrNull: UUID?
-        get() = currentRequest?.getHeader(HEADER_USER_ID)?.let { UUID.fromString(it) }
+        get() = currentRequest?.getHeader(HEADER_USER_ID)?.let(UUID::fromString)
 
     val userIdOrThrow: UUID
         get() = userIdOrNull ?: throw StatusException(sourceAuth, "access.session.notFound", UNAUTHORIZED)
