@@ -37,8 +37,7 @@ class PermissionService(
 
     @CachePut(value = [CACHE_NAME], key = "#result.id")
     fun create(request: PermissionRequest): PermissionResponse {
-        val permission = PermissionMapper.INSTANCE
-            .toEntity(request)
+        val permission = PermissionMapper.INSTANCE.toEntity(request)
             .let { permissionRepository.save(it) }
 
         return PermissionMapper.INSTANCE.toResponse(permission)

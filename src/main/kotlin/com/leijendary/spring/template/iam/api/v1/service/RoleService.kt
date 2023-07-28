@@ -34,8 +34,7 @@ class RoleService(private val roleRepository: RoleRepository) {
 
     @CachePut(value = [CACHE_NAME], key = "#result.id")
     fun create(request: RoleRequest): RoleResponse {
-        val role = RoleMapper.INSTANCE
-            .toEntity(request)
+        val role = RoleMapper.INSTANCE.toEntity(request)
             .let { roleRepository.save(it) }
 
         return RoleMapper.INSTANCE.toResponse(role)

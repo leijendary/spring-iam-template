@@ -37,8 +37,7 @@ class AddressService(
         val user = userRepository.findByIdOrThrow(userId)
         val country = countryValidator.validateCode(request.countryCode!!)
         val address = transactional {
-            val address = AddressMapper.INSTANCE
-                .toEntity(request, country)
+            val address = AddressMapper.INSTANCE.toEntity(request, country)
                 .apply { this.user = user }
                 .let { userAddressRepository.save(it) }
 
