@@ -29,11 +29,7 @@ data class AddressRequest(
     val postalCode: String? = null,
 
     @field:NotBlank(message = "validation.required")
-    @field:Size(max = 56, message = "validation.maxLength")
-    val country: String? = null,
-
-    @field:NotBlank(message = "validation.required")
-    @field:Size(max = 2, message = "validation.maxLength")
+    @field:Size(min = 2, max = 2, message = "validation.length")
     val countryCode: String? = null,
 
     @field:NotNull(message = "validation.required")

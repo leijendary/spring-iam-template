@@ -69,6 +69,9 @@ dependencies {
     implementation("org.springframework.kafka:spring-kafka")
     testImplementation("org.springframework.kafka:spring-kafka-test")
 
+    // Apache Commons
+    implementation("org.apache.commons:commons-csv:1.10.0")
+
     // AWS
     implementation("io.awspring.cloud:spring-cloud-aws-starter")
     implementation("io.awspring.cloud:spring-cloud-aws-starter-s3")

@@ -15,7 +15,7 @@ interface AddressMapper {
 
     fun toResponse(userAddress: UserAddress): AddressResponse
 
-    fun toEntity(addressRequest: AddressRequest): UserAddress
+    fun toEntity(addressRequest: AddressRequest, country: String): UserAddress
 
-    fun update(addressRequest: AddressRequest, @MappingTarget userAddress: UserAddress)
+    fun update(addressRequest: AddressRequest, country: String, @MappingTarget userAddress: UserAddress)
 }

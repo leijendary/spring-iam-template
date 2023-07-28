@@ -4,6 +4,7 @@ import com.leijendary.spring.template.iam.api.v1.mapper.AddressMapper
 import com.leijendary.spring.template.iam.api.v1.model.AddressRequest
 import com.leijendary.spring.template.iam.api.v1.model.AddressResponse
 import com.leijendary.spring.template.iam.core.datasource.transactional
+import com.leijendary.spring.template.iam.core.validator.CountryValidator
 import com.leijendary.spring.template.iam.repository.UserAddressRepository
 import com.leijendary.spring.template.iam.repository.UserRepository
 import org.springframework.cache.annotation.CacheEvict
@@ -17,6 +18,7 @@ import java.util.*
 
 @Service
 class AddressService(
+    private val countryValidator: CountryValidator,
     private val userAddressRepository: UserAddressRepository,
     private val userRepository: UserRepository
 ) {
@@ -33,9 +35,10 @@ class AddressService(
     @CachePut(value = [CACHE_NAME], key = "(#userId + ':' + #result.id)")
     fun create(userId: UUID, request: AddressRequest): AddressResponse {
         val user = userRepository.findByIdOrThrow(userId)
+        val country = countryValidator.validateCode(request.countryCode!!)
         val address = transactional {
             val address = AddressMapper.INSTANCE
-                .toEntity(request)
+                .toEntity(request, country)
                 .apply { this.user = user }
                 .let { userAddressRepository.save(it) }
 
@@ -59,8 +62,9 @@ class AddressService(
     @CachePut(value = [CACHE_NAME], key = "(#userId + ':' + #id)")
     fun update(userId: UUID, id: UUID, request: AddressRequest): AddressResponse {
         val address = userAddressRepository.findFirstByIdAndUserIdOrThrow(id, userId)
+        val country = countryValidator.validateCode(request.countryCode!!)
 
-        AddressMapper.INSTANCE.update(request, address)
+        AddressMapper.INSTANCE.update(request, country, address)
 
         transactional {
             userAddressRepository.save(address)
