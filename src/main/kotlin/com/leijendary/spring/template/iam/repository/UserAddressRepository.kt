@@ -25,6 +25,6 @@ interface UserAddressRepository : JpaRepository<UserAddress, UUID> {
     }
 
     @Modifying
-    @Query("update UserAddress set primary = false where primary = true and id <> ?1")
-    fun unsetOthersAsPrimary(id: UUID)
+    @Query("update UserAddress set primary = false where primary = true and id <> ?1 and user.id = ?2")
+    fun unsetOthersAsPrimary(id: UUID, userId: UUID)
 }

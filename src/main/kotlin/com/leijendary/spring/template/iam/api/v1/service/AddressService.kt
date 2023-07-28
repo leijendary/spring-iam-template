@@ -42,7 +42,7 @@ class AddressService(
                 .let(userAddressRepository::save)
 
             if (request.primary) {
-                userAddressRepository.unsetOthersAsPrimary(address.id!!)
+                userAddressRepository.unsetOthersAsPrimary(address.id!!, userId)
             }
 
             address
@@ -69,7 +69,7 @@ class AddressService(
             userAddressRepository.save(address)
 
             if (request.primary) {
-                userAddressRepository.unsetOthersAsPrimary(address.id!!)
+                userAddressRepository.unsetOthersAsPrimary(address.id!!, userId)
             }
         }
 
