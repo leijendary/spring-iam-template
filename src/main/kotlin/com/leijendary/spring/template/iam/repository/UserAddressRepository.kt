@@ -36,7 +36,7 @@ interface UserAddressRepository : JpaRepository<UserAddress, UUID> {
     @CachePut(value = [CACHE_NAME], key = "(#result.user.id + ':' + #result.id)")
     fun saveAndCache(userAddress: UserAddress): UserAddress = save(userAddress)
 
-    @CacheEvict(value = [CACHE_NAME], key = "(#userAddress.user.id + ':' + #userAddress.id)")
+    @CacheEvict(value = [CACHE_NAME], key = "(#result.user.id + ':' + #result.id)")
     fun saveAndEvict(userAddress: UserAddress): UserAddress = save(userAddress)
 
     @CacheEvict(value = [CACHE_NAME], key = "(#userAddress.user.id + ':' + #userAddress.id)")
