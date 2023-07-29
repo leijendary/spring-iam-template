@@ -29,17 +29,11 @@ interface UserRepository : JpaRepository<User, UUID>, SoftDeleteRepository<User>
 
     @Cacheable(value = [CACHE_NAME], key = "#id")
     @Transactional(readOnly = true)
-    fun findCachedByIdOrThrow(id: UUID): User {
-        return findByIdOrThrow(id)
-    }
+    fun findCachedByIdOrThrow(id: UUID) = findByIdOrThrow(id)
 
     @CachePut(value = [CACHE_NAME], key = "#result.id")
-    fun saveAndCache(user: User): User {
-        return save(user)
-    }
+    fun saveAndCache(user: User): User = save(user)
 
     @CacheEvict(value = [CACHE_NAME], key = "#user.id")
-    fun softDeleteAndEvict(user: User) {
-        softDelete(user)
-    }
+    fun softDeleteAndEvict(user: User) = softDelete(user)
 }

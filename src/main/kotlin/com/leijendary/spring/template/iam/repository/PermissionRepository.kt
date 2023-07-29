@@ -26,17 +26,11 @@ interface PermissionRepository : JpaRepository<Permission, Long> {
 
     @Cacheable(value = [CACHE_NAME], key = "#id")
     @Transactional(readOnly = true)
-    fun findCachedByIdOrThrow(id: Long): Permission {
-        return findByIdOrThrow(id)
-    }
+    fun findCachedByIdOrThrow(id: Long) = findByIdOrThrow(id)
 
     @CachePut(value = [CACHE_NAME], key = "#result.id")
-    fun saveAndCache(permission: Permission): Permission {
-        return save(permission)
-    }
+    fun saveAndCache(permission: Permission): Permission = save(permission)
 
     @CacheEvict(value = [CACHE_NAME], key = "#permission.id")
-    fun deleteAndEvict(permission: Permission) {
-        delete(permission)
-    }
+    fun deleteAndEvict(permission: Permission) = delete(permission)
 }

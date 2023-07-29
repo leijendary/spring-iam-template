@@ -37,26 +37,18 @@ interface RoleRepository : JpaRepository<Role, UUID> {
 
     @Cacheable(value = [CACHE_NAME], key = "('name:' + #name)")
     @Transactional(readOnly = true)
-    fun findCachedByNameOrThrow(name: String): Role {
-        return findFirstByNameOrThrow(name)
-    }
+    fun findCachedByNameOrThrow(name: String) = findFirstByNameOrThrow(name)
 
     @Transactional(readOnly = true)
     fun findByIdOrThrow(id: UUID) = findByIdOrNull(id) ?: throw ResourceNotFoundException(sourceId, id)
 
     @Cacheable(value = [CACHE_NAME], key = "#id")
     @Transactional(readOnly = true)
-    fun findCachedByIdOrThrow(id: UUID): Role {
-        return findByIdOrThrow(id)
-    }
+    fun findCachedByIdOrThrow(id: UUID) = findByIdOrThrow(id)
 
     @CachePut(value = [CACHE_NAME], key = "#result.id")
-    fun saveAndCache(role: Role): Role {
-        return save(role)
-    }
+    fun saveAndCache(role: Role): Role = save(role)
 
     @CacheEvict(value = [CACHE_NAME], key = "#role.id")
-    fun deleteAndEvict(role: Role) {
-        delete(role)
-    }
+    fun deleteAndEvict(role: Role) = delete(role)
 }
