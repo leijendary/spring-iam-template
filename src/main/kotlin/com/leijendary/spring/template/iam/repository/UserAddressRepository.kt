@@ -31,9 +31,7 @@ interface UserAddressRepository : JpaRepository<UserAddress, UUID> {
 
     @Cacheable(value = [CACHE_NAME], key = "(#userId + ':' + #id)")
     @Transactional(readOnly = true)
-    fun findFirstCachedByIdAndUserIdOrThrow(id: UUID, userId: UUID): UserAddress {
-        return findFirstByIdAndUserId(id, userId) ?: throw ResourceNotFoundException(source, id)
-    }
+    fun findFirstCachedByIdAndUserIdOrThrow(id: UUID, userId: UUID) = findFirstByIdAndUserIdOrThrow(id, userId)
 
     @CachePut(value = [CACHE_NAME], key = "(#result.user.id + ':' + #result.id)")
     fun saveAndCache(userAddress: UserAddress): UserAddress = save(userAddress)
