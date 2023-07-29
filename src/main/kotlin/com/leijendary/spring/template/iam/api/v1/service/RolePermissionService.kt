@@ -29,13 +29,12 @@ class RolePermissionService(
         val role = roleRepository.findByIdOrThrow(roleId)
         val permissionIds = request.permissions.map { it.id }
         val permissions = permissionRepository.findAllById(permissionIds)
-        val rolePermissions = permissions
-            .map {
-                RolePermission().apply {
-                    this.role = role
-                    this.permission = it
-                }
+        val rolePermissions = permissions.map {
+            RolePermission().apply {
+                this.role = role
+                this.permission = it
             }
+        }
 
         rolePermissionRepository.saveAll(rolePermissions)
 
