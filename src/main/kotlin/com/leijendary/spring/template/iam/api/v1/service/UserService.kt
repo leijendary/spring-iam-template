@@ -16,9 +16,6 @@ import com.leijendary.spring.template.iam.repository.RoleRepository
 import com.leijendary.spring.template.iam.repository.UserRepository
 import com.leijendary.spring.template.iam.repository.VerificationRepository
 import com.leijendary.spring.template.iam.specification.UserListSpecification
-import org.springframework.cache.annotation.CacheEvict
-import org.springframework.cache.annotation.CachePut
-import org.springframework.cache.annotation.Cacheable
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
@@ -33,10 +30,6 @@ class UserService(
     private val verificationProperties: VerificationProperties,
     private val verificationRepository: VerificationRepository
 ) {
-    companion object {
-        private const val CACHE_NAME = "user:v1"
-    }
-
     fun list(
         queryRequest: QueryRequest,
         userExclusionQueryRequest: UserExclusionQueryRequest,
@@ -48,9 +41,8 @@ class UserService(
         return page.map(UserMapper.INSTANCE::toResponse)
     }
 
-    @CachePut(value = [CACHE_NAME], key = "#result.id")
     fun create(request: UserRequest): UserResponse {
-        val role = request.role!!.id!!.let(roleRepository::findByIdOrThrow)
+        val role = request.role!!.id!!.let(roleRepository::findCachedByIdOrThrow)
         val account = request.account?.let {
             Account().apply {
                 type = it.type!!
@@ -71,10 +63,9 @@ class UserService(
 
         user.credentials.add(credential)
 
-        val generator = CodeGenerationStrategy.UUID_STRATEGY
         val verification = Verification().apply {
             this.user = user
-            this.code = generator.generate()
+            this.code = CodeGenerationStrategy.UUID_STRATEGY.generate()
             this.field = field
             this.value = username
             this.type = Verification.Type.PASSWORD_NOMINATE
@@ -82,26 +73,22 @@ class UserService(
         }
 
         transactional {
-            userRepository.save(user)
+            userRepository.saveAndCache(user)
             verificationRepository.save(verification)
         }
 
         return UserMapper.INSTANCE.toResponse(user)
     }
 
-    @Cacheable(value = [CACHE_NAME], key = "#id")
     fun get(id: UUID): UserResponse {
-        val user = userRepository.findByIdOrThrow(id)
+        val user = userRepository.findCachedByIdOrThrow(id)
 
         return UserMapper.INSTANCE.toResponse(user)
     }
 
-    @CachePut(value = [CACHE_NAME], key = "#result.id")
     fun update(id: UUID, request: UserRequest): UserResponse {
-        val role = request.role!!.id!!.let(roleRepository::findByIdOrThrow)
-        val user = userRepository
-            .findByIdOrThrow(id)
-            .apply { this.role = role }
+        val role = request.role!!.id!!.let(roleRepository::findCachedByIdOrThrow)
+        val user = userRepository.findByIdOrThrow(id).apply { this.role = role }
 
         UserMapper.INSTANCE.update(request, user)
 
@@ -119,22 +106,16 @@ class UserService(
             user.credentials.add(credential)
         }
 
-        transactional { userRepository.save(user) }
+        transactional { userRepository.saveAndCache(user) }
 
         return UserMapper.INSTANCE.toResponse(user)
     }
 
-    @CacheEvict(value = [CACHE_NAME], key = "#id")
     @Transactional
     fun delete(id: UUID) {
-        userRepository
-            .findByIdOrThrow(id)
-            .let { user ->
-                user.account?.let { account ->
-                    accountRepository.softDelete(account)
-                }
+        val user = userRepository.findByIdOrThrow(id)
+        user.account?.let { accountRepository.softDelete(it) }
 
-                userRepository.softDelete(user)
-            }
+        userRepository.softDeleteAndEvict(user)
     }
 }

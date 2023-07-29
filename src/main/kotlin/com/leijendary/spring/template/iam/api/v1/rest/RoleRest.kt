@@ -1,7 +1,6 @@
 package com.leijendary.spring.template.iam.api.v1.rest
 
 import com.leijendary.spring.template.iam.api.v1.model.RoleRequest
-import com.leijendary.spring.template.iam.api.v1.model.RoleResponse
 import com.leijendary.spring.template.iam.api.v1.service.RoleService
 import com.leijendary.spring.template.iam.core.model.QueryRequest
 import io.swagger.v3.oas.annotations.Operation
@@ -18,7 +17,7 @@ import java.util.*
 @Tag(name = "Role", description = "Role resource API. Roles are a group of permissions that can be assigned to a user.")
 class RoleRest(private val roleService: RoleService) {
     @GetMapping
-    @Operation(summary = "Get the paginated list of roles")
+    @Operation(summary = "Get the paginated list of roles.")
     fun list(queryRequest: QueryRequest, pageable: Pageable) = roleService.list(queryRequest, pageable)
 
     @PostMapping
@@ -31,10 +30,8 @@ class RoleRest(private val roleService: RoleService) {
     fun get(@PathVariable id: UUID) = roleService.get(id)
 
     @PutMapping("{id}")
-    @Operation(summary = "Updates the role into the database. The name should be unique.")
-    fun update(@PathVariable id: UUID, @Valid @RequestBody request: RoleRequest): RoleResponse {
-        return roleService.update(id, request)
-    }
+    @Operation(summary = "Updates the role into the database. The name must be unique.")
+    fun update(@PathVariable id: UUID, @Valid @RequestBody request: RoleRequest) = roleService.update(id, request)
 
     @DeleteMapping("{id}")
     @ResponseStatus(NO_CONTENT)

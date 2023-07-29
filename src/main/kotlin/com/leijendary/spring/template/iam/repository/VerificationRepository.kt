@@ -26,7 +26,7 @@ interface VerificationRepository : JpaRepository<Verification, Long> {
     ): Verification?
 
     @Transactional(readOnly = true)
-    fun findFirstByFieldAndValueAndCodeAndAndTypeOrThrow(
+    fun findFirstByFieldAndValueAndCodeAndTypeOrThrow(
         field: UserCredential.Type,
         value: String,
         code: String,

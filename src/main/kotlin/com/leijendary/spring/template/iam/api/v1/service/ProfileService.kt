@@ -9,8 +9,6 @@ import com.leijendary.spring.template.iam.repository.UserCredentialRepository
 import com.leijendary.spring.template.iam.repository.UserRepository
 import com.leijendary.spring.template.iam.repository.VerificationRepository
 import com.leijendary.spring.template.iam.validator.VerificationValidator
-import org.springframework.cache.annotation.CachePut
-import org.springframework.cache.annotation.Cacheable
 import org.springframework.stereotype.Service
 import java.util.*
 
@@ -21,28 +19,18 @@ class ProfileService(
     private val verificationRepository: VerificationRepository,
     private val verificationValidator: VerificationValidator
 ) {
-    companion object {
-        private const val CACHE_NAME = "profile:v1"
-    }
-
-    @Cacheable(value = [CACHE_NAME], key = "#id")
     fun detail(id: UUID): ProfileResponse {
-        val user = userRepository.findByIdOrThrow(id)
+        val user = userRepository.findCachedByIdOrThrow(id)
 
         return ProfileMapper.INSTANCE.toResponse(user)
     }
 
-    @CachePut(value = [CACHE_NAME], key = "#id")
     fun update(id: UUID, request: ProfileRequest): ProfileResponse {
-        val user = transactional {
-            userRepository
-                .findByIdOrThrow(id)
-                .let {
-                    ProfileMapper.INSTANCE.update(request, it)
+        val user = userRepository.findByIdOrThrow(id)
 
-                    userRepository.save(it)
-                }
-        }!!
+        ProfileMapper.INSTANCE.update(request, user)
+
+        userRepository.saveAndCache(user)
 
         return ProfileMapper.INSTANCE.toResponse(user)
     }
@@ -60,9 +48,7 @@ class ProfileService(
             verificationType
         )
         val user = userRepository.findByIdOrThrow(userIdOrThrow)
-        val credential = user
-            .credentials
-            .firstOrNull { it.type == credentialType }
+        val credential = user.credentials.firstOrNull { it.type == credentialType }
 
         when (request) {
             is UpdateEmailRequest -> ProfileMapper.INSTANCE.update(request, user)
@@ -72,7 +58,7 @@ class ProfileService(
         user.setVerified(credentialType)
 
         transactional {
-            userRepository.save(user)
+            userRepository.saveAndCache(user)
 
             credential?.let {
                 it.username = username

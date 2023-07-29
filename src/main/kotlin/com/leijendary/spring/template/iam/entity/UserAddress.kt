@@ -1,5 +1,6 @@
 package com.leijendary.spring.template.iam.entity
 
+import com.leijendary.spring.template.iam.core.entity.AppEntity
 import com.leijendary.spring.template.iam.core.projection.UUIDProjection
 import com.leijendary.spring.template.iam.core.util.RequestContext.now
 import jakarta.persistence.*
@@ -11,7 +12,7 @@ import java.util.*
 
 @Entity
 @EntityListeners(AuditingEntityListener::class)
-class UserAddress : UUIDProjection {
+class UserAddress : AppEntity(), UUIDProjection {
     @Id
     @GeneratedValue
     @Column(updatable = false)

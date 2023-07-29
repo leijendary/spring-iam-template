@@ -44,7 +44,7 @@ class RegisterService(
             type = Account.Type.CUSTOMER
             status = Account.Status.ACTIVE
         }
-        val role = roleRepository.findFirstByNameOrThrow(Role.Default.CUSTOMER.value)
+        val role = roleRepository.findCachedByNameOrThrow(Role.Default.CUSTOMER.value)
         val user = when (request) {
             is RegisterEmailRequest -> UserMapper.INSTANCE.toEntity(request)
             is RegisterPhoneRequest -> UserMapper.INSTANCE.toEntity(request)
@@ -65,7 +65,7 @@ class RegisterService(
         user.credentials.add(credential)
 
         transactional {
-            userRepository.save(user)
+            userRepository.saveAndCache(user)
             verificationRepository.delete(verification)
         }
 

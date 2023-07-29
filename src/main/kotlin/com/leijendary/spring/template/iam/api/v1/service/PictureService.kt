@@ -1,7 +1,6 @@
 package com.leijendary.spring.template.iam.api.v1.service
 
 import com.leijendary.spring.template.iam.api.v1.model.LinkResponse
-import com.leijendary.spring.template.iam.core.datasource.transactional
 import com.leijendary.spring.template.iam.core.exception.ResourceNotFoundException
 import com.leijendary.spring.template.iam.core.storage.S3Storage
 import com.leijendary.spring.template.iam.repository.UserRepository
@@ -25,13 +24,11 @@ class PictureService(private val s3Storage: S3Storage, private val userRepositor
     }
 
     fun update(id: UUID): LinkResponse {
-        val user = userRepository.findByIdOrThrow(id).apply { image = createKey(id) }
+        val user = userRepository.findCachedByIdOrThrow(id).apply { image = createKey(id) }
 
         try {
-            transactional {
-                userRepository.save(user)
-                s3Storage.moveTemp(user.image!!)
-            }
+            userRepository.saveAndCache(user)
+            s3Storage.moveTemp(user.image!!)
         } catch (_: NoSuchKeyException) {
             throw ResourceNotFoundException(source, id.toString())
         }

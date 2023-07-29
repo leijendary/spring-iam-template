@@ -26,7 +26,7 @@ class AccountService(
             .map { it.deletedReason = accountDeleteRequest.reason; it }
             .forEach {
                 authRepository.deleteByUserId(it.id!!)
-                userRepository.softDelete(it)
+                userRepository.softDeleteAndEvict(it)
             }
     }
 }

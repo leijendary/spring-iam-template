@@ -30,11 +30,8 @@ class PasswordService(
         val verificationCode = request.verificationCode!!
         // Validate if the verification code exists first
         val verification = verificationValidator.validateByCode(verificationCode, PASSWORD_NOMINATE)
-        val user = verification.user!!
-        val field = verification.field!!
-        val credential = user
-            .credentials
-            .firstOrNull { it.type == field }
+        val credential = verification.user!!.credentials
+            .firstOrNull { it.type == verification.field!! }
             ?: throw InvalidCredentialException()
         val password = request.password!!
 
@@ -48,11 +45,9 @@ class PasswordService(
     }
 
     fun change(request: PasswordChangeRequest): Next {
-        val user = userRepository.findByIdOrThrow(userIdOrThrow)
-        val field = request.field!!
-        val credential = user
-            .credentials
-            .firstOrNull { it.type == field }
+        val user = userRepository.findCachedByIdOrThrow(userIdOrThrow)
+        val credential = user.credentials
+            .firstOrNull { it.type == request.field!! }
             ?: throw InvalidCredentialException()
         val currentPassword = request.currentPassword!!
 

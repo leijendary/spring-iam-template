@@ -21,7 +21,7 @@ class VerificationValidator(private val verificationRepository: VerificationRepo
      */
     fun validateByField(field: UserCredential.Type, value: String, code: String, type: Type): Verification {
         val verification = verificationRepository
-            .findFirstByFieldAndValueAndCodeAndAndTypeOrThrow(field, value, code, type)
+            .findFirstByFieldAndValueAndCodeAndTypeOrThrow(field, value, code, type)
 
         validateExpiration(verification)
 
