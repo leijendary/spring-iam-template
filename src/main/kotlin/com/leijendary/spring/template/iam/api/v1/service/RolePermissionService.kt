@@ -26,7 +26,7 @@ class RolePermissionService(
     }
 
     fun add(roleId: UUID, request: RolePermissionRequest): List<PermissionResponse> {
-        val role = roleRepository.findByIdOrThrow(roleId)
+        val role = roleRepository.findCachedByIdOrThrow(roleId)
         val permissionIds = request.permissions.map { it.id }
         val permissions = permissionRepository.findAllById(permissionIds)
         val rolePermissions = permissions.map {
