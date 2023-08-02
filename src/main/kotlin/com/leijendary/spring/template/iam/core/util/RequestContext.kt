@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletRequest
 import org.springframework.context.i18n.LocaleContextHolder.getLocale
 import org.springframework.context.i18n.LocaleContextHolder.getTimeZone
 import org.springframework.http.HttpStatus.UNAUTHORIZED
+import org.springframework.web.context.request.RequestAttributes.SCOPE_REQUEST
 import org.springframework.web.context.request.RequestContextHolder.getRequestAttributes
 import org.springframework.web.context.request.ServletRequestAttributes
 import java.net.URI
@@ -59,4 +60,26 @@ object RequestContext {
 
     val now: OffsetDateTime
         get() = OffsetDateTime.now(zoneId)
+
+    /**
+     * Added this here as a utility function to cache objects in to the request scope.
+     * For example, you have an external API call that is being called multiple times
+     * within the same request lifecycle, instead of calling the said external API call
+     * once and passing the result in to multiple functions, save the result in to this
+     * function and reuse the value without passing it into multiple functions.
+     */
+    inline fun <reified T : Any> getOrSetAttribute(name: String, default: () -> T): T {
+        val requestAttributes = getRequestAttributes()!!
+        var value = requestAttributes.getAttribute(name, SCOPE_REQUEST) as? T
+
+        if (value !== null) {
+            return value
+        }
+
+        value = default()
+
+        requestAttributes.setAttribute(name, value, SCOPE_REQUEST)
+
+        return value
+    }
 }
