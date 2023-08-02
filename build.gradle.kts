@@ -84,17 +84,20 @@ dependencies {
     implementation("org.postgresql:postgresql")
     implementation("org.liquibase:liquibase-core")
 
+    // Devtools
+    developmentOnly("org.springframework.boot:spring-boot-devtools")
+    kapt("org.springframework.boot:spring-boot-configuration-processor")
+
+    // Jackson
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+
     // MapStruct
     implementation("org.mapstruct:mapstruct:1.5.3.Final")
     kapt("org.mapstruct:mapstruct-processor:1.5.3.Final")
     testImplementation("org.mapstruct:mapstruct-processor:1.5.3.Final")
 
-    // Devtools
-    developmentOnly("org.springframework.boot:spring-boot-devtools")
-    kapt("org.springframework.boot:spring-boot-configuration-processor")
-
     // OpenAPI
-    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.4")
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.1.0")
 
     // Tracing
     implementation("com.github.loki4j:loki-logback-appender:1.4.1")
