@@ -64,7 +64,7 @@ object RequestContext {
     /**
      * Added this here as a utility function to cache objects in to the request scope.
      * For example, you have an external API call that is being called multiple times
-     * within the same request lifecycle, instead of calling the said external API call
+     * within the same request lifecycle. Instead of calling the said external API call
      * once and passing the result in to multiple functions, save the result in to this
      * function and reuse the value without passing it into multiple functions.
      */
