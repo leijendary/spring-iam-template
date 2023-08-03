@@ -16,7 +16,6 @@ class SoftDeleteRepositoryImpl<T : SoftDeleteEntity>(
     @PersistenceContext
     private val entityManager: EntityManager
 ) : SoftDeleteRepository<T> {
-
     override fun softDelete(entity: T) {
         entity.apply {
             deletedAt = dateTimeProvider.now.get() as OffsetDateTime
