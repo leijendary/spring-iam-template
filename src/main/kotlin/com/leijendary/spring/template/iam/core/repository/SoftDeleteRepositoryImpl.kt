@@ -18,9 +18,11 @@ class SoftDeleteRepositoryImpl<T : SoftDeleteEntity>(
 ) : SoftDeleteRepository<T> {
 
     override fun softDelete(entity: T) {
-        entity.deletedAt = dateTimeProvider.now.get() as OffsetDateTime
-        entity.deletedBy = auditorAware.currentAuditor.get()
+        entity.apply {
+            deletedAt = dateTimeProvider.now.get() as OffsetDateTime
+            deletedBy = auditorAware.currentAuditor.get()
+        }
 
-        entityManager.persist(entity)
+        entityManager.merge(entity)
     }
 }
