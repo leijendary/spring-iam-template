@@ -6,6 +6,7 @@ import jakarta.persistence.PersistenceContext
 import org.springframework.data.auditing.DateTimeProvider
 import org.springframework.data.domain.AuditorAware
 import org.springframework.stereotype.Repository
+import org.springframework.transaction.annotation.Transactional
 import java.time.OffsetDateTime
 
 @Repository
@@ -16,6 +17,7 @@ class SoftDeleteRepositoryImpl<T : SoftDeleteEntity>(
     @PersistenceContext
     private val entityManager: EntityManager
 ) : SoftDeleteRepository<T> {
+    @Transactional
     override fun softDelete(entity: T) {
         entity.apply {
             deletedAt = dateTimeProvider.now.get() as OffsetDateTime

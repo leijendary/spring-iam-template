@@ -35,5 +35,6 @@ interface UserRepository : JpaRepository<User, UUID>, SoftDeleteRepository<User>
     fun saveAndCache(user: User): User = save(user)
 
     @CacheEvict(value = [CACHE_NAME], key = "#user.id")
+    @Transactional
     fun softDeleteAndEvict(user: User) = softDelete(user)
 }
