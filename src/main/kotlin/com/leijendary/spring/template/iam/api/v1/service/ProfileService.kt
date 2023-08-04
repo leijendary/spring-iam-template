@@ -5,6 +5,9 @@ import com.leijendary.spring.template.iam.api.v1.model.*
 import com.leijendary.spring.template.iam.api.v1.model.Next.Type.AUTHENTICATE
 import com.leijendary.spring.template.iam.core.datasource.transactional
 import com.leijendary.spring.template.iam.core.util.RequestContext.userIdOrThrow
+import com.leijendary.spring.template.iam.entity.UserCredential.Type.EMAIL
+import com.leijendary.spring.template.iam.entity.UserCredential.Type.PHONE
+import com.leijendary.spring.template.iam.message.UserMessageProducer
 import com.leijendary.spring.template.iam.repository.UserCredentialRepository
 import com.leijendary.spring.template.iam.repository.UserRepository
 import com.leijendary.spring.template.iam.repository.VerificationRepository
@@ -15,6 +18,7 @@ import java.util.*
 @Service
 class ProfileService(
     private val userCredentialRepository: UserCredentialRepository,
+    private val userMessageProducer: UserMessageProducer,
     private val userRepository: UserRepository,
     private val verificationRepository: VerificationRepository,
     private val verificationValidator: VerificationValidator
@@ -31,6 +35,7 @@ class ProfileService(
         ProfileMapper.INSTANCE.update(request, user)
 
         userRepository.saveAndCache(user)
+        userMessageProducer.profileUpdated(user)
 
         return ProfileMapper.INSTANCE.toResponse(user)
     }
@@ -67,6 +72,11 @@ class ProfileService(
             }
 
             verificationRepository.delete(verification)
+        }
+
+        when (credentialType) {
+            EMAIL -> userMessageProducer.emailUpdated(user)
+            PHONE -> userMessageProducer.phoneUpdated(user)
         }
 
         return Next(AUTHENTICATE.value)

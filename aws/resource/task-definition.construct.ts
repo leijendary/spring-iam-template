@@ -64,10 +64,10 @@ export class TaskDefinitionConstruct extends TaskDefinition {
   }
 
   private container(scope: Construct, image: ContainerImage, logGroup: LogGroup) {
-    const securityCredentials = getSecurityCredentials(scope);
     const auroraCredentials = getAuroraCredentials(scope);
     const dataStorageCredentials = getDataStorageCredentials(scope);
     const integrationCredentials = getIntegrationCredentials(scope);
+    const securityCredentials = getSecurityCredentials(scope);
 
     this.addContainer(`${id}Container-${environment}`, {
       containerName: name,

@@ -7,6 +7,9 @@ import com.leijendary.spring.template.iam.api.v1.model.UserResponse
 import com.leijendary.spring.template.iam.core.util.BeanContainer.s3Storage
 import com.leijendary.spring.template.iam.entity.User
 import com.leijendary.spring.template.iam.model.SocialResult
+import com.leijendary.spring.template.iam.model.UserEmailMessage
+import com.leijendary.spring.template.iam.model.UserMessage
+import com.leijendary.spring.template.iam.model.UserPhoneMessage
 import org.mapstruct.AfterMapping
 import org.mapstruct.Mapper
 import org.mapstruct.Mapping
@@ -37,6 +40,14 @@ interface UserMapper {
     @Mapping(target = "account", ignore = true)
     @Mapping(target = "role", ignore = true)
     fun update(userRequest: UserRequest, @MappingTarget user: User)
+
+    @Mapping(target = "accountId", source = "account.id")
+    @Mapping(target = "roleId", source = "role.id")
+    fun toMessage(user: User): UserMessage
+
+    fun toEmailMessage(user: User): UserEmailMessage
+
+    fun toPhoneMessage(user: User): UserPhoneMessage
 
     @AfterMapping
     fun setImage(user: User, @MappingTarget userResponse: UserResponse) {

@@ -5,15 +5,14 @@ import com.leijendary.spring.template.iam.entity.UserCredential
 import com.leijendary.spring.template.iam.entity.UserCredential.Type.EMAIL
 import com.leijendary.spring.template.iam.entity.Verification
 import com.leijendary.spring.template.iam.entity.Verification.Type.*
-import com.leijendary.spring.template.iam.message.NotificationProducer
-import com.leijendary.spring.template.iam.model.EmailMessage
+import com.leijendary.spring.template.iam.message.NotificationMessageProducer
 import com.leijendary.spring.template.iam.model.NotificationTemplate
 import org.springframework.stereotype.Component
 import org.springframework.web.util.UriComponentsBuilder
 
 @Component
 class EmailVerificationNotificationStrategy(
-    private val notificationProducer: NotificationProducer,
+    private val notificationMessageProducer: NotificationMessageProducer,
     private val verificationProperties: VerificationProperties
 ) : VerificationNotificationStrategy {
     override val field: UserCredential.Type
@@ -45,9 +44,8 @@ class EmailVerificationNotificationStrategy(
 
     override fun send(verification: Verification) {
         val template = template(verification.code, verification.type) ?: return
-        val emailMessage = EmailMessage(verification.value!!, template.name, template.parameters)
 
-        notificationProducer.email(emailMessage)
+        notificationMessageProducer.email(verification.value!!, template.name, template.parameters)
     }
 
     private fun codeParameter(code: String) = mapOf("code" to code)

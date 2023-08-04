@@ -11,28 +11,32 @@ import com.leijendary.spring.template.iam.model.SmsMessage
 import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.retry.annotation.Retryable
 import org.springframework.stereotype.Component
+import java.util.*
 
 @Component
-class NotificationProducer(
+class NotificationMessageProducer(
     private val kafkaTemplate: KafkaTemplate<String, String>,
     private val kafkaTopicProperties: KafkaTopicProperties
 ) {
     @Retryable
-    fun email(emailMessage: EmailMessage) {
+    fun email(to: String, templateId: String, parameters: Map<String, String>) {
+        val emailMessage = EmailMessage(to, templateId, parameters)
         val topic = kafkaTopicProperties.nameOf(NOTIFICATION_EMAIL)
 
         kafkaTemplate.send(topic, emailMessage.toJson())
     }
 
     @Retryable
-    fun push(pushMessage: PushMessage) {
+    fun push(userId: UUID, title: String, body: String, image: String? = null) {
+        val pushMessage = PushMessage(userId, title, body, image)
         val topic = kafkaTopicProperties.nameOf(NOTIFICATION_PUSH)
 
         kafkaTemplate.send(topic, pushMessage.toJson())
     }
 
     @Retryable
-    fun sms(smsMessage: SmsMessage) {
+    fun sms(to: String, message: String) {
+        val smsMessage = SmsMessage(to, message)
         val topic = kafkaTopicProperties.nameOf(NOTIFICATION_SMS)
 
         kafkaTemplate.send(topic, smsMessage.toJson())

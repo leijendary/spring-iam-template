@@ -5,16 +5,15 @@ import com.leijendary.spring.template.iam.entity.UserCredential
 import com.leijendary.spring.template.iam.entity.UserCredential.Type.PHONE
 import com.leijendary.spring.template.iam.entity.Verification
 import com.leijendary.spring.template.iam.entity.Verification.Type.*
-import com.leijendary.spring.template.iam.message.NotificationProducer
+import com.leijendary.spring.template.iam.message.NotificationMessageProducer
 import com.leijendary.spring.template.iam.model.NotificationTemplate
-import com.leijendary.spring.template.iam.model.SmsMessage
 import org.springframework.context.MessageSource
 import org.springframework.stereotype.Component
 
 @Component
 class PhoneVerificationNotificationStrategy(
     private val messageSource: MessageSource,
-    private val notificationProducer: NotificationProducer
+    private val notificationMessageProducer: NotificationMessageProducer
 ) : VerificationNotificationStrategy {
     override val field: UserCredential.Type
         get() = PHONE
@@ -36,8 +35,7 @@ class PhoneVerificationNotificationStrategy(
         val args = template.parameters.map { it.value }.toTypedArray()
         val to = verification.value!!.replace(" ", "")
         val message = messageSource.getMessage(template.name, args, locale)
-        val smsMessage = SmsMessage(to, message)
 
-        notificationProducer.sms(smsMessage)
+        notificationMessageProducer.sms(to, message)
     }
 }

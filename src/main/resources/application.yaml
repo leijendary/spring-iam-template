@@ -159,6 +159,16 @@ spring:
         name: \${info.app.organization}.notification.push
       notificationSms:
         name: \${info.app.organization}.notification.sms
+      userRegistered:
+        name: \${info.app.organization}.user.registered
+      userProfileUpdated:
+        name: \${info.app.organization}.user.profile.updated
+      userEmailUpdated:
+        name: \${info.app.organization}.user.email.updated
+      userPhoneUpdated:
+        name: \${info.app.organization}.user.phone.updated
+      userAddressUpdated:
+        name: \${info.app.organization}.user.address.updated
   main:
     bannerMode: LOG
   messages:

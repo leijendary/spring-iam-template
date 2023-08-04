@@ -13,8 +13,8 @@ import com.leijendary.spring.template.iam.entity.Role
 import com.leijendary.spring.template.iam.entity.User
 import com.leijendary.spring.template.iam.entity.UserCredential
 import com.leijendary.spring.template.iam.entity.Verification.Type.REGISTRATION
-import com.leijendary.spring.template.iam.message.NotificationProducer
-import com.leijendary.spring.template.iam.model.PushMessage
+import com.leijendary.spring.template.iam.message.NotificationMessageProducer
+import com.leijendary.spring.template.iam.message.UserMessageProducer
 import com.leijendary.spring.template.iam.repository.RoleRepository
 import com.leijendary.spring.template.iam.repository.UserRepository
 import com.leijendary.spring.template.iam.repository.VerificationRepository
@@ -26,9 +26,10 @@ import org.springframework.stereotype.Service
 @Service
 class RegisterService(
     private val messageSource: MessageSource,
-    private val notificationProducer: NotificationProducer,
+    private val notificationMessageProducer: NotificationMessageProducer,
     private val passwordEncoder: PasswordEncoder,
     private val roleRepository: RoleRepository,
+    private val userMessageProducer: UserMessageProducer,
     private val userRepository: UserRepository,
     private val verificationRepository: VerificationRepository,
     private val verificationValidator: VerificationValidator
@@ -69,12 +70,12 @@ class RegisterService(
             verificationRepository.delete(verification)
         }
 
-        val userId = user.id!!
+        userMessageProducer.registered(user)
+
         val title = messageSource.getMessage("notification.push.registration.title", emptyArray(), locale)
         val body = messageSource.getMessage("notification.push.registration.body", emptyArray(), locale)
-        val pushMessage = PushMessage(userId, title, body)
 
-        notificationProducer.push(pushMessage)
+        notificationMessageProducer.push(user.id!!, title, body)
 
         return Next(AUTHENTICATE.value)
     }
