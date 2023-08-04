@@ -16,7 +16,9 @@ class UserProviderService(
     private val userRepository: UserRepository
 ) {
     fun list(userId: UUID, pageable: Pageable): Page<UserProviderResponse> {
-        return userProviderRepository.findByUserId(userId, pageable).map(UserProviderMapper.INSTANCE::toResponse)
+        return userProviderRepository
+            .findByUserId(userId, pageable)
+            .map(UserProviderMapper.INSTANCE::toResponse)
     }
 
     fun create(userId: UUID, request: UserProviderRequest): UserProviderResponse {
