@@ -1,8 +1,8 @@
 package com.leijendary.spring.template.iam.api.v1.service
 
-import com.leijendary.spring.template.iam.api.v1.mapper.AddressMapper
-import com.leijendary.spring.template.iam.api.v1.model.AddressRequest
-import com.leijendary.spring.template.iam.api.v1.model.AddressResponse
+import com.leijendary.spring.template.iam.api.v1.mapper.UserAddressMapper
+import com.leijendary.spring.template.iam.api.v1.model.UserAddressRequest
+import com.leijendary.spring.template.iam.api.v1.model.UserAddressResponse
 import com.leijendary.spring.template.iam.core.validator.CountryValidator
 import com.leijendary.spring.template.iam.repository.UserAddressRepository
 import com.leijendary.spring.template.iam.repository.UserRepository
@@ -18,16 +18,16 @@ class AddressService(
     private val userAddressRepository: UserAddressRepository,
     private val userRepository: UserRepository
 ) {
-    fun list(userId: UUID, pageable: Pageable): Page<AddressResponse> {
+    fun list(userId: UUID, pageable: Pageable): Page<UserAddressResponse> {
         return userAddressRepository
             .findByUserId(userId, pageable)
-            .map(AddressMapper.INSTANCE::toResponse)
+            .map(UserAddressMapper.INSTANCE::toResponse)
     }
 
-    fun create(userId: UUID, request: AddressRequest): AddressResponse {
+    fun create(userId: UUID, request: UserAddressRequest): UserAddressResponse {
         val user = userRepository.findCachedByIdOrThrow(userId)
         val country = countryValidator.validateCode(request.countryCode!!)
-        val address = AddressMapper.INSTANCE.toEntity(request, country)
+        val address = UserAddressMapper.INSTANCE.toEntity(request, country)
             .apply { this.user = user }
             .let(userAddressRepository::saveAndCache)
 
@@ -35,20 +35,20 @@ class AddressService(
             unsetOthersAsPrimary(address.id!!, userId)
         }
 
-        return AddressMapper.INSTANCE.toResponse(address)
+        return UserAddressMapper.INSTANCE.toResponse(address)
     }
 
-    fun get(userId: UUID, id: UUID): AddressResponse {
+    fun get(userId: UUID, id: UUID): UserAddressResponse {
         val address = userAddressRepository.findFirstCachedByIdAndUserIdOrThrow(id, userId)
 
-        return AddressMapper.INSTANCE.toResponse(address)
+        return UserAddressMapper.INSTANCE.toResponse(address)
     }
 
-    fun update(userId: UUID, id: UUID, request: AddressRequest): AddressResponse {
+    fun update(userId: UUID, id: UUID, request: UserAddressRequest): UserAddressResponse {
         val address = userAddressRepository.findFirstByIdAndUserIdOrThrow(id, userId)
         val country = countryValidator.validateCode(request.countryCode!!)
 
-        AddressMapper.INSTANCE.update(request, country, address)
+        UserAddressMapper.INSTANCE.update(request, country, address)
 
         userAddressRepository.saveAndCache(address)
 
@@ -56,7 +56,7 @@ class AddressService(
             unsetOthersAsPrimary(address.id!!, userId)
         }
 
-        return AddressMapper.INSTANCE.toResponse(address)
+        return UserAddressMapper.INSTANCE.toResponse(address)
     }
 
     @Transactional

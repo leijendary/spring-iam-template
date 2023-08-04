@@ -1,6 +1,6 @@
 package com.leijendary.spring.template.iam.api.v1.rest
 
-import com.leijendary.spring.template.iam.api.v1.model.AddressResponse
+import com.leijendary.spring.template.iam.api.v1.model.UserAddressResponse
 import com.leijendary.spring.template.iam.api.v1.service.UserAddressService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
@@ -21,7 +21,7 @@ class UserAddressRest(private val userAddressService: UserAddressService) {
 
     @GetMapping("{id}")
     @Operation(summary = "Retrieves the address details from the database.")
-    fun get(@PathVariable userId: UUID, @PathVariable id: UUID): AddressResponse {
+    fun get(@PathVariable userId: UUID, @PathVariable id: UUID): UserAddressResponse {
         return userAddressService.get(userId, id)
     }
 }

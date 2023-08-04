@@ -1,7 +1,7 @@
 package com.leijendary.spring.template.iam.api.v1.rest
 
-import com.leijendary.spring.template.iam.api.v1.model.AddressRequest
-import com.leijendary.spring.template.iam.api.v1.model.AddressResponse
+import com.leijendary.spring.template.iam.api.v1.model.UserAddressRequest
+import com.leijendary.spring.template.iam.api.v1.model.UserAddressResponse
 import com.leijendary.spring.template.iam.api.v1.service.AddressService
 import com.leijendary.spring.template.iam.core.util.RequestContext.userIdOrThrow
 import io.swagger.v3.oas.annotations.Operation
@@ -24,7 +24,7 @@ class AddressRest(private val addressService: AddressService) {
     @PostMapping
     @ResponseStatus(CREATED)
     @Operation(summary = "Saves an address attached to the user into the database.")
-    fun create(@Valid @RequestBody request: AddressRequest) = addressService.create(userIdOrThrow, request)
+    fun create(@Valid @RequestBody request: UserAddressRequest) = addressService.create(userIdOrThrow, request)
 
     @GetMapping("{id}")
     @Operation(summary = "Retrieves the address details from the database.")
@@ -32,7 +32,7 @@ class AddressRest(private val addressService: AddressService) {
 
     @PutMapping("{id}")
     @Operation(summary = "Updates the address attached to the user into the database.")
-    fun update(@PathVariable id: UUID, @Valid @RequestBody request: AddressRequest): AddressResponse {
+    fun update(@PathVariable id: UUID, @Valid @RequestBody request: UserAddressRequest): UserAddressResponse {
         return addressService.update(userIdOrThrow, id, request)
     }
 
