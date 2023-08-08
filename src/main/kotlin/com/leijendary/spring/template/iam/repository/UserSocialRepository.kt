@@ -8,7 +8,7 @@ import java.util.*
 
 interface UserSocialRepository : JpaRepository<UserSocial, String> {
     @Transactional(readOnly = true)
-    fun findFirstByIdAndUserDeletedAtIsNull(id: String): UserSocial?
+    fun findByIdAndUserDeletedAtIsNull(id: String): UserSocial?
 
     @Transactional(readOnly = true)
     fun existsByUserIdAndProvider(userId: UUID, provider: Provider): Boolean

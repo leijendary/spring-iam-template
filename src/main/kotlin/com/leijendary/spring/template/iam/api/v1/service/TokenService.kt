@@ -119,9 +119,7 @@ class TokenService(
         val provider = request.provider!!
         val result = socialVerificationStrategy[provider]!!.verify(token)
         val id = result.id
-        val userSocial = userSocialRepository
-            .findFirstByIdAndUserDeletedAtIsNull(id)
-            ?: createSocial(result, provider)
+        val userSocial = userSocialRepository.findByIdAndUserDeletedAtIsNull(id) ?: createSocial(result, provider)
         val user = userSocial.user
         val email = result.email
         val auth = authorize(user, email, EMAIL)
@@ -142,24 +140,23 @@ class TokenService(
                 throw StatusException(socialSource, "access.user.social.exists", BAD_REQUEST, arrayOf(provider))
             }
         } else {
+            val account = Account().apply {
+                type = Account.Type.CUSTOMER
+                status = Account.Status.ACTIVE
+            }
+            val role = roleRepository.findCachedByNameOrThrow(Role.Default.CUSTOMER.value)
+            val newUser = UserMapper.INSTANCE.toEntity(socialResult).apply {
+                this.account = account
+                this.role = role
+            }
+            val newCredential = UserCredential().apply {
+                this.user = newUser
+                this.username = email
+                this.type = EMAIL
+            }
+            newUser.credentials.add(newCredential)
+
             user = transactional {
-                val account = Account().apply {
-                    type = Account.Type.CUSTOMER
-                    status = Account.Status.ACTIVE
-                }
-                val role = roleRepository.findFirstByNameOrThrow(Role.Default.CUSTOMER.value)
-                val newUser = UserMapper.INSTANCE.toEntity(socialResult).apply {
-                    this.account = account
-                    this.role = role
-                }
-                val newCredential = UserCredential().apply {
-                    this.user = newUser
-                    this.username = email
-                    this.type = EMAIL
-                }
-
-                newUser.credentials.add(newCredential)
-
                 userRepository.save(newUser)
                 userCredentialRepository.save(newCredential)
 
