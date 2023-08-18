@@ -9,9 +9,9 @@ fun Any.toJson(): String {
 
 fun Any.reflectField(property: String): Field {
     val field = try {
-        this.javaClass.getDeclaredField(property)
+        javaClass.getDeclaredField(property)
     } catch (_: NoSuchFieldException) {
-        this.javaClass.superclass.getDeclaredField(property)
+        javaClass.superclass.getDeclaredField(property)
     }
     field.isAccessible = true
 
