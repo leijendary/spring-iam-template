@@ -54,8 +54,7 @@ object RequestContext {
      */
     inline fun <reified T : Any> requestAttribute(name: String, default: () -> T): T {
         val requestAttributes = getRequestAttributes()!!
-        val attribute = requestAttributes.getAttribute(name, SCOPE_REQUEST)
-        var value = attribute as? T
+        var value = requestAttributes.getAttribute(name, SCOPE_REQUEST) as? T
 
         if (value !== null) {
             return value
