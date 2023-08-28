@@ -1,16 +1,15 @@
 package com.leijendary.spring.template.iam.api.v1.service
 
-import com.leijendary.spring.template.iam.api.v1.model.Next
-import com.leijendary.spring.template.iam.api.v1.model.Next.Type.AUTHENTICATE
-import com.leijendary.spring.template.iam.api.v1.model.PasswordChangeRequest
-import com.leijendary.spring.template.iam.api.v1.model.PasswordNominateRequest
-import com.leijendary.spring.template.iam.api.v1.model.PasswordResetRequest
+import com.leijendary.spring.template.iam.api.v1.mapper.TokenMapper
+import com.leijendary.spring.template.iam.api.v1.model.*
+import com.leijendary.spring.template.iam.api.v1.model.NextResponse.Type.AUTHENTICATE
 import com.leijendary.spring.template.iam.core.datasource.transactional
 import com.leijendary.spring.template.iam.core.exception.InvalidCredentialException
 import com.leijendary.spring.template.iam.core.util.RequestContext.userIdOrThrow
 import com.leijendary.spring.template.iam.entity.UserCredential
 import com.leijendary.spring.template.iam.entity.Verification.Type.PASSWORD_NOMINATE
 import com.leijendary.spring.template.iam.entity.Verification.Type.PASSWORD_RESET
+import com.leijendary.spring.template.iam.manager.AuthorizationManager
 import com.leijendary.spring.template.iam.repository.UserCredentialRepository
 import com.leijendary.spring.template.iam.repository.UserRepository
 import com.leijendary.spring.template.iam.repository.VerificationRepository
@@ -20,13 +19,14 @@ import org.springframework.stereotype.Service
 
 @Service
 class PasswordService(
+    private val authorizationManager: AuthorizationManager,
     private val passwordEncoder: PasswordEncoder,
     private val userCredentialRepository: UserCredentialRepository,
     private val userRepository: UserRepository,
     private val verificationRepository: VerificationRepository,
     private val verificationValidator: VerificationValidator
 ) {
-    fun nominate(request: PasswordNominateRequest): Next {
+    fun nominate(request: PasswordNominateRequest): TokenResponse {
         val verificationCode = request.verificationCode!!
         // Validate if the verification code exists first
         val verification = verificationValidator.validateByCode(verificationCode, PASSWORD_NOMINATE)
@@ -41,10 +41,12 @@ class PasswordService(
             verificationRepository.delete(verification)
         }
 
-        return Next(AUTHENTICATE.value)
+        val auth = authorizationManager.authorize(credential.user, credential.username, credential.type)
+
+        return TokenMapper.INSTANCE.toResponse(auth)
     }
 
-    fun change(request: PasswordChangeRequest): Next {
+    fun change(request: PasswordChangeRequest): NextResponse {
         val user = userRepository.findCachedByIdOrThrow(userIdOrThrow)
         val credential = user.credentials
             .firstOrNull { it.type == request.field!! }
@@ -60,10 +62,10 @@ class PasswordService(
 
         updatePassword(credential, password)
 
-        return Next(AUTHENTICATE.value)
+        return NextResponse(AUTHENTICATE.value)
     }
 
-    fun reset(request: PasswordResetRequest): Next {
+    fun reset(request: PasswordResetRequest): TokenResponse {
         val field = request.field!!
         val value = request.value!!
         val verificationCode = request.verificationCode!!
@@ -78,7 +80,9 @@ class PasswordService(
             verificationRepository.delete(verification)
         }
 
-        return Next(AUTHENTICATE.value)
+        val auth = authorizationManager.authorize(credential.user, credential.username, credential.type)
+
+        return TokenMapper.INSTANCE.toResponse(auth)
     }
 
     private fun updatePassword(credential: UserCredential, password: String) {

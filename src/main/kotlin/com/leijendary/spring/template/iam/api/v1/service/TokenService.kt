@@ -3,30 +3,33 @@ package com.leijendary.spring.template.iam.api.v1.service
 import com.leijendary.spring.template.iam.api.v1.mapper.TokenMapper
 import com.leijendary.spring.template.iam.api.v1.mapper.UserMapper
 import com.leijendary.spring.template.iam.api.v1.model.*
-import com.leijendary.spring.template.iam.core.config.properties.AuthProperties
 import com.leijendary.spring.template.iam.core.datasource.transactional
-import com.leijendary.spring.template.iam.core.exception.*
-import com.leijendary.spring.template.iam.core.security.JwtTools
+import com.leijendary.spring.template.iam.core.exception.InvalidCredentialException
+import com.leijendary.spring.template.iam.core.exception.StatusException
 import com.leijendary.spring.template.iam.core.util.RequestContext.now
-import com.leijendary.spring.template.iam.entity.*
+import com.leijendary.spring.template.iam.entity.Account
+import com.leijendary.spring.template.iam.entity.Role
+import com.leijendary.spring.template.iam.entity.UserCredential
 import com.leijendary.spring.template.iam.entity.UserCredential.Type.EMAIL
+import com.leijendary.spring.template.iam.entity.UserSocial
 import com.leijendary.spring.template.iam.entity.UserSocial.Provider
+import com.leijendary.spring.template.iam.manager.AuthorizationManager
 import com.leijendary.spring.template.iam.model.SocialResult
-import com.leijendary.spring.template.iam.repository.*
+import com.leijendary.spring.template.iam.repository.RoleRepository
+import com.leijendary.spring.template.iam.repository.UserCredentialRepository
+import com.leijendary.spring.template.iam.repository.UserRepository
+import com.leijendary.spring.template.iam.repository.UserSocialRepository
 import com.leijendary.spring.template.iam.strategy.SocialVerificationStrategy
-import com.nimbusds.jose.JOSEException
 import org.springframework.http.HttpStatus.BAD_REQUEST
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
-import java.util.*
+
+private val socialSource = listOf("body", "provider")
 
 @Service
 class TokenService(
-    private val authProperties: AuthProperties,
-    private val authRepository: AuthRepository,
-    private val jwtTools: JwtTools,
+    private val authorizationManager: AuthorizationManager,
     private val passwordEncoder: PasswordEncoder,
-    private val rolePermissionRepository: RolePermissionRepository,
     private val roleRepository: RoleRepository,
     private val userCredentialRepository: UserCredentialRepository,
     private val userRepository: UserRepository,
@@ -34,14 +37,6 @@ class TokenService(
     socialVerificationStrategies: List<SocialVerificationStrategy>,
 ) {
     private val socialVerificationStrategy = socialVerificationStrategies.associateBy { it.provider }
-
-    companion object {
-        private val accountSource = listOf("data", "Account", "status")
-        private val userSource = listOf("data", "User", "status")
-        private val accessSource = listOf("body", "accessToken")
-        private val refreshSource = listOf("body", "refreshToken")
-        private val socialSource = listOf("body", "provider")
-    }
 
     fun create(request: TokenRequest): TokenResponse {
         val username = request.username!!
@@ -83,7 +78,7 @@ class TokenService(
     fun social(request: SocialRequest): TokenResponse {
         val token = request.token!!
         val provider = request.provider!!
-        val result = socialVerificationStrategy[provider]!!.verify(token)
+        val result = socialVerificationStrategy.getValue(provider).verify(token)
         val userSocial = userSocialRepository.findByIdAndUserDeletedAtIsNull(result.id)
             ?: createSocial(result, provider)
         val auth = authorizationManager.authorize(userSocial.user, result.email, EMAIL)

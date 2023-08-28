@@ -4,7 +4,6 @@ import com.leijendary.spring.template.iam.core.util.RequestContext.now
 import org.springframework.boot.context.properties.ConfigurationProperties
 import java.time.Duration
 import java.time.OffsetDateTime
-import java.util.*
 
 @ConfigurationProperties("auth")
 class AuthProperties {

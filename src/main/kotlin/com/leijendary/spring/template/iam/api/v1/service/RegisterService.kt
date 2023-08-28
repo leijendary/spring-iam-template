@@ -1,11 +1,11 @@
 package com.leijendary.spring.template.iam.api.v1.service
 
+import com.leijendary.spring.template.iam.api.v1.mapper.TokenMapper
 import com.leijendary.spring.template.iam.api.v1.mapper.UserMapper
-import com.leijendary.spring.template.iam.api.v1.model.Next
-import com.leijendary.spring.template.iam.api.v1.model.Next.Type.AUTHENTICATE
 import com.leijendary.spring.template.iam.api.v1.model.RegisterEmailRequest
 import com.leijendary.spring.template.iam.api.v1.model.RegisterPhoneRequest
 import com.leijendary.spring.template.iam.api.v1.model.RegisterRequest
+import com.leijendary.spring.template.iam.api.v1.model.TokenResponse
 import com.leijendary.spring.template.iam.core.datasource.transactional
 import com.leijendary.spring.template.iam.core.util.RequestContext.locale
 import com.leijendary.spring.template.iam.entity.Account
@@ -13,6 +13,7 @@ import com.leijendary.spring.template.iam.entity.Role
 import com.leijendary.spring.template.iam.entity.User
 import com.leijendary.spring.template.iam.entity.UserCredential
 import com.leijendary.spring.template.iam.entity.Verification.Type.REGISTRATION
+import com.leijendary.spring.template.iam.manager.AuthorizationManager
 import com.leijendary.spring.template.iam.message.NotificationMessageProducer
 import com.leijendary.spring.template.iam.message.UserMessageProducer
 import com.leijendary.spring.template.iam.repository.RoleRepository
@@ -25,6 +26,7 @@ import org.springframework.stereotype.Service
 
 @Service
 class RegisterService(
+    private val authorizationManager: AuthorizationManager,
     private val messageSource: MessageSource,
     private val notificationMessageProducer: NotificationMessageProducer,
     private val passwordEncoder: PasswordEncoder,
@@ -34,7 +36,7 @@ class RegisterService(
     private val verificationRepository: VerificationRepository,
     private val verificationValidator: VerificationValidator
 ) {
-    fun register(request: RegisterRequest): Next {
+    fun register(request: RegisterRequest): TokenResponse {
         val credentialType = request.credentialType
         val username = request.username
         val verificationCode = request.verificationCode!!

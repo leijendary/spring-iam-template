@@ -5,7 +5,7 @@ import com.leijendary.spring.template.iam.core.model.ErrorModel
 import com.leijendary.spring.template.iam.core.util.RequestContext.locale
 import org.springframework.context.MessageSource
 import org.springframework.core.annotation.Order
-import org.springframework.http.HttpStatus.*
+import org.springframework.http.HttpStatus.UNAUTHORIZED
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestControllerAdvice

@@ -9,12 +9,10 @@ import com.leijendary.spring.template.iam.repository.VerificationRepository
 import org.springframework.http.HttpStatus.GONE
 import org.springframework.stereotype.Component
 
+private val expirySource = listOf("data", "Verification", "expiry")
+
 @Component
 class VerificationValidator(private val verificationRepository: VerificationRepository) {
-    companion object {
-        val expirySource = listOf("data", "Verification", "expiry")
-    }
-
     /**
      * Validate that the [field]-[value]-[code]-[type] combination exists and
      * is not expired. This method will throw an error if the verification is not found.

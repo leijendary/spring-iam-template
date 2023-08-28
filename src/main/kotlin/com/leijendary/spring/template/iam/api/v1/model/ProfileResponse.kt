@@ -2,7 +2,7 @@ package com.leijendary.spring.template.iam.api.v1.model
 
 import java.io.Serializable
 
-open data class ProfileResponse(
+data class ProfileResponse(
     val firstName: String,
     val middleName: String?,
     val lastName: String,

@@ -8,11 +8,12 @@ import org.springframework.stereotype.Service
 import software.amazon.awssdk.services.s3.model.NoSuchKeyException
 import java.util.*
 
+private val source = listOf("profile", "image")
+
 @Service
 class PictureService(private val s3Storage: S3Storage, private val userRepository: UserRepository) {
     companion object {
         private const val KEY_SUFFIX = ".png"
-        private val source = listOf("profile", "image")
         private val keyPrefix = source.joinToString("/", postfix = "/")
     }
 

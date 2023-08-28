@@ -1,6 +1,8 @@
 package com.leijendary.spring.template.iam.api.v1.rest
 
-import com.leijendary.spring.template.iam.api.v1.model.*
+import com.leijendary.spring.template.iam.api.v1.model.PasswordChangeRequest
+import com.leijendary.spring.template.iam.api.v1.model.PasswordNominateRequest
+import com.leijendary.spring.template.iam.api.v1.model.PasswordResetRequest
 import com.leijendary.spring.template.iam.api.v1.service.PasswordService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag

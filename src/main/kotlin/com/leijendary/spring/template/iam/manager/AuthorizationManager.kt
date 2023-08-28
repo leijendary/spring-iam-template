@@ -1,6 +1,32 @@
 package com.leijendary.spring.template.iam.manager
 
-class AuthorizationManager {
+import com.leijendary.spring.template.iam.core.config.properties.AuthProperties
+import com.leijendary.spring.template.iam.core.datasource.transactional
+import com.leijendary.spring.template.iam.core.exception.NotActiveException
+import com.leijendary.spring.template.iam.core.exception.ResourceNotFoundException
+import com.leijendary.spring.template.iam.core.exception.TokenExpiredException
+import com.leijendary.spring.template.iam.core.exception.TokenInvalidSignatureException
+import com.leijendary.spring.template.iam.core.security.JwtTools
+import com.leijendary.spring.template.iam.core.util.RequestContext.now
+import com.leijendary.spring.template.iam.entity.*
+import com.leijendary.spring.template.iam.repository.AuthRepository
+import com.leijendary.spring.template.iam.repository.RolePermissionRepository
+import com.nimbusds.jose.JOSEException
+import org.springframework.stereotype.Component
+import java.util.*
+
+private val accessSource = listOf("body", "accessToken")
+private val accountSource = listOf("data", "Account", "status")
+private val refreshSource = listOf("body", "refreshToken")
+private val userSource = listOf("data", "User", "status")
+
+@Component
+class AuthorizationManager(
+    private val authProperties: AuthProperties,
+    private val authRepository: AuthRepository,
+    private val jwtTools: JwtTools,
+    private val rolePermissionRepository: RolePermissionRepository
+) {
     fun authorize(user: User, username: String, type: UserCredential.Type): Auth {
         val auth = Auth().apply {
             this.user = user
