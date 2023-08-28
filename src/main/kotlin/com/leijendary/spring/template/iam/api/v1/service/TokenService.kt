@@ -62,74 +62,38 @@ class TokenService(
 
         userCredentialRepository.save(credential)
 
-        val user = credential.user
-        val auth = authorize(user, username, credential.type)
+        val auth = authorizationManager.authorize(credential.user, username, credential.type)
 
         return TokenMapper.INSTANCE.toResponse(auth)
     }
 
     fun refresh(request: TokenRefreshRequest): TokenResponse {
         val refreshToken = request.refreshToken!!
-        val jwt = try {
-            jwtTools.parse(refreshToken)
-        } catch (exception: JOSEException) {
-            throw TokenInvalidSignatureException(refreshSource)
-        }
-
-        if (!jwt.isVerified) {
-            throw TokenInvalidSignatureException(refreshSource)
-        }
-
-        val isExpired = jwt.expirationTime.isBefore(now)
-
-        if (isExpired) {
-            val accessTokenId = jwt.accessTokenId!!
-
-            removeByAccessId(accessTokenId)
-
-            throw TokenExpiredException(refreshSource)
-        }
-
-        val refreshTokenId = UUID.fromString(jwt.id)
-        val auth = authRepository
-            .findFirstByRefreshId(refreshTokenId)
-            ?.let { authorize(it, it.user) }
-            ?: throw ResourceNotFoundException(refreshSource, refreshTokenId)
+        val auth = authorizationManager.refresh(refreshToken)
 
         return TokenMapper.INSTANCE.toResponse(auth)
     }
 
     fun revoke(request: TokenRevokeRequest) {
         val accessToken = request.accessToken!!
-        val jwt = try {
-            jwtTools.parse(accessToken)
-        } catch (exception: JOSEException) {
-            throw TokenInvalidSignatureException(accessSource)
-        }
 
-        if (!jwt.isVerified) {
-            throw TokenInvalidSignatureException(accessSource)
-        }
-
-        removeByAccessId(jwt.id)
+        authorizationManager.revoke(accessToken)
     }
 
     fun social(request: SocialRequest): TokenResponse {
         val token = request.token!!
         val provider = request.provider!!
         val result = socialVerificationStrategy[provider]!!.verify(token)
-        val id = result.id
-        val userSocial = userSocialRepository.findByIdAndUserDeletedAtIsNull(id) ?: createSocial(result, provider)
-        val user = userSocial.user
-        val email = result.email
-        val auth = authorize(user, email, EMAIL)
+        val userSocial = userSocialRepository.findByIdAndUserDeletedAtIsNull(result.id)
+            ?: createSocial(result, provider)
+        val auth = authorizationManager.authorize(userSocial.user, result.email, EMAIL)
 
         return TokenMapper.INSTANCE.toResponse(auth)
     }
 
     private fun createSocial(socialResult: SocialResult, provider: Provider): UserSocial {
         val email = socialResult.email
-        val credential = userCredentialRepository.findFirstByUsernameAndUserDeletedAtIsNull(email)
+        var credential = userCredentialRepository.findFirstByUsernameAndUserDeletedAtIsNull(email)
         var user = credential?.user
 
         if (user != null) {
@@ -145,23 +109,21 @@ class TokenService(
                 status = Account.Status.ACTIVE
             }
             val role = roleRepository.findCachedByNameOrThrow(Role.Default.CUSTOMER.value)
-            val newUser = UserMapper.INSTANCE.toEntity(socialResult).apply {
+            user = UserMapper.INSTANCE.toEntity(socialResult).apply {
                 this.account = account
                 this.role = role
             }
-            val newCredential = UserCredential().apply {
-                this.user = newUser
+            credential = UserCredential().apply {
+                this.user = user
                 this.username = email
                 this.type = EMAIL
             }
-            newUser.credentials.add(newCredential)
+            user.credentials.add(credential)
 
-            user = transactional {
-                userRepository.save(newUser)
-                userCredentialRepository.save(newCredential)
-
-                newUser
-            }!!
+            transactional {
+                userRepository.save(user)
+                userCredentialRepository.save(credential)
+            }
         }
 
         val social = UserSocial().apply {
@@ -171,74 +133,5 @@ class TokenService(
         }
 
         return userSocialRepository.save(social)
-    }
-
-    private fun authorize(user: User, username: String, type: UserCredential.Type): Auth {
-        val auth = Auth().apply {
-            this.user = user
-            this.username = username
-            this.type = type
-        }
-
-        return authorize(auth, user)
-    }
-
-    private fun authorize(auth: Auth, user: User): Auth {
-        validateStatus(user.account, user)
-
-        val role = user.role!!
-        val scopes = scopes(role)
-        val audience = authProperties.issuer
-        val jwtSet = jwtTools.create(user.id.toString(), audience, scopes)
-        val accessToken = jwtSet.accessToken
-        val refreshToken = jwtSet.refreshToken
-        val authAccess = AuthAccess().apply {
-            this.id = accessToken.id
-            this.auth = auth
-            this.token = accessToken.value
-            this.expiresAt = accessToken.expiration
-        }
-        val authRefresh = AuthRefresh().apply {
-            this.id = refreshToken.id
-            this.auth = auth
-            this.accessTokenId = accessToken.id
-            this.token = refreshToken.value
-            this.expiresAt = refreshToken.expiration
-        }
-
-        auth.apply {
-            this.audience = audience
-            this.access = authAccess
-            this.refresh = authRefresh
-        }
-
-        return transactional { authRepository.save(auth) }!!
-    }
-
-    private fun validateStatus(account: Account?, user: User) {
-        account?.status?.let {
-            if (it != Account.Status.ACTIVE) {
-                throw NotActiveException(accountSource, "access.account.inactive")
-            }
-        }
-
-        if (user.status != User.Status.ACTIVE) {
-            throw NotActiveException(userSource, "access.user.inactive")
-        }
-    }
-
-    private fun scopes(role: Role): Set<String> {
-        val permissions = rolePermissionRepository.findAllByRoleId(role.id!!)
-
-        return permissions
-            .map { it.permission.value }
-            .toSet()
-    }
-
-    private fun removeByAccessId(accessTokenId: String) {
-        val accessId = UUID.fromString(accessTokenId)
-        val auth = authRepository.findFirstByAccessId(accessId) ?: return
-
-        authRepository.delete(auth)
     }
 }

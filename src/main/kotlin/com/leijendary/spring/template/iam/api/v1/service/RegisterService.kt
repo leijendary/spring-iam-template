@@ -77,6 +77,8 @@ class RegisterService(
 
         notificationMessageProducer.push(user.id!!, title, body)
 
-        return Next(AUTHENTICATE.value)
+        val auth = authorizationManager.authorize(user, username, credentialType)
+
+        return TokenMapper.INSTANCE.toResponse(auth)
     }
 }

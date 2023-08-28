@@ -40,7 +40,7 @@ class ProfileService(
         return ProfileMapper.INSTANCE.toResponse(user)
     }
 
-    fun username(request: UpdateUsernameRequest): Next {
+    fun username(request: UpdateUsernameRequest): ProfileResponse {
         val credentialType = request.credentialType
         val username = request.username
         val verificationCode = request.verificationCode!!
@@ -79,6 +79,6 @@ class ProfileService(
             PHONE -> userMessageProducer.phoneUpdated(user)
         }
 
-        return Next(AUTHENTICATE.value)
+        return ProfileMapper.INSTANCE.toResponse(user)
     }
 }
