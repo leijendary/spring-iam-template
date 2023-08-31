@@ -9,6 +9,8 @@ import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.security.oauth2.jwt.JwtDecoder
 import org.springframework.security.oauth2.jwt.JwtException
 
+private val source = listOf("body", "token")
+
 abstract class SocialVerificationStrategy {
     private val log = logger()
 
@@ -26,10 +28,10 @@ abstract class SocialVerificationStrategy {
             log.warn(message)
 
             if (message.contains("expired")) {
-                throw statusException("access.expired")
+                throw StatusException(source, "access.expired", UNAUTHORIZED)
             }
 
-            throw statusException("access.invalid")
+            throw StatusException(source, "access.invalid", UNAUTHORIZED)
         }
 
         return mapper(jwt)
@@ -37,11 +39,5 @@ abstract class SocialVerificationStrategy {
 
     open fun mapper(jwt: Jwt): SocialResult {
         throw NotImplementedError()
-    }
-
-    private fun statusException(code: String): StatusException {
-        val source = listOf("header", "authorization")
-
-        return StatusException(source, code, UNAUTHORIZED)
     }
 }
