@@ -22,7 +22,6 @@ interface UserMapper {
         val INSTANCE: UserMapper = getMapper(UserMapper::class.java)
     }
 
-    @Mapping(target = "image", ignore = true)
     fun toResponse(user: User): UserResponse
 
     fun toEntity(registerEmailRequest: RegisterEmailRequest): User
@@ -50,8 +49,8 @@ interface UserMapper {
     fun toPhoneMessage(user: User): UserPhoneMessage
 
     @AfterMapping
-    fun setImage(user: User, @MappingTarget userResponse: UserResponse) {
-        val image = user.image
+    fun setImage(@MappingTarget userResponse: UserResponse) {
+        val image = userResponse.image
 
         if (image != null && !image.startsWith("http")) {
             userResponse.image = image.let(s3Storage::sign)
