@@ -42,7 +42,7 @@ class UserService(
     }
 
     fun create(request: UserRequest): UserResponse {
-        val role = request.role!!.id!!.let(roleRepository::findCachedByIdOrThrow)
+        val role = roleRepository.findCachedByIdOrThrow(request.role!!.id!!)
         val account = request.account?.let {
             Account().apply {
                 type = it.type!!
@@ -87,7 +87,7 @@ class UserService(
     }
 
     fun update(id: UUID, request: UserRequest): UserResponse {
-        val role = request.role!!.id!!.let(roleRepository::findCachedByIdOrThrow)
+        val role = roleRepository.findCachedByIdOrThrow(request.role!!.id!!)
         val user = userRepository.findByIdOrThrow(id).apply { this.role = role }
 
         UserMapper.INSTANCE.update(request, user)

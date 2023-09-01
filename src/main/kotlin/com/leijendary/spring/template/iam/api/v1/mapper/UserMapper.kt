@@ -52,8 +52,8 @@ interface UserMapper {
     fun setImage(@MappingTarget userResponse: UserResponse) {
         val image = userResponse.image
 
-        if (image != null && !image.startsWith("http")) {
-            userResponse.image = image.let(s3Storage::sign)
+        if (image !== null && !image.startsWith("http")) {
+            userResponse.image = s3Storage.sign(image)
         }
     }
 }

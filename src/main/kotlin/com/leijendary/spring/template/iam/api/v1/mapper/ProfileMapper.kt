@@ -29,8 +29,8 @@ interface ProfileMapper {
     fun setImage(@MappingTarget profileResponse: ProfileResponse) {
         val image = profileResponse.image
 
-        if (image != null && !image.startsWith("http")) {
-            profileResponse.image = image.let(s3Storage::sign)
+        if (image !== null && !image.startsWith("http")) {
+            profileResponse.image = s3Storage.sign(image)
         }
     }
 }
