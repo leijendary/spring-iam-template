@@ -1,14 +1,12 @@
 package com.leijendary.spring.template.iam.event
 
 import com.leijendary.spring.template.iam.entity.Verification
-import com.leijendary.spring.template.iam.strategy.VerificationNotificationStrategy
+import com.leijendary.spring.template.iam.registry.VerificationNotificationRegistry
 import org.springframework.retry.annotation.Retryable
 import org.springframework.stereotype.Component
 
 @Component
-class VerificationEvent(notificationStrategies: List<VerificationNotificationStrategy>) {
-    private val strategy = notificationStrategies.associateBy { it.field }
-
+class VerificationEvent(private val verificationNotificationRegistry: VerificationNotificationRegistry) {
     @Retryable
     fun notify(verification: Verification) {
         val field = verification.field
@@ -18,6 +16,6 @@ class VerificationEvent(notificationStrategies: List<VerificationNotificationStr
             return
         }
 
-        strategy[field]?.send(verification)
+        verificationNotificationRegistry.using(field) { send(verification) }
     }
 }

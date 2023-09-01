@@ -15,11 +15,11 @@ import com.leijendary.spring.template.iam.entity.UserSocial
 import com.leijendary.spring.template.iam.entity.UserSocial.Provider
 import com.leijendary.spring.template.iam.manager.AuthorizationManager
 import com.leijendary.spring.template.iam.model.SocialResult
+import com.leijendary.spring.template.iam.registry.SocialVerificationRegistry
 import com.leijendary.spring.template.iam.repository.RoleRepository
 import com.leijendary.spring.template.iam.repository.UserCredentialRepository
 import com.leijendary.spring.template.iam.repository.UserRepository
 import com.leijendary.spring.template.iam.repository.UserSocialRepository
-import com.leijendary.spring.template.iam.strategy.SocialVerificationStrategy
 import org.springframework.http.HttpStatus.BAD_REQUEST
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
@@ -31,13 +31,11 @@ class TokenService(
     private val authorizationManager: AuthorizationManager,
     private val passwordEncoder: PasswordEncoder,
     private val roleRepository: RoleRepository,
+    private val socialVerificationRegistry: SocialVerificationRegistry,
     private val userCredentialRepository: UserCredentialRepository,
     private val userRepository: UserRepository,
     private val userSocialRepository: UserSocialRepository,
-    socialVerificationStrategies: List<SocialVerificationStrategy>,
 ) {
-    private val socialVerificationStrategy = socialVerificationStrategies.associateBy { it.provider }
-
     fun create(request: TokenRequest): TokenResponse {
         val username = request.username!!
         val password = request.password!!
@@ -78,7 +76,7 @@ class TokenService(
     fun social(request: SocialRequest): TokenResponse {
         val token = request.token!!
         val provider = request.provider!!
-        val result = socialVerificationStrategy.getValue(provider).verify(token)
+        val result = socialVerificationRegistry.using(provider) { verify(token) }!!
         val userSocial = userSocialRepository.findByIdAndUserDeletedAtIsNull(result.id)
             ?: createSocial(result, provider)
         val auth = authorizationManager.authorize(userSocial.user, result.email, EMAIL)
