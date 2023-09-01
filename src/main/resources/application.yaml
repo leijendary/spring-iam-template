@@ -80,6 +80,7 @@ spring:
   cloud:
     aws:
       cloudFront:
+        distributionId:
         url:
         publicKeyId:
         privateKey:

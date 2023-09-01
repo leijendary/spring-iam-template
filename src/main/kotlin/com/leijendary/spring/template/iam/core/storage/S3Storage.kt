@@ -5,27 +5,30 @@ import com.leijendary.spring.template.iam.core.config.properties.AwsS3Properties
 import com.leijendary.spring.template.iam.core.extension.rsaPrivateKey
 import com.leijendary.spring.template.iam.core.storage.S3Storage.Request.GET
 import com.leijendary.spring.template.iam.core.storage.S3Storage.Request.PUT
-import com.leijendary.spring.template.iam.core.util.RequestContext.now
 import jakarta.servlet.http.HttpServletResponse
 import org.bouncycastle.jce.provider.BouncyCastleProvider
 import org.springframework.stereotype.Service
 import software.amazon.awssdk.core.ResponseInputStream
 import software.amazon.awssdk.core.sync.RequestBody
+import software.amazon.awssdk.services.cloudfront.CloudFrontClient
 import software.amazon.awssdk.services.cloudfront.CloudFrontUtilities
 import software.amazon.awssdk.services.cloudfront.model.CannedSignerRequest
+import software.amazon.awssdk.services.cloudfront.model.CreateInvalidationRequest
+import software.amazon.awssdk.services.cloudfront.model.InvalidationBatch
 import software.amazon.awssdk.services.s3.S3Client
 import software.amazon.awssdk.services.s3.model.*
 import software.amazon.awssdk.services.s3.presigner.S3Presigner
 import software.amazon.awssdk.services.s3.presigner.model.PutObjectPresignRequest
 import java.io.File
 import java.security.KeyFactory
+import java.time.Instant
 
-private const val KEY_TEMP_SUFFIX = ".tmp"
 
 @Service
 class S3Storage(
     private val awsCloudFrontProperties: AwsCloudFrontProperties,
     private val awsS3Properties: AwsS3Properties,
+    private val cloudFrontClient: CloudFrontClient,
     private val s3Client: S3Client,
     private val s3Presigner: S3Presigner
 ) {
@@ -38,19 +41,6 @@ class S3Storage(
         PUT
     }
 
-    fun signTemp(key: String): String {
-        val tempKey = "$key$KEY_TEMP_SUFFIX"
-
-        return signPut(tempKey)
-    }
-
-    fun moveTemp(key: String) {
-        val tempKey = "$key$KEY_TEMP_SUFFIX"
-
-        copy(tempKey, key)
-        delete(tempKey)
-    }
-
     fun sign(key: String, request: Request = GET) = when (request) {
         GET -> signGet(key)
         PUT -> signPut(key)
@@ -58,7 +48,7 @@ class S3Storage(
 
     fun signGet(key: String): String {
         val resourceUrl = "${awsCloudFrontProperties.url}/$key"
-        val expiry = now.plus(awsCloudFrontProperties.signatureDuration).toInstant()
+        val expiry = Instant.now().plus(awsCloudFrontProperties.signatureDuration)
         val signerRequest = CannedSignerRequest.builder()
             .keyPairId(awsCloudFrontProperties.publicKeyId)
             .resourceUrl(resourceUrl)
@@ -99,6 +89,40 @@ class S3Storage(
         val s3Object = stream(key)
 
         return s3Object.response()
+    }
+
+    fun head(key: String): HeadObjectResponse {
+        val request = HeadObjectRequest
+            .builder()
+            .bucket(awsS3Properties.bucketName)
+            .key(key)
+            .build()
+
+        return s3Client.headObject(request)
+    }
+
+    fun exists(key: String): Boolean = try {
+        head(key)
+        true
+    } catch (_: NoSuchKeyException) {
+        false
+    }
+
+    fun invalidateCache(reference: String, vararg keys: String) {
+        val items = keys.map { if (it.startsWith("/")) it else "/$it" }
+        val callerReference = "$reference:${Instant.now().epochSecond}"
+        val batch = InvalidationBatch
+            .builder()
+            .paths { it.items(items).quantity(keys.size) }
+            .callerReference(callerReference)
+            .build()
+        val request = CreateInvalidationRequest
+            .builder()
+            .distributionId(awsCloudFrontProperties.distributionId)
+            .invalidationBatch(batch)
+            .build()
+
+        cloudFrontClient.createInvalidation(request)
     }
 
     fun stream(key: String): ResponseInputStream<GetObjectResponse> {
