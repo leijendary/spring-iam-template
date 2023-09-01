@@ -13,8 +13,7 @@ class AwsConfiguration(
 ) {
     @Bean
     fun cloudFrontClient(): CloudFrontClient {
-        return CloudFrontClient
-            .builder()
+        return CloudFrontClient.builder()
             .credentialsProvider(awsCredentialsProvider)
             .region(awsRegionProvider.region)
             .build()
