@@ -19,20 +19,11 @@ class EmailVerificationNotificationStrategy(
         get() = EMAIL
 
     override fun template(code: String, type: Verification.Type) = when (type) {
-        REGISTRATION -> NotificationTemplate(
-            verificationProperties.register.templateId,
-            codeParameter(code),
-        )
+        REGISTRATION -> NotificationTemplate(verificationProperties.register.templateId, codeParameter(code))
 
-        EMAIL_CHANGE -> NotificationTemplate(
-            verificationProperties.email.templateId,
-            codeParameter(code),
-        )
+        EMAIL_CHANGE -> NotificationTemplate(verificationProperties.email.templateId, codeParameter(code))
 
-        PASSWORD_RESET -> NotificationTemplate(
-            verificationProperties.password.reset.templateId,
-            codeParameter(code),
-        )
+        PASSWORD_RESET -> NotificationTemplate(verificationProperties.password.reset.templateId, codeParameter(code))
 
         PASSWORD_NOMINATE -> NotificationTemplate(
             verificationProperties.password.nominate.templateId,
