@@ -60,13 +60,11 @@ class S3Storage(
     }
 
     fun signPut(key: String): String {
-        val request = PutObjectRequest
-            .builder()
+        val request = PutObjectRequest.builder()
             .bucket(awsS3Properties.bucketName)
             .key(key)
             .build()
-        val signRequest = PutObjectPresignRequest
-            .builder()
+        val signRequest = PutObjectPresignRequest.builder()
             .putObjectRequest(request)
             .signatureDuration(awsS3Properties.signatureDuration)
             .build()
@@ -92,8 +90,7 @@ class S3Storage(
     }
 
     fun head(key: String): HeadObjectResponse {
-        val request = HeadObjectRequest
-            .builder()
+        val request = HeadObjectRequest.builder()
             .bucket(awsS3Properties.bucketName)
             .key(key)
             .build()
@@ -111,13 +108,11 @@ class S3Storage(
     fun invalidateCache(reference: String, vararg keys: String) {
         val items = keys.map { if (it.startsWith("/")) it else "/$it" }
         val callerReference = "$reference:${Instant.now().epochSecond}"
-        val batch = InvalidationBatch
-            .builder()
+        val batch = InvalidationBatch.builder()
             .paths { it.items(items).quantity(keys.size) }
             .callerReference(callerReference)
             .build()
-        val request = CreateInvalidationRequest
-            .builder()
+        val request = CreateInvalidationRequest.builder()
             .distributionId(awsCloudFrontProperties.distributionId)
             .invalidationBatch(batch)
             .build()
@@ -168,9 +163,7 @@ class S3Storage(
         val ids = keys.map { key -> ObjectIdentifier.builder().key(key).build() }
         val request = DeleteObjectsRequest.builder()
             .bucket(awsS3Properties.bucketName)
-            .delete {
-                it.objects(ids).build()
-            }
+            .delete { it.objects(ids).build() }
             .build()
 
         return s3Client.deleteObjects(request)
