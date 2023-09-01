@@ -492,7 +492,7 @@ databaseChangeLog:
                   constraints:
                     nullable: false
               - column:
-                  name: name
+                  name: label
                   type: varchar(50)
                   constraints:
                     nullable: false
@@ -924,7 +924,7 @@ databaseChangeLog:
       author: Leijendekker
       changes:
         - sql:
-            sql: create unique index user_address_user_id_name_key on user_address (user_id, lower(name));
+            sql: create unique index user_address_user_id_label_key on user_address (user_id, lower(label));
   - changeSet:
       id: add-user-account-id-index
       author: Leijendekker

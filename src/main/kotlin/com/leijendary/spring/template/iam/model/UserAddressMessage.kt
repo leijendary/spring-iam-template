@@ -5,7 +5,7 @@ import java.util.*
 data class UserAddressMessage(
     val id: UUID,
     val userId: UUID,
-    val name: String,
+    val label: String,
     val street: String,
     val additional: String?,
     val city: String,

@@ -21,7 +21,7 @@ class UserAddress : AppEntity(), UUIDProjection {
     @ManyToOne
     lateinit var user: User
 
-    lateinit var name: String
+    lateinit var label: String
     lateinit var street: String
     var additional: String? = null
     lateinit var city: String
