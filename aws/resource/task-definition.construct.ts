@@ -1,4 +1,5 @@
 import { Duration, RemovalPolicy } from "aws-cdk-lib";
+import { Distribution, IDistribution } from "aws-cdk-lib/aws-cloudfront";
 import { IRepository, Repository } from "aws-cdk-lib/aws-ecr";
 import {
   AppProtocol,
@@ -28,6 +29,7 @@ const organization = env.organization;
 const port = env.port;
 const imageTag = env.imageTag;
 const { id, name } = env.stack;
+const { id: distributionId, domainName: distributionDomainName } = env.distribution;
 const family = `${name}-${environment}`;
 const assumedBy = new ServicePrincipal("ecs-tasks.amazonaws.com");
 const logPrefix = "/ecs/fargate";
@@ -40,6 +42,7 @@ export class TaskDefinitionConstruct extends TaskDefinition {
     const repository = getRepository(scope, repositoryArn);
     const image = getImage(repository);
     const bucket = getBucket(scope);
+    const distribution = getDistribution(scope);
     const logGroup = createLogGroup(scope);
     const taskRole = createTaskRole(scope);
     const executionRole = createExecutionRole(scope, logGroup, repository);
@@ -61,6 +64,7 @@ export class TaskDefinitionConstruct extends TaskDefinition {
     this.container(scope, image, logGroup);
     this.trustPolicy(taskRole, executionRole);
     this.grantBucketAccess(taskRole, bucket);
+    this.grantDistribution(taskRole, distribution);
   }
 
   private container(scope: Construct, image: ContainerImage, logGroup: LogGroup) {
@@ -130,6 +134,10 @@ export class TaskDefinitionConstruct extends TaskDefinition {
     bucket.grantPut(role);
     bucket.grantDelete(role);
   }
+
+  private grantDistribution(role: Role, distribution: IDistribution) {
+    distribution.grantCreateInvalidation(role);
+  }
 }
 
 const createLogGroup = (scope: Construct) => {
@@ -183,6 +191,13 @@ const getImage = (repository: IRepository) => {
 
 const getBucket = (scope: Construct) => {
   return Bucket.fromBucketName(scope, `${id}Bucket-${environment}`, `${organization}-api-${environment}`);
+};
+
+const getDistribution = (scope: Construct) => {
+  return Distribution.fromDistributionAttributes(scope, `${id}Distribution-${environment}`, {
+    distributionId,
+    domainName: distributionDomainName,
+  });
 };
 
 const getSecurityCredentials = (scope: Construct) => {

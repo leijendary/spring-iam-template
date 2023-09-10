@@ -18,4 +18,8 @@ export default {
     id: process.env.NAMESPACE_ID!!,
     name: process.env.NAMESPACE_NAME!!,
   },
+  distribution: {
+    id: process.env.DISTRIBUTION_ID!!,
+    domainName: process.env.DISTRIBUTION_DOMAIN_NAME!!,
+  },
 };
