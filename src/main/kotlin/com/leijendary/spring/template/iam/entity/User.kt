@@ -21,9 +21,9 @@ class User : AuditingUUIDEntity(), PhoneProjection, SoftDeleteEntity {
         ACTIVE
     }
 
-    lateinit var firstName: String
+    var firstName: String? = null
     var middleName: String? = null
-    lateinit var lastName: String
+    var lastName: String? = null
     lateinit var email: String
     var emailVerified: Boolean = false
     override var countryCode: String? = null
