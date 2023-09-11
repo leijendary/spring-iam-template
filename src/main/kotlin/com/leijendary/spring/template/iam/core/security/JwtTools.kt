@@ -17,11 +17,10 @@ import com.nimbusds.jose.crypto.RSASSASigner
 import com.nimbusds.jose.crypto.RSASSAVerifier
 import com.nimbusds.jwt.JWTClaimsSet
 import com.nimbusds.jwt.SignedJWT
-import org.springframework.core.task.AsyncTaskExecutor
 import org.springframework.stereotype.Component
 import java.security.KeyFactory
 import java.util.*
-import java.util.concurrent.Callable
+import java.util.concurrent.CompletableFuture.supplyAsync
 
 private const val CLAIM_SCOPE = "scope"
 private const val CLAIM_ATI = "ati"
@@ -29,7 +28,7 @@ private const val CLAIM_ISSUE_TIME = "iat"
 private val keyFactory = KeyFactory.getInstance("RSA")
 
 @Component
-class JwtTools(private val asyncTaskExecutor: AsyncTaskExecutor, private val authProperties: AuthProperties) {
+class JwtTools(private val authProperties: AuthProperties) {
     val publicKey = mapOf(
         ACCESS_TOKEN to keyFactory.rsaPublicKey(authProperties.accessToken.publicKey),
         REFRESH_TOKEN to keyFactory.rsaPublicKey(authProperties.refreshToken.publicKey),
@@ -47,14 +46,9 @@ class JwtTools(private val asyncTaskExecutor: AsyncTaskExecutor, private val aut
 
     fun create(subject: String, audience: String, scopes: Set<String>): JwtSet {
         val accessId = UUID.randomUUID()
-        val accessToken = asyncTaskExecutor.submit(Callable {
-            create(accessId, ACCESS_TOKEN, subject, audience, scopes)
-        })
-        val refreshToken = asyncTaskExecutor.submit(Callable {
-            val refreshId = UUID.randomUUID()
-
-            create(refreshId, REFRESH_TOKEN, subject, audience, scopes, accessId.toString())
-        })
+        val accessToken = supplyAsync { create(accessId, ACCESS_TOKEN, subject, audience, scopes) }
+        val refreshId = UUID.randomUUID()
+        val refreshToken = supplyAsync { create(refreshId, REFRESH_TOKEN, subject, audience, scopes, accessId) }
 
         return JwtSet(accessToken.get(), refreshToken.get())
     }
@@ -65,7 +59,7 @@ class JwtTools(private val asyncTaskExecutor: AsyncTaskExecutor, private val aut
         subject: String,
         audience: String,
         scopes: Set<String>,
-        ati: String? = null
+        ati: UUID? = null
     ): Token {
         val expiration = when (type) {
             ACCESS_TOKEN -> authProperties.accessToken.computeExpiration()
@@ -91,9 +85,7 @@ class JwtTools(private val asyncTaskExecutor: AsyncTaskExecutor, private val aut
             claims.claim(CLAIM_SCOPE, scope)
         }
 
-        ati?.let {
-            claims.claim(CLAIM_ATI, it)
-        }
+        ati?.let { claims.claim(CLAIM_ATI, it.toString()) }
 
         val privateKey = privateKey[type]!!
         val signer = RSASSASigner(privateKey)
