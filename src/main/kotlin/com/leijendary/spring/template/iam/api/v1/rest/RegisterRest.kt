@@ -13,7 +13,10 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/api/v1/register")
-@Tag(name = "Register", description = ".")
+@Tag(
+    name = "Register",
+    description = "Registration APIs for customers. This API will create users with the Customer role."
+)
 class RegisterRest(private val registerService: RegisterService) {
     @PostMapping("email")
     @Operation(
