@@ -1,6 +1,5 @@
 package com.leijendary.spring.template.iam.api.v1.model
 
-import java.io.Serializable
 import java.util.*
 
 data class UserAddressResponse(
@@ -16,4 +15,4 @@ data class UserAddressResponse(
     val latitude: Double,
     val longitude: Double,
     val primary: Boolean
-) : Serializable
+)

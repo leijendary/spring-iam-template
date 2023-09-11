@@ -1,6 +1,5 @@
 package com.leijendary.spring.template.iam.api.v1.model
 
-import java.io.Serializable
 import java.time.OffsetDateTime
 import java.util.*
 
@@ -23,4 +22,4 @@ data class UserResponse(
     val createdBy: String,
     val lastModifiedAt: OffsetDateTime,
     val lastModifiedBy: String,
-) : Serializable
+)

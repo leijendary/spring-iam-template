@@ -1,7 +1,5 @@
 package com.leijendary.spring.template.iam.api.v1.model
 
-import java.io.Serializable
-
 data class ProfileResponse(
     val firstName: String?,
     val middleName: String?,
@@ -12,4 +10,4 @@ data class ProfileResponse(
     val phone: String?,
     val phoneVerified: Boolean = false,
     var image: String?
-) : Serializable
+)
