@@ -22,7 +22,7 @@ jobs:
       - name: Execute Gradle Test
         uses: gradle/gradle-build-action@v2
         with:
-          arguments: test --info
+          arguments: test -i
         env:
           SPRING_PROFILES_ACTIVE: ci
           SPRING_CLOUD_AWS_CREDENTIALS_INSTANCE_PROFILE: false
