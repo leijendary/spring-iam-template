@@ -6,7 +6,7 @@ import com.leijendary.spring.template.iam.api.v1.model.VerificationCreateRequest
 import com.leijendary.spring.template.iam.core.config.properties.VerificationProperties
 import com.leijendary.spring.template.iam.core.datasource.transactional
 import com.leijendary.spring.template.iam.core.exception.StatusException
-import com.leijendary.spring.template.iam.generator.CodeGenerationStrategy
+import com.leijendary.spring.template.iam.generator.CodeGenerator
 import com.leijendary.spring.template.iam.repository.VerificationRepository
 import org.springframework.http.HttpStatus.BAD_REQUEST
 import org.springframework.stereotype.Service
@@ -30,7 +30,7 @@ class VerificationService(
             throw StatusException(timeoutSource, "validation.verification.timeout", BAD_REQUEST)
         }
 
-        val generator = CodeGenerationStrategy.fromField(field)
+        val generator = CodeGenerator.fromField(field)
         val verification = VerificationMapper.INSTANCE.toEntity(request).apply {
             code = generator.generate()
             expiresAt = verificationProperties.computeExpiration()

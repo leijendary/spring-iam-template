@@ -1,4 +1,4 @@
-package com.leijendary.spring.template.iam.strategy
+package com.leijendary.spring.template.iam.handler
 
 import com.leijendary.spring.template.iam.client.FacebookClient
 import com.leijendary.spring.template.iam.entity.UserSocial.Provider
@@ -7,7 +7,7 @@ import com.leijendary.spring.template.iam.model.SocialResult
 import org.springframework.stereotype.Component
 
 @Component
-class FacebookSocialVerificationStrategy(private val facebookClient: FacebookClient) : SocialVerificationStrategy() {
+class FacebookSocialVerificationHandler(private val facebookClient: FacebookClient) : SocialVerificationHandler() {
     override val provider: Provider
         get() = FACEBOOK
 

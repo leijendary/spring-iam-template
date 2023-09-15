@@ -74,19 +74,17 @@ class TokenService(
     }
 
     fun social(request: SocialRequest): TokenResponse {
-        val token = request.token!!
         val provider = request.provider!!
-        val result = socialVerificationRegistry.using(provider) { verify(token) }!!
+        val result = socialVerificationRegistry.using(provider) { verify(request.token!!) }!!
         val userSocial = userSocialRepository.findByIdAndUserDeletedAtIsNull(result.id)
-            ?: createSocial(result, provider)
+            ?: createSocial(request, result, provider)
         val auth = authorizationManager.authorize(userSocial.user, result.email, EMAIL)
 
         return TokenMapper.INSTANCE.toResponse(auth)
     }
 
-    private fun createSocial(socialResult: SocialResult, provider: Provider): UserSocial {
-        val email = socialResult.email
-        var credential = userCredentialRepository.findFirstByUsernameAndUserDeletedAtIsNull(email)
+    private fun createSocial(request: SocialRequest, result: SocialResult, provider: Provider): UserSocial {
+        var credential = userCredentialRepository.findFirstByUsernameAndUserDeletedAtIsNull(result.email)
         var user = credential?.user
 
         if (user != null) {
@@ -102,13 +100,17 @@ class TokenService(
                 status = Account.Status.ACTIVE
             }
             val role = roleRepository.findCachedByNameOrThrow(Role.Default.CUSTOMER.value)
-            user = UserMapper.INSTANCE.toEntity(socialResult).apply {
+            user = UserMapper.INSTANCE.toEntity(result).apply {
+                // Replace null or blank first and last names from the request. This is applicable to
+                // apple since they give the frontend the first name and last name of the user.
+                this.firstName = this.firstName?.ifBlank { request.firstName } ?: request.firstName
+                this.lastName = this.lastName?.ifBlank { request.lastName } ?: request.lastName
                 this.account = account
                 this.role = role
             }
             credential = UserCredential().apply {
                 this.user = user
-                this.username = email
+                this.username = result.email
                 this.type = EMAIL
             }
             user.credentials.add(credential)
@@ -120,7 +122,7 @@ class TokenService(
         }
 
         val social = UserSocial().apply {
-            this.id = socialResult.id
+            this.id = result.id
             this.user = user
             this.provider = provider
         }

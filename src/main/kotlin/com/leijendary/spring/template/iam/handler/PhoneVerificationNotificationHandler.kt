@@ -1,4 +1,4 @@
-package com.leijendary.spring.template.iam.strategy
+package com.leijendary.spring.template.iam.handler
 
 import com.leijendary.spring.template.iam.core.util.RequestContext.locale
 import com.leijendary.spring.template.iam.entity.UserCredential
@@ -11,10 +11,10 @@ import org.springframework.context.MessageSource
 import org.springframework.stereotype.Component
 
 @Component
-class PhoneVerificationNotificationStrategy(
+class PhoneVerificationNotificationHandler(
     private val messageSource: MessageSource,
     private val notificationMessageProducer: NotificationMessageProducer
-) : VerificationNotificationStrategy {
+) : VerificationNotificationHandler {
     override val field: UserCredential.Type
         get() = PHONE
 

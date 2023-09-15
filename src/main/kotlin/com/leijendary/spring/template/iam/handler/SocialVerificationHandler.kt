@@ -1,4 +1,4 @@
-package com.leijendary.spring.template.iam.strategy
+package com.leijendary.spring.template.iam.handler
 
 import com.leijendary.spring.template.iam.core.exception.StatusException
 import com.leijendary.spring.template.iam.core.extension.logger
@@ -11,7 +11,7 @@ import org.springframework.security.oauth2.jwt.JwtException
 
 private val source = listOf("body", "token")
 
-abstract class SocialVerificationStrategy {
+abstract class SocialVerificationHandler {
     private val log = logger()
 
     abstract val provider: Provider

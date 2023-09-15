@@ -1,4 +1,4 @@
-package com.leijendary.spring.template.iam.strategy
+package com.leijendary.spring.template.iam.handler
 
 import com.leijendary.spring.template.iam.core.config.properties.VerificationProperties
 import com.leijendary.spring.template.iam.entity.UserCredential
@@ -11,10 +11,10 @@ import org.springframework.stereotype.Component
 import org.springframework.web.util.UriComponentsBuilder
 
 @Component
-class EmailVerificationNotificationStrategy(
+class EmailVerificationNotificationHandler(
     private val notificationMessageProducer: NotificationMessageProducer,
     private val verificationProperties: VerificationProperties
-) : VerificationNotificationStrategy {
+) : VerificationNotificationHandler {
     override val field: UserCredential.Type
         get() = EMAIL
 

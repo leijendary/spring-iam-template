@@ -10,7 +10,7 @@ import com.leijendary.spring.template.iam.core.model.QueryRequest
 import com.leijendary.spring.template.iam.entity.Account
 import com.leijendary.spring.template.iam.entity.UserCredential
 import com.leijendary.spring.template.iam.entity.Verification
-import com.leijendary.spring.template.iam.generator.CodeGenerationStrategy
+import com.leijendary.spring.template.iam.generator.CodeGenerator
 import com.leijendary.spring.template.iam.repository.AccountRepository
 import com.leijendary.spring.template.iam.repository.RoleRepository
 import com.leijendary.spring.template.iam.repository.UserRepository
@@ -65,7 +65,7 @@ class UserService(
 
         val verification = Verification().apply {
             this.user = user
-            this.code = CodeGenerationStrategy.UUID_STRATEGY.generate()
+            this.code = CodeGenerator.UUID_GENERATOR.generate()
             this.field = field
             this.value = username
             this.type = Verification.Type.PASSWORD_NOMINATE

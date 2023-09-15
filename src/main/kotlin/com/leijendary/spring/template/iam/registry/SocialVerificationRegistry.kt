@@ -1,15 +1,15 @@
 package com.leijendary.spring.template.iam.registry
 
 import com.leijendary.spring.template.iam.entity.UserSocial
-import com.leijendary.spring.template.iam.strategy.SocialVerificationStrategy
+import com.leijendary.spring.template.iam.handler.SocialVerificationHandler
 import org.springframework.stereotype.Component
 
 @Component
-class SocialVerificationRegistry(socialVerificationStrategies: List<SocialVerificationStrategy>) :
-    Registry<UserSocial.Provider, SocialVerificationStrategy> {
+class SocialVerificationRegistry(socialVerificationStrategies: List<SocialVerificationHandler>) :
+    Registry<UserSocial.Provider, SocialVerificationHandler> {
     private val strategy = socialVerificationStrategies.associateBy { it.provider }
 
-    override fun <R> using(type: UserSocial.Provider, function: SocialVerificationStrategy.() -> R?): R? {
+    override fun <R> using(type: UserSocial.Provider, function: SocialVerificationHandler.() -> R?): R? {
         return strategy[type]?.run(function)
     }
 }
