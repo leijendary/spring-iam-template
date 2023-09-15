@@ -23,9 +23,11 @@ class PictureService(private val s3Storage: S3Storage, private val userRepositor
     fun update(id: UUID): LinkResponse {
         val user = userRepository.findCachedByIdOrThrow(id)
         var image = user.image
+        var invalidate = true
 
         if (image === null) {
             image = createKey(id)
+            invalidate = false
             val exists = s3Storage.exists(image)
 
             if (!exists) {
@@ -37,7 +39,9 @@ class PictureService(private val s3Storage: S3Storage, private val userRepositor
             userRepository.saveAndCache(user)
         }
 
-        s3Storage.invalidateCache(id.toString(), image)
+        if (invalidate) {
+            s3Storage.invalidateCache(id.toString(), image)
+        }
 
         val link = s3Storage.sign(image)
 
