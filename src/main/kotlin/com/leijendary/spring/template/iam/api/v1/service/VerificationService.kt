@@ -22,7 +22,7 @@ class VerificationService(
         val field = request.field!!
         val value = request.value!!
         val type = request.type!!
-        val existing = verificationRepository.findFirstByFieldAndValueAndType(field, value, type)
+        val existing = verificationRepository.findFirstByFieldAndValueIgnoreCaseAndType(field, value, type)
         val timeout = verificationProperties.computeTimeout()
         val isTimedOut = existing?.createdAt?.isAfter(timeout) ?: false
 
@@ -37,7 +37,7 @@ class VerificationService(
         }
 
         transactional {
-            verificationRepository.deleteAllByFieldAndValueAndType(field, value, type)
+            verificationRepository.deleteAllByFieldAndValueIgnoreCaseAndType(field, value, type)
             verificationRepository.save(verification)
         }
 

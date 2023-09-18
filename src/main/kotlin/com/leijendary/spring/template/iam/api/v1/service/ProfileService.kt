@@ -45,12 +45,8 @@ class ProfileService(
         val verificationCode = request.verificationCode!!
         val verificationType = request.verificationType
         // Validate the verification code first
-        val verification = verificationValidator.validateByField(
-            credentialType,
-            username,
-            verificationCode,
-            verificationType
-        )
+        val verification = verificationValidator
+            .validateByField(credentialType, username, verificationCode, verificationType)
         val user = userRepository.findByIdOrThrow(userIdOrThrow)
         val credential = user.credentials.firstOrNull { it.type == credentialType }
 

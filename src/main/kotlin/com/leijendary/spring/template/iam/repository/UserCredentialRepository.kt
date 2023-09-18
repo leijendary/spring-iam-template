@@ -7,21 +7,25 @@ import org.springframework.transaction.annotation.Transactional
 
 interface UserCredentialRepository : JpaRepository<UserCredential, Long> {
     @Transactional(readOnly = true)
-    fun findFirstByUsernameAndUserDeletedAtIsNull(username: String): UserCredential?
+    fun findFirstByUsernameIgnoreCaseAndUserDeletedAtIsNull(username: String): UserCredential?
 
     @Transactional(readOnly = true)
-    fun findFirstByUsernameAndTypeAndUserDeletedAtIsNull(username: String, type: UserCredential.Type): UserCredential?
+    fun findFirstByUsernameIgnoreCaseAndTypeAndUserDeletedAtIsNull(
+        username: String,
+        type: UserCredential.Type
+    ): UserCredential?
 
     @Transactional(readOnly = true)
-    fun findFirstByUsernameAndUserDeletedAtIsNullOrThrow(username: String): UserCredential {
-        return findFirstByUsernameAndUserDeletedAtIsNull(username) ?: throw InvalidCredentialException()
+    fun findFirstByUsernameIgnoreCaseAndUserDeletedAtIsNullOrThrow(username: String): UserCredential {
+        return findFirstByUsernameIgnoreCaseAndUserDeletedAtIsNull(username) ?: throw InvalidCredentialException()
     }
 
     @Transactional(readOnly = true)
-    fun findFirstByUsernameAndTypeAndUserDeletedAtIsNullOrThrow(
+    fun findFirstByUsernameIgnoreCaseAndTypeAndUserDeletedAtIsNullOrThrow(
         username: String,
         type: UserCredential.Type
     ): UserCredential {
-        return findFirstByUsernameAndTypeAndUserDeletedAtIsNull(username, type) ?: throw InvalidCredentialException()
+        return findFirstByUsernameIgnoreCaseAndTypeAndUserDeletedAtIsNull(username, type)
+            ?: throw InvalidCredentialException()
     }
 }

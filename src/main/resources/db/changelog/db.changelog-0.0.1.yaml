@@ -985,3 +985,87 @@ databaseChangeLog:
                   name: user_id
             indexName: user_address_user_id_idx
             tableName: user_address
+  - changeSet:
+      id: drop-user-credential-user-id-username-type-index
+      author: Leijendekker
+      changes:
+        - dropIndex:
+            indexName: user_credential_user_id_username_type_idx
+            tableName: user_credential
+  - changeSet:
+      id: drop-user-credential-user-id-username-index
+      author: Leijendekker
+      changes:
+        - dropIndex:
+            indexName: user_credential_user_id_username_idx
+            tableName: user_credential
+  - changeSet:
+      id: add-user-credential-user-id-username-ignore-case-type-index
+      author: Leijendekker
+      changes:
+        - createIndex:
+            columns:
+              - column:
+                  name: user_id
+              - column:
+                  name: lower(username)
+              - column:
+                  name: type
+            indexName: user_credential_user_id_username_type_idx
+            tableName: user_credential
+  - changeSet:
+      id: add-user-credential-user-id-username-ignore-case-index
+      author: Leijendekker
+      changes:
+        - createIndex:
+            columns:
+              - column:
+                  name: user_id
+              - column:
+                  name: lower(username)
+            indexName: user_credential_user_id_username_idx
+            tableName: user_credential
+  - changeSet:
+      id: drop-verification-field-value-type-index
+      author: Leijendekker
+      changes:
+        - dropIndex:
+            indexName: verification_field_value_type_idx
+            tableName: verification
+  - changeSet:
+      id: drop-verification-field-value-code-type-index
+      author: Leijendekker
+      changes:
+        - dropIndex:
+            indexName: verification_field_value_code_type_idx
+            tableName: verification
+  - changeSet:
+      id: add-verification-field-value-ignore-case-type-index
+      author: Leijendekker
+      changes:
+        - createIndex:
+            columns:
+              - column:
+                  name: field
+              - column:
+                  name: lower(value)
+              - column:
+                  name: type
+            indexName: verification_field_value_type_idx
+            tableName: verification
+  - changeSet:
+      id: add-verification-field-value-ignore-case-code-type-index
+      author: Leijendekker
+      changes:
+        - createIndex:
+            columns:
+              - column:
+                  name: field
+              - column:
+                  name: lower(value)
+              - column:
+                  name: code
+              - column:
+                  name: type
+            indexName: verification_field_value_code_type_idx
+            tableName: verification

@@ -71,7 +71,8 @@ class PasswordService(
         val verificationCode = request.verificationCode!!
         // Validate if the verification code exists first.
         val verification = verificationValidator.validateByField(field, value, verificationCode, PASSWORD_RESET)
-        val credential = userCredentialRepository.findFirstByUsernameAndTypeAndUserDeletedAtIsNullOrThrow(value, field)
+        val credential = userCredentialRepository
+            .findFirstByUsernameIgnoreCaseAndTypeAndUserDeletedAtIsNullOrThrow(value, field)
         val password = request.password!!
 
         transactional {

@@ -18,7 +18,7 @@ interface VerificationRepository : JpaRepository<Verification, Long> {
     }
 
     @Transactional(readOnly = true)
-    fun findFirstByFieldAndValueAndCodeAndType(
+    fun findFirstByFieldAndValueIgnoreCaseAndCodeAndType(
         field: UserCredential.Type,
         value: String,
         code: String,
@@ -26,22 +26,22 @@ interface VerificationRepository : JpaRepository<Verification, Long> {
     ): Verification?
 
     @Transactional(readOnly = true)
-    fun findFirstByFieldAndValueAndCodeAndTypeOrThrow(
+    fun findFirstByFieldAndValueIgnoreCaseAndCodeAndTypeOrThrow(
         field: UserCredential.Type,
         value: String,
         code: String,
         type: Verification.Type
     ): Verification {
-        return findFirstByFieldAndValueAndCodeAndType(field, value, code, type)
+        return findFirstByFieldAndValueIgnoreCaseAndCodeAndType(field, value, code, type)
             ?: throw ResourceNotFoundException(sourceCode, code)
     }
 
     @Transactional(readOnly = true)
-    fun findFirstByFieldAndValueAndType(
+    fun findFirstByFieldAndValueIgnoreCaseAndType(
         field: UserCredential.Type,
         value: String,
         type: Verification.Type
     ): Verification?
 
-    fun deleteAllByFieldAndValueAndType(field: UserCredential.Type, value: String, type: Verification.Type)
+    fun deleteAllByFieldAndValueIgnoreCaseAndType(field: UserCredential.Type, value: String, type: Verification.Type)
 }

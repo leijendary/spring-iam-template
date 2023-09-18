@@ -39,7 +39,7 @@ class TokenService(
     fun create(request: TokenRequest): TokenResponse {
         val username = request.username!!
         val password = request.password!!
-        val credential = userCredentialRepository.findFirstByUsernameAndUserDeletedAtIsNullOrThrow(username)
+        val credential = userCredentialRepository.findFirstByUsernameIgnoreCaseAndUserDeletedAtIsNullOrThrow(username)
         val encoded = credential.password
 
         if (!passwordEncoder.matches(password, encoded)) {
@@ -84,7 +84,7 @@ class TokenService(
     }
 
     private fun createSocial(request: SocialRequest, result: SocialResult, provider: Provider): UserSocial {
-        var credential = userCredentialRepository.findFirstByUsernameAndUserDeletedAtIsNull(result.email)
+        var credential = userCredentialRepository.findFirstByUsernameIgnoreCaseAndUserDeletedAtIsNull(result.email)
         var user = credential?.user
 
         if (user != null) {
