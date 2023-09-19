@@ -15,7 +15,19 @@ plugins {
 group = "com.leijendary.spring"
 version = "1.0.0"
 description = "Spring Boot IAM Template for the Microservice Architecture or general purpose"
-java.sourceCompatibility = JavaVersion.VERSION_20
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_20
+}
+
+kotlin {
+    compilerOptions {
+        apiVersion.set(KotlinVersion.KOTLIN_2_0)
+        freeCompilerArgs.addAll("-Xjsr305=strict", "-Xjvm-default=all", "-Xjvm-enable-preview")
+        languageVersion.set(KotlinVersion.KOTLIN_2_0)
+        jvmTarget.set(JvmTarget.JVM_20)
+    }
+}
 
 configurations {
     implementation {
@@ -129,15 +141,6 @@ dependencyManagement {
         mavenBom("org.springframework.cloud:spring-cloud-dependencies:2022.0.3")
         mavenBom("org.testcontainers:testcontainers-bom:1.18.3")
         mavenBom("software.amazon.awssdk:bom:2.20.98")
-    }
-}
-
-kotlin {
-    compilerOptions {
-        apiVersion.set(KotlinVersion.KOTLIN_2_0)
-        freeCompilerArgs.addAll("-Xjsr305=strict", "-Xjvm-default=all", "-Xjvm-enable-preview")
-        languageVersion.set(KotlinVersion.KOTLIN_2_0)
-        jvmTarget.set(JvmTarget.JVM_20)
     }
 }
 
