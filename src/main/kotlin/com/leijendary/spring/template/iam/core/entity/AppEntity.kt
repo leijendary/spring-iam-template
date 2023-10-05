@@ -5,6 +5,6 @@ import java.io.Serializable
 open class AppEntity : Serializable {
     companion object {
         @JvmStatic
-        val serialVersionUID: Long = -1L
+        val serialVersionUID = -1L
     }
 }

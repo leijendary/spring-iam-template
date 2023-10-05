@@ -5,6 +5,6 @@ import java.io.Serializable
 sealed interface Response : Serializable {
     companion object {
         @JvmStatic
-        val serialVersionUID: Long = -1L
+        val serialVersionUID = -1L
     }
 }
