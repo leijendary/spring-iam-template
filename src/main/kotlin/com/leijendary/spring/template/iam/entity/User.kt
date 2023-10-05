@@ -21,6 +21,11 @@ class User : AuditingUUIDEntity(), PhoneProjection, SoftDeleteEntity {
         ACTIVE
     }
 
+    companion object {
+        @JvmStatic
+        val serialVersionUID = -1L
+    }
+
     var firstName: String? = null
     var middleName: String? = null
     var lastName: String? = null

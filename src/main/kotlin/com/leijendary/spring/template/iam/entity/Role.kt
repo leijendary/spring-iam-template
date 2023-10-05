@@ -12,6 +12,11 @@ class Role : AuditingUUIDEntity() {
         ADMIN("Admin");
     }
 
+    companion object {
+        @JvmStatic
+        val serialVersionUID = -1L
+    }
+
     lateinit var name: String
     var description: String? = null
 

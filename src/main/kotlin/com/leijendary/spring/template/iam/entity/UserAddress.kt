@@ -13,6 +13,11 @@ import java.util.*
 @Entity
 @EntityListeners(AuditingEntityListener::class)
 class UserAddress : AppEntity(), UUIDProjection {
+    companion object {
+        @JvmStatic
+        val serialVersionUID = -1L
+    }
+
     @Id
     @GeneratedValue
     @Column(updatable = false)

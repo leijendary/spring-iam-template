@@ -5,5 +5,10 @@ import jakarta.persistence.Entity
 
 @Entity
 class Permission : IdentityEntity() {
+    companion object {
+        @JvmStatic
+        val serialVersionUID = -1L
+    }
+
     lateinit var value: String
 }
