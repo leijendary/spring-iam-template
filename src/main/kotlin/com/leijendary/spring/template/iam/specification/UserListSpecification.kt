@@ -23,9 +23,9 @@ class UserListSpecification(
         if (!query.isNullOrBlank()) {
             val fields = listOf<Path<String>>(root.get("firstName"), root.get("lastName"))
             val concatenated = criteriaBuilder.concat(" ", *fields.toTypedArray())
-            val like = criteriaBuilder.lowerLike(concatenated, query)
+            val lowerLike = criteriaBuilder.lowerLike(concatenated, query)
 
-            predicates.add(like)
+            predicates.add(lowerLike)
         }
 
         if (exclusionQuery.exclude.withAccounts) {
