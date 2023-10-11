@@ -1,14 +1,12 @@
 package com.leijendary.spring.template.iam.specification
 
 import com.leijendary.spring.template.iam.api.v1.model.UserExclusionQueryRequest
+import com.leijendary.spring.template.iam.core.extension.concat
 import com.leijendary.spring.template.iam.core.extension.lowerLike
 import com.leijendary.spring.template.iam.entity.Account
 import com.leijendary.spring.template.iam.entity.User
-import jakarta.persistence.criteria.CriteriaBuilder
-import jakarta.persistence.criteria.CriteriaQuery
+import jakarta.persistence.criteria.*
 import jakarta.persistence.criteria.JoinType.LEFT
-import jakarta.persistence.criteria.Predicate
-import jakarta.persistence.criteria.Root
 import org.springframework.data.jpa.domain.Specification
 
 class UserListSpecification(
@@ -23,12 +21,11 @@ class UserListSpecification(
         val predicates = mutableListOf<Predicate>()
 
         if (!query.isNullOrBlank()) {
-            val firstName = root.get<String>("firstName").lowerLike(query, criteriaBuilder)
-            val middleName = root.get<String>("middleName").lowerLike(query, criteriaBuilder)
-            val lastName = root.get<String>("lastName").lowerLike(query, criteriaBuilder)
-            val orNames = criteriaBuilder.or(firstName, middleName, lastName)
+            val fields = listOf<Path<String>>(root.get("firstName"), root.get("lastName"))
+            val concatenated = criteriaBuilder.concat(" ", *fields.toTypedArray())
+            val like = criteriaBuilder.lowerLike(concatenated, query)
 
-            predicates.add(orNames)
+            predicates.add(like)
         }
 
         if (exclusionQuery.exclude.withAccounts) {
