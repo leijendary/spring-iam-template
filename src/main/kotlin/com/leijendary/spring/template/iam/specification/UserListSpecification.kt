@@ -21,11 +21,19 @@ class UserListSpecification(
         val predicates = mutableListOf<Predicate>()
 
         if (!query.isNullOrBlank()) {
-            val fields = listOf<Path<String>>(root.get("firstName"), root.get("lastName"))
-            val concatenated = criteriaBuilder.concat(" ", *fields.toTypedArray())
-            val lowerLike = criteriaBuilder.lowerLike(concatenated, query)
+            // First name and last name
+            val names = listOf<Path<String>>(root.get("firstName"), root.get("lastName"))
+            val concatenated = criteriaBuilder.concat(" ", *names.toTypedArray())
+            val namesLike = criteriaBuilder.lowerLike(concatenated, query)
 
-            predicates.add(lowerLike)
+            // Email
+            val email = root.get<String>("email")
+            val emailLike = criteriaBuilder.lowerLike(email, query)
+
+            // (First name and last name) or (email)
+            val namesOrEmailLike = criteriaBuilder.or(namesLike, emailLike)
+
+            predicates.add(namesOrEmailLike)
         }
 
         if (exclusionQuery.exclude.withAccounts) {
