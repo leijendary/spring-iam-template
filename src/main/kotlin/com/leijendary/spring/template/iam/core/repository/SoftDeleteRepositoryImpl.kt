@@ -19,11 +19,10 @@ class SoftDeleteRepositoryImpl<T : SoftDeleteEntity>(
 ) : SoftDeleteRepository<T> {
     @Transactional
     override fun softDelete(entity: T) {
-        entity.apply {
+        val merged = entityManager.merge(entity)
+        merged.apply {
             deletedAt = dateTimeProvider.now.get() as OffsetDateTime
             deletedBy = auditorAware.currentAuditor.get()
         }
-
-        entityManager.merge(entity)
     }
 }
