@@ -22,11 +22,11 @@ class AccountService(
 
         accountRepository.softDelete(account)
 
-        account.users
-            .map { it.deletedReason = accountDeleteRequest.reason; it }
-            .forEach {
-                authRepository.deleteByUserId(it.id!!)
-                userRepository.softDeleteAndEvict(it)
-            }
+        account.users.forEach {
+            it.deletedReason = accountDeleteRequest.reason
+
+            authRepository.deleteByUserId(it.id!!)
+            userRepository.softDeleteAndEvict(it)
+        }
     }
 }
