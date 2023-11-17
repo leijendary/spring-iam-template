@@ -8,6 +8,10 @@ inline fun <reified T : Any> String.toClass(): T {
     return objectMapper.readValue(this, T::class.java)
 }
 
+fun <T> String.toClass(reference: TypeReference<T>): T {
+    return objectMapper.readValue(this, reference)
+}
+
 fun String.snakeCaseToCamelCase(capitalizeFirst: Boolean = false): String {
     val builder = StringBuilder()
 
