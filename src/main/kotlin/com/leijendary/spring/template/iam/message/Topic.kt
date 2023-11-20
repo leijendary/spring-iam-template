@@ -8,5 +8,6 @@ object Topic {
     const val USER_PROFILE_UPDATED = "userProfileUpdated"
     const val USER_EMAIL_UPDATED = "userEmailUpdated"
     const val USER_PHONE_UPDATED = "userPhoneUpdated"
+    const val USER_ADDRESS_CREATED = "userAddressCreated"
     const val USER_ADDRESS_UPDATED = "userAddressUpdated"
 }

@@ -6,6 +6,7 @@ import com.leijendary.spring.template.iam.core.config.properties.KafkaTopicPrope
 import com.leijendary.spring.template.iam.core.extension.toJson
 import com.leijendary.spring.template.iam.entity.User
 import com.leijendary.spring.template.iam.entity.UserAddress
+import com.leijendary.spring.template.iam.message.Topic.USER_ADDRESS_CREATED
 import com.leijendary.spring.template.iam.message.Topic.USER_ADDRESS_UPDATED
 import com.leijendary.spring.template.iam.message.Topic.USER_EMAIL_UPDATED
 import com.leijendary.spring.template.iam.message.Topic.USER_PHONE_UPDATED
@@ -48,6 +49,14 @@ class UserMessageProducer(
     fun phoneUpdated(user: User) {
         val userMessage = UserMapper.INSTANCE.toPhoneMessage(user)
         val topic = kafkaTopicProperties.nameOf(USER_PHONE_UPDATED)
+
+        kafkaTemplate.send(topic, userMessage.toJson())
+    }
+
+    @Retryable
+    fun addressCreated(userAddress: UserAddress) {
+        val userMessage = UserAddressMapper.INSTANCE.toMessage(userAddress)
+        val topic = kafkaTopicProperties.nameOf(USER_ADDRESS_CREATED)
 
         kafkaTemplate.send(topic, userMessage.toJson())
     }

@@ -168,6 +168,8 @@ spring:
         name: \${info.app.organization}.user.email.updated
       userPhoneUpdated:
         name: \${info.app.organization}.user.phone.updated
+      userAddressCreated:
+        name: \${info.app.organization}.user.address.created
       userAddressUpdated:
         name: \${info.app.organization}.user.address.updated
   main:

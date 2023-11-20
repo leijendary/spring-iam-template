@@ -33,6 +33,8 @@ class AddressService(
             .apply { this.user = user }
             .let(userAddressRepository::saveAndCache)
 
+        userMessageProducer.addressCreated(address)
+
         if (request.primary) {
             unsetOthersAsPrimary(address.id!!, userId)
         }
