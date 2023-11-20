@@ -76,6 +76,7 @@ class AddressService(
             it.primary = false
 
             userAddressRepository.saveAndEvict(it)
+            userMessageProducer.addressUpdated(it)
         }
     }
 }
