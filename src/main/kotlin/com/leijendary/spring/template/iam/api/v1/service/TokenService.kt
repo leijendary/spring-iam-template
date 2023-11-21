@@ -78,8 +78,7 @@ class TokenService(
     fun social(request: SocialRequest): TokenResponse {
         val provider = request.provider!!
         val result = socialVerificationRegistry.using(provider) { verify(request.token!!) }!!
-        val userSocial = userSocialRepository.findFirstById(result.id)
-            ?: createSocial(request, result, provider)
+        val userSocial = userSocialRepository.findFirstById(result.id) ?: createSocial(request, result, provider)
         val auth = authorizationManager.authorize(userSocial.user, result.email, EMAIL)
 
         return TokenMapper.INSTANCE.toResponse(auth)
