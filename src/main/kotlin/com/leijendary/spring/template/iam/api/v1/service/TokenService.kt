@@ -14,6 +14,7 @@ import com.leijendary.spring.template.iam.entity.UserCredential.Type.EMAIL
 import com.leijendary.spring.template.iam.entity.UserSocial
 import com.leijendary.spring.template.iam.entity.UserSocial.Provider
 import com.leijendary.spring.template.iam.manager.AuthorizationManager
+import com.leijendary.spring.template.iam.message.UserMessageProducer
 import com.leijendary.spring.template.iam.model.SocialResult
 import com.leijendary.spring.template.iam.registry.SocialVerificationRegistry
 import com.leijendary.spring.template.iam.repository.RoleRepository
@@ -33,6 +34,7 @@ class TokenService(
     private val roleRepository: RoleRepository,
     private val socialVerificationRegistry: SocialVerificationRegistry,
     private val userCredentialRepository: UserCredentialRepository,
+    private val userMessageProducer: UserMessageProducer,
     private val userRepository: UserRepository,
     private val userSocialRepository: UserSocialRepository,
 ) {
@@ -87,7 +89,7 @@ class TokenService(
         var credential = userCredentialRepository.findFirstByUsernameIgnoreCaseAndUserDeletedAtIsNull(result.email)
         var user = credential?.user
 
-        if (user != null) {
+        if (user !== null) {
             val hasProvider = userSocialRepository.existsByUserIdAndProvider(user.id!!, provider)
 
             // The user already has the same social provider attached to his/her account.
@@ -119,6 +121,8 @@ class TokenService(
                 userRepository.save(user)
                 userCredentialRepository.save(credential)
             }
+
+            userMessageProducer.registered(user)
         }
 
         val social = UserSocial().apply {
