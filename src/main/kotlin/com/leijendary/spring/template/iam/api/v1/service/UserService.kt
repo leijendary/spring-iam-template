@@ -11,10 +11,7 @@ import com.leijendary.spring.template.iam.entity.Account
 import com.leijendary.spring.template.iam.entity.UserCredential
 import com.leijendary.spring.template.iam.entity.Verification
 import com.leijendary.spring.template.iam.generator.CodeGenerator
-import com.leijendary.spring.template.iam.repository.AccountRepository
-import com.leijendary.spring.template.iam.repository.RoleRepository
-import com.leijendary.spring.template.iam.repository.UserRepository
-import com.leijendary.spring.template.iam.repository.VerificationRepository
+import com.leijendary.spring.template.iam.repository.*
 import com.leijendary.spring.template.iam.specification.UserListSpecification
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -25,8 +22,10 @@ import java.util.*
 @Service
 class UserService(
     private val accountRepository: AccountRepository,
+    private val authRepository: AuthRepository,
     private val roleRepository: RoleRepository,
     private val userRepository: UserRepository,
+    private val userSocialRepository: UserSocialRepository,
     private val verificationProperties: VerificationProperties,
     private val verificationRepository: VerificationRepository
 ) {
@@ -116,6 +115,8 @@ class UserService(
         val user = userRepository.findByIdOrThrow(id)
         user.account?.let { accountRepository.softDelete(it) }
 
+        authRepository.deleteByUserId(id)
         userRepository.softDeleteAndEvict(user)
+        userSocialRepository.deleteByUserId(id)
     }
 }

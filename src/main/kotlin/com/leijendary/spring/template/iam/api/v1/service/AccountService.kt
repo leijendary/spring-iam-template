@@ -4,6 +4,7 @@ import com.leijendary.spring.template.iam.api.v1.model.AccountDeleteRequest
 import com.leijendary.spring.template.iam.repository.AccountRepository
 import com.leijendary.spring.template.iam.repository.AuthRepository
 import com.leijendary.spring.template.iam.repository.UserRepository
+import com.leijendary.spring.template.iam.repository.UserSocialRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.util.*
@@ -12,7 +13,8 @@ import java.util.*
 class AccountService(
     private val accountRepository: AccountRepository,
     private val authRepository: AuthRepository,
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val userSocialRepository: UserSocialRepository
 ) {
     @Transactional
     fun delete(userId: UUID, accountDeleteRequest: AccountDeleteRequest) {
@@ -27,6 +29,7 @@ class AccountService(
 
             authRepository.deleteByUserId(it.id!!)
             userRepository.softDeleteAndEvict(it)
+            userSocialRepository.deleteByUserId(it.id!!)
         }
     }
 }
