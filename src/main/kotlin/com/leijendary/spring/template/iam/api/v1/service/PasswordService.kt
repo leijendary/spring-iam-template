@@ -3,26 +3,33 @@ package com.leijendary.spring.template.iam.api.v1.service
 import com.leijendary.spring.template.iam.api.v1.mapper.TokenMapper
 import com.leijendary.spring.template.iam.api.v1.model.*
 import com.leijendary.spring.template.iam.api.v1.model.NextResponse.Type.AUTHENTICATE
+import com.leijendary.spring.template.iam.core.config.properties.VerificationProperties
 import com.leijendary.spring.template.iam.core.datasource.transactional
 import com.leijendary.spring.template.iam.core.exception.InvalidCredentialException
+import com.leijendary.spring.template.iam.core.util.RequestContext.locale
 import com.leijendary.spring.template.iam.core.util.RequestContext.userIdOrThrow
 import com.leijendary.spring.template.iam.entity.UserCredential
 import com.leijendary.spring.template.iam.entity.Verification.Type.PASSWORD_NOMINATE
 import com.leijendary.spring.template.iam.entity.Verification.Type.PASSWORD_RESET
 import com.leijendary.spring.template.iam.manager.AuthorizationManager
+import com.leijendary.spring.template.iam.message.NotificationMessageProducer
 import com.leijendary.spring.template.iam.repository.UserCredentialRepository
 import com.leijendary.spring.template.iam.repository.UserRepository
 import com.leijendary.spring.template.iam.repository.VerificationRepository
 import com.leijendary.spring.template.iam.validator.VerificationValidator
+import org.springframework.context.MessageSource
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 
 @Service
 class PasswordService(
     private val authorizationManager: AuthorizationManager,
+    private val messageSource: MessageSource,
+    private val notificationMessageProducer: NotificationMessageProducer,
     private val passwordEncoder: PasswordEncoder,
     private val userCredentialRepository: UserCredentialRepository,
     private val userRepository: UserRepository,
+    private val verificationProperties: VerificationProperties,
     private val verificationRepository: VerificationRepository,
     private val verificationValidator: VerificationValidator
 ) {
@@ -88,5 +95,16 @@ class PasswordService(
         credential.password = passwordEncoder.encode(password)
 
         userCredentialRepository.save(credential)
+
+        val email = credential.user.email
+        val templateId = verificationProperties.password.change.templateId
+
+        notificationMessageProducer.email(email, templateId, emptyMap())
+
+        val userId = credential.user.id!!
+        val title = messageSource.getMessage("notification.push.password.changed.title", emptyArray(), locale)
+        val body = messageSource.getMessage("notification.push.password.changed.body", emptyArray(), locale)
+
+        notificationMessageProducer.push(userId, title, body)
     }
 }

@@ -62,6 +62,8 @@ verification:
   register:
     templateId: register-verify
   password:
+    change:
+      templateId: password-change
     nominate:
       templateId: password-nominate
       url:

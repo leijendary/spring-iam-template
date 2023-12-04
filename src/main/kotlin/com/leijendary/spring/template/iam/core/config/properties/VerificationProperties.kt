@@ -19,6 +19,7 @@ class VerificationProperties {
 
     inner class Password {
         var nominate = PasswordNominate()
+        var change = Config()
         var reset = Config()
     }
 
